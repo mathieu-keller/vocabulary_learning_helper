@@ -52,8 +52,8 @@ func getVocab(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	r := mux.NewRouter()
-	r.HandleFunc("/add", insertVocab).Methods(http.MethodPost)
-	r.HandleFunc("/", getVocab).Methods(http.MethodGet)
+	r.HandleFunc("/vocab/add", insertVocab).Methods(http.MethodPost)
+	r.HandleFunc("/vocab/", getVocab).Methods(http.MethodGet)
 	err := http.ListenAndServe(":8080", r)
 	if err != nil {
 		log.Fatal(err)
