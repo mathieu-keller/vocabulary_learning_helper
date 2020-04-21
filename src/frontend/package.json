@@ -1,0 +1,16 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "dependencies": {
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  },
+  "devDependencies": {
+    "webpack": "^4.42.1",
+    "webpack-dev-server": "^3.10.3",
+    "typescript": "^3.8.3",
+    "ts-loader": "^7.0.1",
+    "@types/react": "^16.9.0",
+    "@types/react-dom": "^16.9.0"
+  }
+}
