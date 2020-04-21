@@ -1,25 +1,21 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useEffect, useState} from 'react';
 import './App.css';
 
+type Vocab = {
+    German: string;
+    Japanese: string;
+    Kanji: string;
+}
+
 const App = (): JSX.Element => {
+    const [vocabs, setVocabs] = useState<Vocab[]>([]);
+    useEffect(() => {
+        fetch('/vocab/').then(r => r.json().then(j => setVocabs(j)))
+    }, [])
+    const renderVocabs = (): JSX.Element[] => vocabs.map((vocab, i) => <li
+        key={i}>{vocab.German},{vocab.Japanese},{vocab.Kanji}</li>)
     return (
-        <div className="App">
-            <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo"/>
-                <p>
-                    Edit <code>src/App.tsx</code> and save to reload.
-                </p>
-                <a
-                    className="App-link"
-                    href="https://reactjs.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Learn React
-                </a>
-            </header>
-        </div>
+        <>{renderVocabs()}</>
     );
 };
 export default App;

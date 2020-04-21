@@ -3,8 +3,11 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
     entry: './src/index.tsx',
-    mode: 'production',
-    devtool: 'inline-source-map',//todo only in dev mode
+    mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
+    performance: {
+        hints: process.env.NODE_ENV === 'production' ? "warning" : false
+    },
+    devtool:'inline-source-map',
     module: {
         rules: [
             {
@@ -42,7 +45,7 @@ module.exports = {
                 {
                     inject: true,
                     template: "./public/index.html",
-                }, {//todo only in prod
+                }, process.env.NODE_ENV === 'production' ? {
                     minify: {
                         removeComments: true,
                         collapseWhitespace: true,
@@ -55,7 +58,7 @@ module.exports = {
                         minifyCSS: true,
                         minifyURLs: true,
                     },
-                }
+                } : undefined
             )
         )],
     devServer: {
