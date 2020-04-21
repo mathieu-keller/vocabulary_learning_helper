@@ -67,7 +67,7 @@ module.exports = {
         proxy: {
             "**": {
                 changeOrigin: true,
-                target: "localhost:8080"
+                target: "http://localhost:8080"
             }
         }
     }
