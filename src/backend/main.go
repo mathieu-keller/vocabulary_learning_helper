@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"github.com/afrima/japanese_learning_helper/src/backend/entity"
 	"github.com/gorilla/mux"
 	"io/ioutil"
@@ -51,9 +52,13 @@ func getVocab(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	var dir string
+	flag.StringVar(&dir, "dir", "./dist", "the directory to serve files from. Defaults to the current dir")
+	flag.Parse()
 	r := mux.NewRouter()
 	r.HandleFunc("/vocab/add", insertVocab).Methods(http.MethodPost)
 	r.HandleFunc("/vocab/", getVocab).Methods(http.MethodGet)
+	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(dir))))
 	err := http.ListenAndServe(":8080", r)
 	if err != nil {
 		log.Fatal(err)
