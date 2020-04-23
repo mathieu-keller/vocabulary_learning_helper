@@ -1,23 +1,15 @@
 import React from 'react';
-import {Button, Card} from "react-bootstrap";
 import VocabularyView from "./containers/vocabulary/VocabularyView";
-
+import {Route, Switch} from "react-router-dom";
+import Home from "./components/Home";
 
 const App = (): JSX.Element => {
-
     return (
         <>
-            <VocabularyView/>
-            <Card>
-                <Card.Header as="h5">Featured</Card.Header>
-                <Card.Body>
-                    <Card.Title>Special title treatment</Card.Title>
-                    <Card.Text>
-                        With supporting text below as a natural lead-in to additional content.
-                    </Card.Text>
-                    <Button variant="primary">Go somewhere</Button>
-                </Card.Body>
-            </Card>
+            <Switch>
+                <Route path='/vocabulary' component={VocabularyView}/>
+                <Route path='/' component={Home} exact/>
+            </Switch>
         </>
     );
 };
