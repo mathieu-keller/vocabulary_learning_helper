@@ -1,7 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import './App.css';
+import Grid from "./components/UI/Grid";
 
 type Vocab = {
+    Id: string;
     German: string;
     Japanese: string;
     Kanji: string;
@@ -10,12 +12,19 @@ type Vocab = {
 const App = (): JSX.Element => {
     const [vocabs, setVocabs] = useState<Vocab[]>([]);
     useEffect(() => {
-        fetch('/vocab/').then(r => r.json().then(j => setVocabs(j)))
+        fetch('/vocab/').then(r => r.json().then((j) => setVocabs(j)))
     }, [])
-    const renderVocabs = (): JSX.Element[] => vocabs.map((vocab, i) => <li
-        key={i}>{vocab.German},{vocab.Japanese},{vocab.Kanji}</li>)
     return (
-        <>{renderVocabs()}</>
+        <>
+            <Grid<Vocab>
+                columns={[
+                    {name: 'German', field: 'German'},
+                    {name: 'Japanese', field: 'Japanese'},
+                    {name: 'Kanji', field: 'Kanji'}
+                ]}
+                data={vocabs}
+            />
+        </>
     );
 };
 export default App;
