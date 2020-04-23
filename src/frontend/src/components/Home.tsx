@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Card} from "react-bootstrap";
+import {Card} from "react-bootstrap";
 import {Link} from "react-router-dom";
 
 const Home = (): JSX.Element => (
@@ -10,7 +10,7 @@ const Home = (): JSX.Element => (
             <Card.Text>
                 With supporting text below as a natural lead-in to additional content.
             </Card.Text>
-            <Button variant="primary"><Link to="/vocabulary">Go somewhere</Link></Button>
+            <Link className='btn btn-primary' to="/vocabulary">Go somewhere</Link>
         </Card.Body>
     </Card>
 );

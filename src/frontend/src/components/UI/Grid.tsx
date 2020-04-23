@@ -21,7 +21,7 @@ function Grid<d extends { Id: string; [key: string]: string }>(props: GridProps<
             ))
         , [columns, data]);
     return (
-        <Table striped bordered hover variant="dark">
+        <Table striped bordered hover>
             <thead>
             <tr>
                 {columnsToRender}

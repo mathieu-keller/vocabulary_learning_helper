@@ -11,7 +11,7 @@ type Vocab = {
 const VocabularyView = (): JSX.Element => {
     const [vocabs, setVocabs] = useState<Vocab[]>([]);
     useEffect(() => {
-        fetch('/vocab/').then(r => r.json().then((j) => setVocabs(j)))
+        fetch('/vocab/').then((r: Response) => r.json().then((j: Vocab[]) => setVocabs(j)))
     }, [])
     return (<Grid<Vocab>
         columns={[
