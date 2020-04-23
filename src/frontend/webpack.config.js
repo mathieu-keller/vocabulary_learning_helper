@@ -24,7 +24,7 @@ module.exports = {
             },
             {
                 loader: require.resolve('file-loader'),
-                exclude: [/\.(css|js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
+                exclude: [/\.(css|js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/, /node_modules/],
                 options: {
                     name: 'static/media/[name].[hash:8].[ext]',
                 },

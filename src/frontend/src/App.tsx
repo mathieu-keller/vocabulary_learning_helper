@@ -1,29 +1,23 @@
-import React, {useEffect, useState} from 'react';
-import './App.css';
-import Grid from "./components/UI/Grid";
+import React from 'react';
+import {Button, Card} from "react-bootstrap";
+import VocabularyView from "./containers/vocabulary/VocabularyView";
 
-type Vocab = {
-    Id: string;
-    German: string;
-    Japanese: string;
-    Kanji: string;
-}
 
 const App = (): JSX.Element => {
-    const [vocabs, setVocabs] = useState<Vocab[]>([]);
-    useEffect(() => {
-        fetch('/vocab/').then(r => r.json().then((j) => setVocabs(j)))
-    }, [])
+
     return (
         <>
-            <Grid<Vocab>
-                columns={[
-                    {name: 'German', field: 'German'},
-                    {name: 'Japanese', field: 'Japanese'},
-                    {name: 'Kanji', field: 'Kanji'}
-                ]}
-                data={vocabs}
-            />
+            <VocabularyView/>
+            <Card>
+                <Card.Header as="h5">Featured</Card.Header>
+                <Card.Body>
+                    <Card.Title>Special title treatment</Card.Title>
+                    <Card.Text>
+                        With supporting text below as a natural lead-in to additional content.
+                    </Card.Text>
+                    <Button variant="primary">Go somewhere</Button>
+                </Card.Body>
+            </Card>
         </>
     );
 };

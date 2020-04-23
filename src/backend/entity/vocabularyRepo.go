@@ -9,6 +9,7 @@ import (
 )
 
 type Vocab struct {
+	Id       string
 	German   string
 	Japanese string
 	Kanji    string
