@@ -5,7 +5,7 @@ RUN apk update && apk add --no-cache git
 RUN go get -d -v
 RUN go build -ldflags "-s -w" -o /go/bin/backend
 
-FROM node:12-alpine AS NodeBuilder
+FROM node:14-alpine AS NodeBuilder
 WORKDIR /app
 COPY frontend/ .
 ARG NODE_ENV=production

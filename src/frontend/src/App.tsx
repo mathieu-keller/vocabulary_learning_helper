@@ -7,7 +7,7 @@ import Navbar from "./components/Navigation/Navbar";
 const App = (): JSX.Element => {
     return (
         <>
-            <Navbar/>
+            <Navbar />
             <Switch>
                 <Route path='/vocabulary' component={VocabularyView}/>
                 <Route path='/' component={Home} exact/>

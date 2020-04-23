@@ -8,13 +8,20 @@ type Vocab = {
     Kanji: string;
 }
 
+type GridData = {
+    data: Vocab;
+    edit?: boolean;
+}
+
 const VocabularyView = (): JSX.Element => {
-    const [vocabs, setVocabs] = useState<Vocab[]>([]);
+    const [vocabs, setVocabs] = useState<GridData[]>([]);
     useEffect(() => {
-        fetch('/vocab/').then((r: Response) => r.json().then((j: Vocab[]) => setVocabs(j)))
+        fetch('/vocab/').then((r: Response) => r.json().then((j: Vocab[]) => setVocabs(j.map(data => ({data: data})))))
     }, [])
-    return (<Grid<Vocab>
+    return (<Grid<GridData>
+        id='Id'
         columns={[
+            {title: '#', field: 'edit', width: '150px'},
             {title: 'German', field: 'German'},
             {title: 'Japanese', field: 'Japanese'},
             {title: 'Kanji', field: 'Kanji'}
