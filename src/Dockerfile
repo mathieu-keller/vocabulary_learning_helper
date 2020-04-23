@@ -5,12 +5,12 @@ RUN apk update && apk add --no-cache git
 RUN go get -d -v
 RUN go build -ldflags "-s -w" -o /go/bin/backend
 
-FROM node:12 AS NodeBuilder
+FROM node:12-alpine AS NodeBuilder
 WORKDIR /app
 COPY frontend/ .
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
-RUN yarn install --production=false
+RUN yarn install
 RUN npm run build
 
 FROM alpine:latest
