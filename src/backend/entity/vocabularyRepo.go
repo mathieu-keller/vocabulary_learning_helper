@@ -4,12 +4,14 @@ import (
 	"context"
 	"github.com/afrima/japanese_learning_helper/src/backend/database"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"time"
 )
 
 type Vocab struct {
-	Id       string
+	Id       primitive.ObjectID `bson:"_id, omitempty"`
 	German   string
 	Japanese string
 	Kanji    string
@@ -48,8 +50,21 @@ func (vocab Vocab) InsertVocab() error {
 	}
 	collection := database.GetDatabase().Collection("Vocabulary")
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
-	_, err := collection.InsertOne(ctx, vocab)
-	return err
+	if vocab.Id.IsZero() {
+		_, err := collection.InsertOne(ctx, vocab)
+		return err
+	} else {
+		opts := options.Update().SetUpsert(true)
+		filter := bson.D{{"_id", vocab.Id}}
+		update := bson.D{{"$set", bson.D{{"German", vocab.German}}}}
+		_, err := collection.UpdateOne(
+			context.Background(),
+			filter,
+			update,
+			opts,
+		)
+		return err
+	}
 }
 
 func (vocabErrors VocabErrors) Error() string {

@@ -1,8 +1,8 @@
 import React from 'react';
 import VocabularyView from "./containers/vocabulary/VocabularyView";
-import {Route, Switch} from "react-router-dom";
 import Home from "./components/Home";
 import Navbar from "./components/Navigation/Navbar";
+import { Route, Switch } from 'react-router-dom';
 
 const App = (): JSX.Element => {
     return (

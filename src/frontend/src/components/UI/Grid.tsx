@@ -1,7 +1,5 @@
-import React, {useMemo} from 'react';
-import DeleteForeverOutlinedIcon from '@material-ui/icons/DeleteForeverOutlined';
-import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
-import {Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@material-ui/core";
+import React from 'react';
+import '../../../public/App.css'
 
 type Column = { title: string; field: string; width?: string }
 
@@ -9,57 +7,42 @@ type GridProps<d> = {
     columns: Column[];
     data: d[];
     id: string;
+    editData?: { new: d; old: d };
+    editRow: (data?: d) => void;
+    onChange: (field: string, value: string) => void;
+    saveChanges: () => void;
 }
 
 
-function Grid<d extends { edit?: boolean; data: { [key: string]: string } }>(props: GridProps<d>): JSX.Element {
-    const {columns, data, id} = props;
-    const columnsToRender = useMemo(() => columns.map((column => <TableCell
-        key={column.field} style={column.width ? {width: column.width} : {}}>{column.title}</TableCell>)), [columns]);
-    const dataToRender = useMemo(() =>
-            data.map((d => {
-                    if (d.edit) {
-                        return (<tr key={d.data[id]}>
-                            {columns.map(column => <TableCell key={column.field} style={column.width ? {width: column.width} : {}}>
-                                <input name={column.field} type="text" className="form-control"
-                                       value={d.data[column.field]}/>
-                            </TableCell>)}
-                        </tr>)
-                    } else {
-                        return (<tr key={d.data[id]}>
-                            {columns.map(column => {
-                                if (column.field === 'edit') {
-                                    return (<TableCell key={column.field} style={column.width ? {width: column.width} : {}}>
-                                        <Button color="primary">
-                                            <EditOutlinedIcon/>
-                                        </Button>
-                                        <Button color="secondary">
-                                            <DeleteForeverOutlinedIcon/>
-                                        </Button>
-                                    </TableCell>)
-                                }
-                                return (<TableCell key={column.field}
-                                            style={column.width ? {width: column.width} : {}}>{d.data[column.field]}</TableCell>)
-                            })}
-                        </tr>)
-                    }
+function Grid<d extends { Id: string; [key: string]: string }>(props: GridProps<d>): JSX.Element {
+    const {columns, data, editData, editRow, saveChanges, onChange} = props;
+    const header = columns.map(c => <th key={c.field}>{c.title}</th>);
+    const rows = data.map(d => {
+        return <tr key={d.Id}>{columns.map(c => {
+            if (editData && editData.old.Id === d.Id) {
+                if (c.field === 'edit') {
+                    return <td><p onClick={saveChanges}>save</p><p onClick={() => editRow(undefined)}>cancel</p></td>
                 }
-            ))
-        , [columns, data]);
+                return <td key={c.field}><input type='text' onChange={(e) => onChange(c.field, e.target.value)}
+                                                value={editData.new[c.field]}/></td>
+            }
+            if (c.field === 'edit') {
+                return <td><p onClick={() => editRow(d)}>edit</p></td>
+            }
+            return <td key={c.field}>{d[c.field]}</td>
+        })}</tr>
+    })
     return (
-        <TableContainer component={Paper}>
-        <Table>
-            <TableHead>
-                <TableRow>
-                {columnsToRender}
-                </TableRow>
-            </TableHead>
-            <TableBody>
-            {dataToRender}
-            </TableBody>
-        </Table>
-        </TableContainer>
-    );
+        <table className="blueTable">
+            <thead>
+            <tr>
+                {header}
+            </tr>
+            </thead>
+            <tbody>
+            {rows}
+            </tbody>
+        </table>)
 }
 
 export default Grid;

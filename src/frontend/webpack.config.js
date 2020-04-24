@@ -1,33 +1,32 @@
 const path = require('path');
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
+    .BundleAnalyzerPlugin;
+const TerserPlugin = require('terser-webpack-plugin');
+var production = process.env.NODE_ENV !== 'production';
 module.exports = {
     entry: './src/index.tsx',
-    mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
+    mode: production ? 'production' : 'development',
     performance: {
-        hints: process.env.NODE_ENV === 'production' ? "warning" : false
+        hints: production ? "warning" : false
     },
-    devtool: process.env.NODE_ENV === 'production' ? '' : 'inline-source-map',
+    devtool: production ? false : 'inline-source-map',
     module: {
         rules: [
             {
                 test: /\.(ts|tsx)$/,
                 exclude: [/.*\.test.*/, /node_modules/],
                 use: {
-                    loader: "ts-loader"
+                    loader: "ts-loader",
+                    options: {
+                        transpileOnly: true
+                    }
                 }
             },
             {
                 test: /\.css$/,
                 exclude: [/node_modules/],
                 use: ['style-loader', "css-loader"]
-            },
-            {
-                loader: require.resolve('file-loader'),
-                exclude: [/\.(css|js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/, /node_modules/],
-                options: {
-                    name: 'static/media/[name].[hash:8].[ext]',
-                },
             },
         ]
     },
@@ -38,14 +37,18 @@ module.exports = {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'dist'),
     },
+    optimization: {
+        minimizer: [new TerserPlugin({ /* additional options here */ })],
+    },
     plugins: [
+        new BundleAnalyzerPlugin(),
         new HtmlWebpackPlugin(
             Object.assign(
                 {},
                 {
                     inject: true,
                     template: "./public/index.html",
-                }, process.env.NODE_ENV === 'production' ? {
+                }, production ? {
                     minify: {
                         removeComments: true,
                         collapseWhitespace: true,
