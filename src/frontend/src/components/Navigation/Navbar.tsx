@@ -1,7 +1,6 @@
 import React from 'react';
 import {Link} from "react-router-dom";
 
-
 export default (): JSX.Element => {
     return (
         <ul id="menu-bar">
@@ -9,6 +8,5 @@ export default (): JSX.Element => {
             <li><Link className="link" to='/vocabulary'>Vocabulary</Link>
             </li>
         </ul>
-
-);
-}
+    );
+};

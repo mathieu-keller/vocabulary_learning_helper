@@ -9,13 +9,12 @@
     "@types/react-router-dom": "^5.1.4",
     "@typescript-eslint/eslint-plugin": "^2.29.0",
     "@typescript-eslint/parser": "^2.29.0",
-    "css-loader": "^3.5.2",
-    "file-loader": "^6.0.0",
+    "css-loader": "^3.5.3",
     "html-webpack-plugin": "^4.2.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.1.2",
-    "style-loader": "^1.1.4",
+    "style-loader": "^1.2.0",
     "terser-webpack-plugin": "^2.3.5",
     "ts-loader": "^7.0.1",
     "typescript": "^3.8.3",
@@ -31,7 +30,7 @@
   },
   "scripts": {
     "run": "webpack-dev-server",
-    "build": "webpack -p",
+    "build": "webpack",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src --color",
     "yarn": "yarn"
   }

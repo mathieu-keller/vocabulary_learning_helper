@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
     .BundleAnalyzerPlugin;
 const TerserPlugin = require('terser-webpack-plugin');
-var production = process.env.NODE_ENV !== 'production';
+var production = process.env.NODE_ENV === 'production';
 module.exports = {
     entry: './src/index.tsx',
     mode: production ? 'production' : 'development',
@@ -38,7 +38,7 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
     },
     optimization: {
-        minimizer: [new TerserPlugin({ /* additional options here */ })],
+        minimizer: [new TerserPlugin({ /* additional options here */})],
     },
     plugins: [
         new BundleAnalyzerPlugin(),
