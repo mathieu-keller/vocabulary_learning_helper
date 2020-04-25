@@ -51,6 +51,7 @@ func (vocab Vocab) InsertVocab() error {
 	collection := database.GetDatabase().Collection("Vocabulary")
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	if vocab.Id.IsZero() {
+		vocab.Id = primitive.NewObjectIDFromTimestamp(time.Now())
 		_, err := collection.InsertOne(ctx, vocab)
 		return err
 	} else {

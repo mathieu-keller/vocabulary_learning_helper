@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import Grid from "../../components/UI/Grid/Grid";
 
 type Vocab = {
-    Id: string;
+    Id?: string;
     German: string;
     Japanese: string;
     Kanji: string;
@@ -11,19 +11,30 @@ type Vocab = {
 const VocabularyView = (): JSX.Element => {
     const [vocabs, setVocabs] = useState<Vocab[]>([]);
     const [editData, setEditData] = useState<{ new: Vocab; old: Vocab }>();
-    const setEditHandler = (data: Vocab | null): void => {
-        if (data) {
-            setEditData({new: data, old: data});
-        } else {
-            setEditData(undefined);
+    const setEditHandler = (data: Vocab): void => {
+        setEditData({new: data, old: data});
+    };
+    const cancelEdit = (data: Vocab): void => {
+        setEditData(undefined);
+        if(!data.Id){
+            const filteredVocabs = vocabs.filter(vocab=> vocab.Id);
+            setVocabs(filteredVocabs);
         }
     };
     const onChangeHandler = (field: string, value: string): void => {
         if (editData) {
-            const newEditData: { [k: string]: string } = {...editData.new};
+            const newEditData: any = {...editData.new};
             newEditData[field] = value;
             setEditData({new: newEditData as Vocab, old: editData.old});
         }
+    };
+    const addVocab = (): void => {
+        const emptyVocab = {German: '', Japanese: '', Kanji: ''};
+        setVocabs([...vocabs, emptyVocab]);
+        setEditData({
+            new: emptyVocab,
+            old: emptyVocab
+        });
     };
     const saveChanges = (): void => {
         if (editData) {
@@ -34,13 +45,11 @@ const VocabularyView = (): JSX.Element => {
                 },
                 body: JSON.stringify(editData.new)
             }).then(r => r.json().then((j: Vocab) => {
-                const foundedVocab = vocabs.find(vocab => vocab.Id === j.Id);
+                const foundedVocab = vocabs.find(vocab => vocab.Id === undefined || vocab.Id === j.Id);
                 if (foundedVocab) {
                     foundedVocab.German = j.German;
                     foundedVocab.Japanese = j.Japanese;
                     foundedVocab.Kanji = j.Kanji;
-                } else {
-                    vocabs.push(j);
                 }
                 setVocabs(vocabs);
                 setEditData(undefined);
@@ -55,7 +64,9 @@ const VocabularyView = (): JSX.Element => {
     }, []);
     return (<Grid<Vocab>
         id='Id'
+        add={addVocab}
         editData={editData}
+        cancelEditRow={cancelEdit}
         onChange={onChangeHandler}
         editRow={setEditHandler}
         saveChanges={saveChanges}
