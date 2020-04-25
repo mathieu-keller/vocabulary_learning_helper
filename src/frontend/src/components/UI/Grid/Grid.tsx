@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../../public/App.css';
+import classes from './Grid.module.scss';
 
 type Column = { title: string; field: string; width?: string }
 
@@ -45,7 +45,7 @@ function Grid<d extends { Id: string; [key: string]: string }>(props: GridProps<
         return <tr key={d.Id}>{columns.map(c => getRow(c, d))}</tr>;
     });
     return (
-        <table className="blueTable">
+        <table className={classes.blueTable}>
             <thead>
             <tr>
                 {header}

@@ -1,0 +1,35 @@
+table.blueTable {
+  border: 1px solid #1C6EA4;
+  background-color: #EEEEEE;
+  width: 100%;
+  text-align: left;
+
+
+  td, th {
+    padding: 3px 2px;
+  }
+
+  tbody td {
+    font-size: 13px;
+  }
+
+  tr:nth-child(even) {
+    background: #B6DBFF;
+  }
+
+  thead {
+    background: #006DCC;
+    background: -moz-linear-gradient(top, #4091d9 0%, #197bd1 66%, #006DCC 100%);
+    background: -webkit-linear-gradient(top, #4091d9 0%, #197bd1 66%, #006DCC 100%);
+    background: linear-gradient(to bottom, #4091d9 0%, #197bd1 66%, #006DCC 100%);
+    border-bottom: 2px solid #444444;
+  }
+
+  thead th {
+    font-size: 17px;
+    font-weight: bold;
+    color: #FFFFFF;
+    text-align: center;
+  }
+
+}

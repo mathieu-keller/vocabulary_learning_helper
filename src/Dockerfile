@@ -1,10 +1,8 @@
 FROM node:14-alpine AS NodeBuilder
 WORKDIR /app
 COPY frontend/ .
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
 RUN yarn install
-RUN npm run build
+RUN npm run build:prod
 
 FROM golang:1.14-alpine AS GOBuilder
 WORKDIR $GOPATH/src/github.com/afrima/japanese_learning_helper/src/backend

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import Grid from "../../components/UI/Grid";
+import Grid from "../../components/UI/Grid/Grid";
 
 type Vocab = {
     Id: string;
