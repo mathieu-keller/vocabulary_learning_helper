@@ -3,6 +3,7 @@ table.blueTable {
   background-color: #EEEEEE;
   width: 100%;
   text-align: left;
+  table-layout: fixed;
 
 
   td, th {
@@ -11,10 +12,19 @@ table.blueTable {
 
   tbody td {
     font-size: 13px;
+    word-break: break-all;
+    vertical-align: top;
   }
 
   tbody tr {
     height: 32px;
+  }
+
+  tbody tr textarea {
+    width: 100%;
+    overflow: auto;
+    resize: none;
+    box-sizing: border-box;
   }
 
   tr:nth-child(even) {

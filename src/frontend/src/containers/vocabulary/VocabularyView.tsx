@@ -16,8 +16,8 @@ const VocabularyView = (): JSX.Element => {
     };
     const cancelEdit = (data: Vocab): void => {
         setEditData(undefined);
-        if(!data.Id){
-            const filteredVocabs = vocabs.filter(vocab=> vocab.Id);
+        if (!data.Id) {
+            const filteredVocabs = vocabs.filter(vocab => vocab.Id);
             setVocabs(filteredVocabs);
         }
     };
@@ -29,12 +29,14 @@ const VocabularyView = (): JSX.Element => {
         }
     };
     const addVocab = (): void => {
-        const emptyVocab = {German: '', Japanese: '', Kanji: ''};
-        setVocabs([...vocabs, emptyVocab]);
-        setEditData({
-            new: emptyVocab,
-            old: emptyVocab
-        });
+        if (!editData) {
+            const emptyVocab = {German: '', Japanese: '', Kanji: ''};
+            setVocabs([...vocabs, emptyVocab]);
+            setEditData({
+                new: emptyVocab,
+                old: emptyVocab
+            });
+        }
     };
     const saveChanges = (): void => {
         if (editData) {
@@ -71,10 +73,10 @@ const VocabularyView = (): JSX.Element => {
         editRow={setEditHandler}
         saveChanges={saveChanges}
         columns={[
-            {title: '#', field: 'edit', width: '150px'},
-            {title: 'German', field: 'German'},
-            {title: 'Japanese', field: 'Japanese'},
-            {title: 'Kanji', field: 'Kanji'}
+            {title: '#', field: 'edit', width: '48px'},
+            {title: 'German', field: 'German', width: 'calc(33% - 48px)'},
+            {title: 'Japanese', field: 'Japanese', width: 'calc(33% - 48px)'},
+            {title: 'Kanji', field: 'Kanji', width: 'calc(33% - 48px)'}
         ]}
         data={vocabs}
     />);
