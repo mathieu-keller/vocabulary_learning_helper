@@ -12,9 +12,9 @@ import (
 
 type Vocab struct {
 	Id       primitive.ObjectID `bson:"_id, omitempty"`
-	German   string
-	Japanese string
-	Kanji    string
+	German   string `bson:"german, omitempty"`
+	Japanese string `bson:"japanese, omitempty"`
+	Kanji    string `bson:"kanji, omitempty"`
 }
 
 type VocabErrors struct {
@@ -58,11 +58,20 @@ func (vocab *Vocab) InsertVocab() error {
 		_, err := collection.InsertOne(ctx, vocab)
 		return err
 	} else {
-		obj, _ := bson.Marshal(vocab);
+		pByte, err := bson.Marshal(vocab)
+		if err != nil {
+			return err
+		}
+
+		var obj bson.M
+		err = bson.Unmarshal(pByte, &obj)
+		if err != nil {
+			return err
+		}
 		opts := options.Update().SetUpsert(true)
 		filter := bson.D{{"_id", vocab.Id}}
-		update := bson.D{{"$set", obj}}
-		_, err := collection.UpdateOne(
+		update := bson.D{{Key: "$set", Value: obj}}
+		_, err = collection.UpdateOne(
 			context.Background(),
 			filter,
 			update,
@@ -72,7 +81,7 @@ func (vocab *Vocab) InsertVocab() error {
 	}
 }
 
-func (vocab Vocab) Delete() error  {
+func (vocab Vocab) Delete() error {
 	collection := database.GetDatabase().Collection("Vocabulary")
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	_, err := collection.DeleteOne(ctx, bson.D{{"_id", vocab.Id}})

@@ -1,10 +1,10 @@
 import {errorToast} from "./Toast";
 
 const printErrorMessageInToast = (r: Response): void => {
-    if (r.status <= 200 && r.status >= 299) {
-        r.text().then(t => errorToast(r.status + ": " + r.statusText, t));
-    } else {
+    if (r.status >= 200 && r.status <= 299) {
         errorToast(r.status + ": " + r.statusText, "status code is not expected.");
+    } else {
+        r.text().then(t => errorToast(r.status + ": " + r.statusText, t));
     }
 };
 

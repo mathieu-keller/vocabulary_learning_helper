@@ -50,7 +50,14 @@ func insertVocab(w http.ResponseWriter, r *http.Request) {
 func getVocab(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(entity.GetVocabs()); err != nil {
+	vocabs, err := entity.GetVocabs()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+		log.Print(err)
+		return
+	}
+	if err = json.NewEncoder(w).Encode(vocabs); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
 		log.Print(err)

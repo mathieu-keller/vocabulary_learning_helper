@@ -2,7 +2,6 @@ import React, {CSSProperties, useEffect} from 'react';
 import classes from './Grid.module.scss';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheckSquare, faEdit, faPlusSquare, faTrashAlt, faWindowClose} from '@fortawesome/free-solid-svg-icons';
-import {toast} from "react-toastify";
 
 type Column = { title: string; field: string; width?: string }
 
@@ -28,6 +27,18 @@ function Grid<d extends dataType>(props: GridProps<d>): JSX.Element {
             window.scrollTo(0, document.body.scrollHeight);
         }
     }, [editData]);
+
+    const sortData = (data: d[]): d[] => {
+        return data.sort((da, db) => {
+            if (da.Id && db.Id) {
+                if (da.Id < db.Id) //sort string ascending
+                    return -1;
+                if (da.Id > db.Id)
+                    return 1;
+            }
+            return 0;
+        });
+    };
 
     function getRow(c: Column, data: d): JSX.Element {
         const cellStyle: CSSProperties = c.width ? {maxWidth: c.width, width: c.width} : {};
@@ -63,7 +74,7 @@ function Grid<d extends dataType>(props: GridProps<d>): JSX.Element {
 
 
     const header = columns.map(c => <th key={c.field} style={c.width ? {width: c.width} : {}}>{c.title}</th>);
-    const rows = data.map(d => {
+    const rows = sortData(data).map(d => {
         return <tr key={d.Id}>{columns.map(c => getRow(c, d))}</tr>;
     });
 
