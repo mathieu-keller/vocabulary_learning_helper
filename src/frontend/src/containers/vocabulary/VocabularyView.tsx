@@ -11,10 +11,18 @@ type Vocab = {
 const VocabularyView = (): JSX.Element => {
     const [vocabs, setVocabs] = useState<Vocab[]>([]);
     const [editData, setEditData] = useState<{ new: Vocab; old: Vocab }>();
+
+    useEffect(() => {
+        fetch('/vocab/')
+            .then((r: Response) => {
+                r.json().then((j: Vocab[]) => setVocabs(j));
+            });
+    }, []);
+
     const setEditHandler = (data: Vocab): void => {
         setEditData({new: data, old: data});
     };
-    const cancelEdit = (data: Vocab): void => {
+    const cancelHandler = (data: Vocab): void => {
         setEditData(undefined);
         if (!data.Id) {
             const filteredVocabs = vocabs.filter(vocab => vocab.Id);
@@ -28,7 +36,7 @@ const VocabularyView = (): JSX.Element => {
             setEditData({new: newEditData as Vocab, old: editData.old});
         }
     };
-    const addVocab = (): void => {
+    const addRowHandler = (): void => {
         if (!editData) {
             const emptyVocab = {German: '', Japanese: '', Kanji: ''};
             setVocabs([...vocabs, emptyVocab]);
@@ -38,40 +46,49 @@ const VocabularyView = (): JSX.Element => {
             });
         }
     };
-    const saveChanges = (): void => {
+    const saveHandler = (): void => {
         if (editData) {
-            fetch('/vocab/add', {
+            fetch('/vocab/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(editData.new)
             }).then(r => r.json().then((j: Vocab) => {
-                const foundedVocab = vocabs.find(vocab => vocab.Id === undefined || vocab.Id === j.Id);
-                if (foundedVocab) {
-                    foundedVocab.German = j.German;
-                    foundedVocab.Japanese = j.Japanese;
-                    foundedVocab.Kanji = j.Kanji;
-                }
-                setVocabs(vocabs);
+                const foundedVocabs = vocabs.filter(vocab => vocab.Id).filter(vocab => vocab.Id !== j.Id);
+                setVocabs([...foundedVocabs, j]);
                 setEditData(undefined);
             }));
         }
     };
-    useEffect(() => {
-        fetch('/vocab/')
-            .then((r: Response) => {
-                r.json().then((j: Vocab[]) => setVocabs(j));
-            });
-    }, []);
+
+    const deleteHandler = (data: Vocab): void => {
+        fetch('/vocab/', {
+            method: 'delete',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then((r) => {
+            if (r.status === 200) {
+                r.json().then(id => {
+                    const filteredVocabs = vocabs.filter(vocab => vocab.Id !== id);
+                    setVocabs(filteredVocabs);
+                });
+            }
+        });
+    };
+
+
     return (<Grid<Vocab>
         id='Id'
-        add={addVocab}
         editData={editData}
-        cancelEditRow={cancelEdit}
-        onChange={onChangeHandler}
-        editRow={setEditHandler}
-        saveChanges={saveChanges}
+        addRowHandler={addRowHandler}
+        cancelHandler={cancelHandler}
+        onChangeHandler={onChangeHandler}
+        setEditHander={setEditHandler}
+        saveHandler={saveHandler}
+        deleteHandler={deleteHandler}
         columns={[
             {title: '#', field: 'edit', width: '48px'},
             {title: 'German', field: 'German', width: 'calc(33% - 48px)'},

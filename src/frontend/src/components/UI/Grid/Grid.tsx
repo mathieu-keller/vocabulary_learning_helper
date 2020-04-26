@@ -1,7 +1,7 @@
 import React, {CSSProperties, useEffect} from 'react';
 import classes from './Grid.module.scss';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCheckSquare, faEdit, faPlusSquare, faWindowClose} from '@fortawesome/free-solid-svg-icons';
+import {faCheckSquare, faEdit, faPlusSquare, faTrashAlt, faWindowClose} from '@fortawesome/free-solid-svg-icons';
 
 type Column = { title: string; field: string; width?: string }
 
@@ -10,45 +10,51 @@ type GridProps<d extends dataType> = {
     data: d[];
     id: string;
     editData?: { new: d; old: d };
-    editRow: (data: d) => void;
-    cancelEditRow: (data: d) => void;
-    onChange: (field: string, value: string) => void;
-    saveChanges: () => void;
-    add: () => void;
+    setEditHander: (data: d) => void;
+    cancelHandler: (data: d) => void;
+    onChangeHandler: (field: string, value: string) => void;
+    saveHandler: () => void;
+    addRowHandler: () => void;
+    deleteHandler: (data: d) => void;
 }
 
 type dataType = { Id?: string; [key: string]: string | undefined };
 
 function Grid<d extends dataType>(props: GridProps<d>): JSX.Element {
-    const {columns, data, editData, editRow, saveChanges, onChange, add, cancelEditRow} = props;
+    const {columns, data, editData, cancelHandler, saveHandler, onChangeHandler, addRowHandler, setEditHander, deleteHandler} = props;
     useEffect(() => {
         if (editData && !editData.new.Id && !editData.old.Id) {
             window.scrollTo(0, document.body.scrollHeight);
         }
-    }, [editRow]);
+    }, [editData]);
 
     function getRow(c: Column, data: d): JSX.Element {
         const cellStyle: CSSProperties = c.width ? {maxWidth: c.width, width: c.width} : {};
         if (editData && editData.old.Id === data.Id) {
             if (c.field === 'edit') {
                 return (<td style={cellStyle}>
-                    <div onClick={saveChanges} style={{float: 'left'}}><FontAwesomeIcon className='icon'
+                    <div onClick={saveHandler} style={{float: 'left'}}><FontAwesomeIcon className='icon'
                                                                                         icon={faCheckSquare}/></div>
-                    <div onClick={() => cancelEditRow(data)} style={{float: 'left'}}><FontAwesomeIcon className='icon'
+                    <div onClick={() => cancelHandler(data)} style={{float: 'left'}}><FontAwesomeIcon className='icon'
                                                                                                       icon={faWindowClose}/>
                     </div>
                 </td>);
             }
             return (
                 <td key={c.field} style={cellStyle}>
-                    <textarea rows={2} onChange={(e) => onChange(c.field, e.target.value)}
+                    <textarea rows={2} onChange={(e) => onChangeHandler(c.field, e.target.value)}
                               value={editData.new[c.field]}/>
                 </td>);
         }
         if (!editData && c.field === 'edit') {
             return (
                 <td style={cellStyle}>
-                    <div onClick={() => editRow(data)}><FontAwesomeIcon className='icon' icon={faEdit}/></div>
+                    <div style={{float: 'left'}} onClick={() => setEditHander(data)}><FontAwesomeIcon className='icon'
+                                                                                                      icon={faEdit}/>
+                    </div>
+                    <div style={{float: 'left'}} onClick={() => deleteHandler(data)}><FontAwesomeIcon className='icon'
+                                                                                                      icon={faTrashAlt}/>
+                    </div>
                 </td>);
         }
         return <td key={c.field} style={cellStyle}>{data[c.field]}</td>;
@@ -62,7 +68,7 @@ function Grid<d extends dataType>(props: GridProps<d>): JSX.Element {
 
 
     return (<>
-        <FontAwesomeIcon onClick={add} style={{float: 'right'}} className='icon' icon={faPlusSquare}/>
+        <FontAwesomeIcon onClick={addRowHandler} style={{float: 'right'}} className='icon' icon={faPlusSquare}/>
         <table className={classes.blueTable}>
             <thead>
             <tr>

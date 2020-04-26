@@ -44,7 +44,7 @@ func GetVocabs() []Vocab {
 	return returnValue
 }
 
-func (vocab Vocab) InsertVocab() error {
+func (vocab *Vocab) InsertVocab() error {
 	if vocab.German == "" || (vocab.Japanese == "" && vocab.Kanji == "") {
 		return VocabErrors{"German and Japanese must be filled"}
 	}
@@ -66,6 +66,13 @@ func (vocab Vocab) InsertVocab() error {
 		)
 		return err
 	}
+}
+
+func (vocab Vocab) Delete() error  {
+	collection := database.GetDatabase().Collection("Vocabulary")
+	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	_, err := collection.DeleteOne(ctx, bson.D{{"_id", vocab.Id}})
+	return err
 }
 
 func (vocabErrors VocabErrors) Error() string {
