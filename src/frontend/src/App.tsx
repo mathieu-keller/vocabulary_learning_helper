@@ -1,20 +1,21 @@
-import React from 'react';
+import React, {lazy, Suspense} from 'react';
 import Navbar from "./components/Navigation/Navbar";
 import {Route, Switch} from 'react-router-dom';
 import Home from "./components/Home";
 import '../public/App';
-import VocabularyView from './containers/vocabulary/VocabularyView';
-import {toast, ToastContainer} from "react-toastify";
+import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+
+const VocabularyView = lazy(() => import('./containers/vocabulary/VocabularyView'));
 
 const App = (): JSX.Element => {
     return (
         <>
-
             <ToastContainer/>
             <Navbar/>
             <Switch>
-                <Route path='/vocabulary' component={VocabularyView}/>
+                <Route path='/vocabulary'
+                       render={() => <Suspense fallback={<div>Loading..</div>}><VocabularyView/></Suspense>}/>
                 <Route path='/' component={Home} exact/>
             </Switch>
         </>);

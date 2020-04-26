@@ -65,7 +65,7 @@ const VocabularyView = (): JSX.Element => {
         addRowHandler={addRowHandler}
         cancelHandler={cancelHandler}
         onChangeHandler={onChangeHandler}
-        setEditHander={setEditHandler}
+        setEditHandler={setEditHandler}
         saveHandler={saveHandler}
         deleteHandler={deleteHandler}
         columns={[
