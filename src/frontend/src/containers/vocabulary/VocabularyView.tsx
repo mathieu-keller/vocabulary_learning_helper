@@ -69,10 +69,10 @@ const VocabularyView = (): JSX.Element => {
         saveHandler={saveHandler}
         deleteHandler={deleteHandler}
         columns={[
-            {title: '#', field: 'edit', width: '48px'},
-            {title: 'German', field: 'German', width: 'calc(33% - 48px)'},
-            {title: 'Japanese', field: 'Japanese', width: 'calc(33% - 48px)'},
-            {title: 'Kanji', field: 'Kanji', width: 'calc(33% - 48px)'}
+            {title: '#', field: 'edit'},
+            {title: 'German', field: 'German',width:'33%'},
+            {title: 'Japanese', field: 'Japanese',width:'33%'},
+            {title: 'Kanji', field: 'Kanji',width:'33%'}
         ]}
         data={vocabs}
     />);

@@ -21,7 +21,7 @@ type GridProps<d extends dataType> = {
 type dataType = { Id?: string; [key: string]: string | undefined };
 
 function Grid<d extends dataType>(props: GridProps<d>): JSX.Element {
-    const {columns, data, editData, cancelHandler, saveHandler, onChangeHandler, addRowHandler, setEditHandler, deleteHandler} = props;
+    const {editData} = props;
     useEffect(() => {
         if (editData && !editData.new.Id && !editData.old.Id) {
             window.scrollTo(0, document.body.scrollHeight);
@@ -42,54 +42,62 @@ function Grid<d extends dataType>(props: GridProps<d>): JSX.Element {
 
     function getRow(c: Column, data: d): JSX.Element {
         const cellStyle: CSSProperties = c.width ? {maxWidth: c.width, width: c.width} : {};
-        let buildedRow: JSX.Element;
+        let row: JSX.Element;
         if (editData && editData.old.Id === data.Id) {
+            const {onChangeHandler, saveHandler, cancelHandler} = props;
             if (c.field === 'edit') {
-                buildedRow = <>
+                row = <>
                     <div onClick={saveHandler} style={{float: 'left'}}>
-                        <FontAwesomeIcon className='icon' icon={faCheckSquare}/></div>
+                        <FontAwesomeIcon aria-label='save changes' title='save changes' className='icon'
+                                         icon={faCheckSquare}/></div>
                     <div onClick={() => cancelHandler(data)} style={{float: 'left'}}>
-                        <FontAwesomeIcon className='icon' icon={faWindowClose}/>
+                        <FontAwesomeIcon aria-label='discard changes' title='discard changes' className='icon'
+                                         icon={faWindowClose}/>
                     </div>
                 </>;
             } else {
-                buildedRow = <textarea rows={2} onChange={(e) => onChangeHandler(c.field, e.target.value)}
-                                       value={editData.new[c.field]}/>;
+                row =
+                    <textarea name={c.field + '-input'} aria-label={c.title + ' input'} title={c.title + ' input'}
+                              placeholder={c.title} rows={2}
+                              onChange={(e) => onChangeHandler(c.field, e.target.value)}
+                              value={editData.new[c.field]}/>;
             }
         } else if (!editData && c.field === 'edit') {
-            buildedRow = <>
+            const {deleteHandler, setEditHandler} = props;
+            row = <>
                 <div style={{float: 'left'}} onClick={() => setEditHandler(data)}>
-                    <FontAwesomeIcon className='icon' icon={faEdit}/>
+                    <FontAwesomeIcon aria-label='edit entry' title='edit entry' className='icon' icon={faEdit}/>
                 </div>
                 <div style={{float: 'left'}} onClick={() => deleteHandler(data)}>
-                    <FontAwesomeIcon className='icon' icon={faTrashAlt}/>
+                    <FontAwesomeIcon aria-label='delete entry' title='delete entry' className='icon' icon={faTrashAlt}/>
                 </div>
             </>;
         } else {
-            buildedRow = <>{data[c.field]}</>;
+            row = <>{data[c.field]}</>;
         }
-        return <td key={c.field} style={cellStyle}>{buildedRow}</td>;
+        return <div className={classes.cell} key={c.field} style={cellStyle}>{row}</div>;
     }
 
-
-    const header = columns.map(c => <th key={c.field} style={c.width ? {width: c.width} : {}}>{c.title}</th>);
-    const rows = sortData(data).map(d => {
-        return <tr key={d.Id}>{columns.map(c => getRow(c, d))}</tr>;
+    const {addRowHandler, columns, data} = props;
+    const header = columns.map(c => <div className={classes.head} key={c.field}
+                                         style={c.width ? {maxWidth: c.width, width: c.width} : {}}>{c.title}</div>);
+    const rows = sortData(data).map((d, i) => {
+        return <div className={classes.row} key={d.Id ?? i}>{columns.map(c => getRow(c, d))}</div>;
     });
 
-
     return (<>
-        <FontAwesomeIcon onClick={addRowHandler} style={{float: 'right'}} className='icon' icon={faPlusSquare}/>
-        <table className={classes.blueTable}>
-            <thead>
-            <tr>
-                {header}
-            </tr>
-            </thead>
-            <tbody>
-            {rows}
-            </tbody>
-        </table>
+        <FontAwesomeIcon aria-label='add entry' title='add entry' onClick={addRowHandler} style={{float: 'right'}}
+                         className='icon' icon={faPlusSquare}/>
+        <div className={classes.table}>
+            <div className={classes.heading}>
+                <div className={classes.row}>
+                    {header}
+                </div>
+            </div>
+            <div className={classes.body}>
+                {rows}
+            </div>
+        </div>
     </>);
 }
 

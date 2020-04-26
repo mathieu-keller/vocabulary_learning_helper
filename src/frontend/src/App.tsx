@@ -15,8 +15,8 @@ const App = (): JSX.Element => {
             <Navbar/>
             <Switch>
                 <Route path='/vocabulary'
-                       render={() => <Suspense fallback={<div>Loading..</div>}><VocabularyView/></Suspense>}/>
-                <Route path='/' component={Home} exact/>
+                       render={() => <Suspense fallback={<div>Loading..</div>}><VocabularyView/></Suspense>} exact/>
+                <Route path='/' component={Home}/>
             </Switch>
         </>);
 };
