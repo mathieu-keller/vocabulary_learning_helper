@@ -2,6 +2,7 @@ import React, {CSSProperties, useEffect} from 'react';
 import classes from './Grid.module.scss';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheckSquare, faEdit, faPlusSquare, faTrashAlt, faWindowClose} from '@fortawesome/free-solid-svg-icons';
+import {toast} from "react-toastify";
 
 type Column = { title: string; field: string; width?: string }
 

@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import Grid from "../../components/UI/Grid/Grid";
+import {deleteCall, get, post} from "../../utility/restCaller";
 
 type Vocab = {
     Id?: string;
@@ -13,10 +14,7 @@ const VocabularyView = (): JSX.Element => {
     const [editData, setEditData] = useState<{ new: Vocab; old: Vocab }>();
 
     useEffect(() => {
-        fetch('/vocab/')
-            .then((r: Response) => {
-                r.json().then((j: Vocab[]) => setVocabs(j));
-            });
+        get<Vocab[]>('/vocab', setVocabs);
     }, []);
 
     const setEditHandler = (data: Vocab): void => {
@@ -48,35 +46,16 @@ const VocabularyView = (): JSX.Element => {
     };
     const saveHandler = (): void => {
         if (editData) {
-            fetch('/vocab/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(editData.new)
-            }).then(r => r.json().then((j: Vocab) => {
-                const foundedVocabs = vocabs.filter(vocab => vocab.Id).filter(vocab => vocab.Id !== j.Id);
-                setVocabs([...foundedVocabs, j]);
+            post<Vocab>('/vocab', editData.new, (data: Vocab) => {
+                const foundedVocabs = vocabs.filter(vocab => vocab.Id).filter(vocab => vocab.Id !== data.Id);
+                setVocabs([...foundedVocabs, data]);
                 setEditData(undefined);
-            }));
+            });
         }
     };
 
     const deleteHandler = (data: Vocab): void => {
-        fetch('/vocab/', {
-            method: 'delete',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        }).then((r) => {
-            if (r.status === 200) {
-                r.json().then(id => {
-                    const filteredVocabs = vocabs.filter(vocab => vocab.Id !== id);
-                    setVocabs(filteredVocabs);
-                });
-            }
-        });
+        deleteCall<Vocab, string>('/vocab', data, ((d) => setVocabs(vocabs.filter(vocab => vocab.Id !== d))));
     };
 
 

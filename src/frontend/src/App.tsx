@@ -4,10 +4,14 @@ import {Route, Switch} from 'react-router-dom';
 import Home from "./components/Home";
 import '../public/App';
 import VocabularyView from './containers/vocabulary/VocabularyView';
+import {toast, ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const App = (): JSX.Element => {
     return (
         <>
+
+            <ToastContainer/>
             <Navbar/>
             <Switch>
                 <Route path='/vocabulary' component={VocabularyView}/>

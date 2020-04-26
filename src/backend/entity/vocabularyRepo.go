@@ -21,12 +21,13 @@ type VocabErrors struct {
 	errorText string
 }
 
-func GetVocabs() []Vocab {
+func GetVocabs() ([]Vocab, error) {
 	collection := database.GetDatabase().Collection("Vocabulary")
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	cur, err := collection.Find(ctx, bson.D{})
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return nil, err
 	}
 	defer cur.Close(ctx)
 	returnValue := make([]Vocab, 0, 20)
@@ -34,14 +35,16 @@ func GetVocabs() []Vocab {
 		var result Vocab
 		err := cur.Decode(&result)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return nil, err
 		}
 		returnValue = append(returnValue, result)
 	}
 	if err := cur.Err(); err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return nil, err
 	}
-	return returnValue
+	return returnValue, nil
 }
 
 func (vocab *Vocab) InsertVocab() error {
@@ -55,9 +58,10 @@ func (vocab *Vocab) InsertVocab() error {
 		_, err := collection.InsertOne(ctx, vocab)
 		return err
 	} else {
+		obj, _ := bson.Marshal(vocab);
 		opts := options.Update().SetUpsert(true)
 		filter := bson.D{{"_id", vocab.Id}}
-		update := bson.D{{"$set", bson.D{{"German", vocab.German}}}}
+		update := bson.D{{"$set", obj}}
 		_, err := collection.UpdateOne(
 			context.Background(),
 			filter,
