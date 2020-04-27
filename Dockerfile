@@ -1,12 +1,12 @@
 FROM node:14-alpine AS NodeBuilder
 WORKDIR /app
-COPY frontend/ .
+COPY src/frontend .
 RUN yarn install
 RUN npm run build:prod
 
 FROM golang:1.14-alpine AS GOBuilder
 WORKDIR $GOPATH/src/github.com/afrima/japanese_learning_helper/src/backend
-COPY backend/ .
+COPY src/backend .
 RUN apk update && apk add --no-cache git
 RUN go get -d -v
 RUN go build -ldflags "-s -w" -o /go/bin/backend
