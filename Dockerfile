@@ -16,5 +16,5 @@ LABEL maintainer=MathieuKeller@gmx.de
 WORKDIR /app
 COPY --from=GOBuilder /go/bin/backend .
 COPY --from=NodeBuilder /app/dist ./dist
-EXPOSE 8080
+EXPOSE 80:80
 ENTRYPOINT ["/app/backend"]

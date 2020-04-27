@@ -1,7 +1,7 @@
 import React, {CSSProperties, useEffect} from 'react';
 import classes from './Grid.module.scss';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCheckSquare, faEdit, faPlusSquare, faTrashAlt, faWindowClose} from '@fortawesome/free-solid-svg-icons';
+import {faEdit, faPlusSquare, faTrashAlt} from '@fortawesome/free-solid-svg-icons';
 
 type Column = { title: string; field: string; width?: string }
 
@@ -11,9 +11,6 @@ type GridProps<d extends dataType> = {
     id: string;
     editData?: { new: d; old: d };
     setEditHandler: (data: d) => void;
-    cancelHandler: (data: d) => void;
-    onChangeHandler: (field: string, value: string) => void;
-    saveHandler: () => void;
     addRowHandler: () => void;
     deleteHandler: (data: d) => void;
 }
@@ -43,26 +40,7 @@ function Grid<d extends dataType>(props: GridProps<d>): JSX.Element {
     function getRow(c: Column, data: d): JSX.Element {
         const cellStyle: CSSProperties = c.width ? {maxWidth: c.width, width: c.width} : {};
         let row: JSX.Element;
-        if (editData && editData.old.Id === data.Id) {
-            const {onChangeHandler, saveHandler, cancelHandler} = props;
-            if (c.field === 'edit') {
-                row = <>
-                    <div onClick={saveHandler} style={{float: 'left'}}>
-                        <FontAwesomeIcon aria-label='save changes' title='save changes' className='icon'
-                                         icon={faCheckSquare}/></div>
-                    <div onClick={() => cancelHandler(data)} style={{float: 'left'}}>
-                        <FontAwesomeIcon aria-label='discard changes' title='discard changes' className='icon'
-                                         icon={faWindowClose}/>
-                    </div>
-                </>;
-            } else {
-                row =
-                    <textarea name={c.field + '-input'} aria-label={c.title + ' input'} title={c.title + ' input'}
-                              placeholder={c.title} rows={2}
-                              onChange={(e) => onChangeHandler(c.field, e.target.value)}
-                              value={editData.new[c.field]}/>;
-            }
-        } else if (!editData && c.field === 'edit') {
+        if (c.field === 'edit') {
             const {deleteHandler, setEditHandler} = props;
             row = <>
                 <div style={{float: 'left'}} onClick={() => setEditHandler(data)}>
