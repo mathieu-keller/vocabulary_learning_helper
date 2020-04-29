@@ -1,7 +1,7 @@
 import React from 'react';
 import classes from "./Input.module.scss";
 
-const Input = (props: React.InputHTMLAttributes<HTMLInputElement>): JSX.Element => {
+const Input = (props: React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>): JSX.Element => {
     return (
         <div className={classes.box}>
             <label className={classes.label}>{props.title}:</label>

@@ -11,6 +11,10 @@ export const SubmitButton = (props: React.ButtonHTMLAttributes<HTMLButtonElement
     <Button className={classes.submit} {...props}><FontAwesomeIcon icon={faCheck}/> Submit</Button>
 );
 
+export const SubmitButtonAndClose = (props: React.ButtonHTMLAttributes<HTMLButtonElement>): JSX.Element => (
+    <Button className={classes.submit} {...props}><FontAwesomeIcon icon={faWindowClose}/> Submit and Close</Button>
+);
+
 export const CancelButton = (props: React.ButtonHTMLAttributes<HTMLButtonElement>): JSX.Element => (
     <Button className={classes.cancel} {...props}><FontAwesomeIcon icon={faWindowClose}/> Cancel</Button>
 );

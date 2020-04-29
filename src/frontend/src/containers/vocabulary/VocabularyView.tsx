@@ -2,9 +2,8 @@ import React, {useEffect, useState} from 'react';
 import Grid from "../../components/UI/Grid/Grid";
 import {deleteCall, get, post} from "../../utility/restCaller";
 import VocabularyEditModal from "../../components/UI/Modal/VocabularyEditModal";
-import {CancelButton, Input, SubmitButton} from "../../components/UI/Input";
 
-type Vocab = {
+export type Vocab = {
     id?: string;
     german: string;
     japanese: string;
@@ -33,20 +32,18 @@ const VocabularyView = (): JSX.Element => {
         }
     };
     const addRowHandler = (): void => {
-        if (!editData) {
-            const emptyVocab = {german: '', japanese: '', kanji: ''};
-            setEditData({
-                new: emptyVocab,
-                old: emptyVocab
-            });
-        }
+        const emptyVocab = {german: '', japanese: '', kanji: ''};
+        setEditData({
+            new: emptyVocab,
+            old: emptyVocab
+        });
     };
     const saveHandler = (): void => {
         if (editData) {
             post<Vocab>('/vocab', editData.new, (data: Vocab) => {
                 const foundedVocabs = vocabs.filter(vocab => vocab.id).filter(vocab => vocab.id !== data.id);
                 setVocabs([...foundedVocabs, data]);
-                setEditData(undefined);
+                addRowHandler();
             });
         }
     };
@@ -55,21 +52,15 @@ const VocabularyView = (): JSX.Element => {
         deleteCall<Vocab, string>('/vocab', data, ((d) => setVocabs(vocabs.filter(vocab => vocab.id !== d))));
     };
 
-    const modalBody = editData ? <>
-        <Input type='text' name='german' title='German' placeholder='German' value={editData?.new.german}
-               onChange={(e) => onChangeHandler(e.target.name, e.target.value)}/>
-        <Input type='text' name='japanese' title='Japanese' placeholder='Japanese' value={editData?.new.japanese}
-               onChange={(e) => onChangeHandler(e.target.name, e.target.value)}/>
-        <Input type='text' name='kanji' title='Kanji' placeholder='Kanji' value={editData?.new.kanji}
-               onChange={(e) => onChangeHandler(e.target.name, e.target.value)}/>
-        <CancelButton style={{width: '50%', height: '30px'}} onClick={cancelHandler}/>
-        <SubmitButton style={{width: '50%', height: '30px'}} onClick={saveHandler}/>
-    </> : null;
 
     return (<>
-        <VocabularyEditModal show={editData !== undefined} modalClosed={cancelHandler}>
-            {modalBody}
-        </VocabularyEditModal>
+        <VocabularyEditModal cancelHandler={cancelHandler}
+                             onChangeHandler={onChangeHandler}
+                             saveHandler={saveHandler}
+                             show={editData !== undefined}
+                             modalClosed={cancelHandler}
+                             editData={editData}
+        />
         <Grid<Vocab>
             addRowHandler={addRowHandler}
             setEditHandler={setEditHandler}
