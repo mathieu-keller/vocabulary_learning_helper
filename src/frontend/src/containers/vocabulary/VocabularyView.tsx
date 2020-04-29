@@ -5,10 +5,10 @@ import VocabularyEditModal from "../../components/UI/Modal/VocabularyEditModal";
 import {CancelButton, Input, SubmitButton} from "../../components/UI/Input";
 
 type Vocab = {
-    Id?: string;
-    German: string;
-    Japanese: string;
-    Kanji: string;
+    id?: string;
+    german: string;
+    japanese: string;
+    kanji: string;
 }
 
 const VocabularyView = (): JSX.Element => {
@@ -34,7 +34,7 @@ const VocabularyView = (): JSX.Element => {
     };
     const addRowHandler = (): void => {
         if (!editData) {
-            const emptyVocab = {German: '', Japanese: '', Kanji: ''};
+            const emptyVocab = {german: '', japanese: '', kanji: ''};
             setEditData({
                 new: emptyVocab,
                 old: emptyVocab
@@ -44,7 +44,7 @@ const VocabularyView = (): JSX.Element => {
     const saveHandler = (): void => {
         if (editData) {
             post<Vocab>('/vocab', editData.new, (data: Vocab) => {
-                const foundedVocabs = vocabs.filter(vocab => vocab.Id).filter(vocab => vocab.Id !== data.Id);
+                const foundedVocabs = vocabs.filter(vocab => vocab.id).filter(vocab => vocab.id !== data.id);
                 setVocabs([...foundedVocabs, data]);
                 setEditData(undefined);
             });
@@ -52,15 +52,15 @@ const VocabularyView = (): JSX.Element => {
     };
 
     const deleteHandler = (data: Vocab): void => {
-        deleteCall<Vocab, string>('/vocab', data, ((d) => setVocabs(vocabs.filter(vocab => vocab.Id !== d))));
+        deleteCall<Vocab, string>('/vocab', data, ((d) => setVocabs(vocabs.filter(vocab => vocab.id !== d))));
     };
 
     const modalBody = editData ? <>
-        <Input type='text' name='German' title='German' placeholder='German' value={editData?.new.German}
+        <Input type='text' name='german' title='German' placeholder='German' value={editData?.new.german}
                onChange={(e) => onChangeHandler(e.target.name, e.target.value)}/>
-        <Input type='text' name='Japanese' title='Japanese' placeholder='Japanese' value={editData?.new.Japanese}
+        <Input type='text' name='japanese' title='Japanese' placeholder='Japanese' value={editData?.new.japanese}
                onChange={(e) => onChangeHandler(e.target.name, e.target.value)}/>
-        <Input type='text' name='Kanji' title='Kanji' placeholder='Kanji' value={editData?.new.Kanji}
+        <Input type='text' name='kanji' title='Kanji' placeholder='Kanji' value={editData?.new.kanji}
                onChange={(e) => onChangeHandler(e.target.name, e.target.value)}/>
         <CancelButton style={{width: '50%', height: '30px'}} onClick={cancelHandler}/>
         <SubmitButton style={{width: '50%', height: '30px'}} onClick={saveHandler}/>
@@ -71,16 +71,14 @@ const VocabularyView = (): JSX.Element => {
             {modalBody}
         </VocabularyEditModal>
         <Grid<Vocab>
-            id='Id'
-            editData={editData}
             addRowHandler={addRowHandler}
             setEditHandler={setEditHandler}
             deleteHandler={deleteHandler}
             columns={[
                 {title: '#', field: 'edit'},
-                {title: 'German', field: 'German', width: '33%'},
-                {title: 'Japanese', field: 'Japanese', width: '33%'},
-                {title: 'Kanji', field: 'Kanji', width: '33%'}
+                {title: 'German', field: 'german', width: '33%'},
+                {title: 'Japanese', field: 'japanese', width: '33%'},
+                {title: 'Kanji', field: 'kanji', width: '33%'}
             ]}
             data={vocabs}
         /></>);

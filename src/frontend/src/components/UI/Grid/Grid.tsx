@@ -1,4 +1,4 @@
-import React, {CSSProperties, useEffect} from 'react';
+import React, {CSSProperties} from 'react';
 import classes from './Grid.module.scss';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEdit, faPlusSquare, faTrashAlt} from '@fortawesome/free-solid-svg-icons';
@@ -8,23 +8,14 @@ type Column = { title: string; field: string; width?: string }
 type GridProps<d extends dataType> = {
     columns: Column[];
     data: d[];
-    id: string;
-    editData?: { new: d; old: d };
     setEditHandler: (data: d) => void;
     addRowHandler: () => void;
     deleteHandler: (data: d) => void;
 }
 
-type dataType = { Id?: string; [key: string]: string | undefined };
+type dataType = { id?: string; [key: string]: string | undefined };
 
 function Grid<d extends dataType>(props: GridProps<d>): JSX.Element {
-    const {editData} = props;
-    useEffect(() => {
-        if (editData && !editData.new.Id && !editData.old.Id) {
-            window.scrollTo(0, document.body.scrollHeight);
-        }
-    }, [editData]);
-
     const sortData = (data: d[]): d[] => {
         return data.sort((da, db) => {
             if (da.Id && db.Id) {
@@ -60,7 +51,7 @@ function Grid<d extends dataType>(props: GridProps<d>): JSX.Element {
     const header = columns.map(c => <div className={classes.head} key={c.field}
                                          style={c.width ? {maxWidth: c.width, width: c.width} : {}}>{c.title}</div>);
     const rows = sortData(data).map((d, i) => {
-        return <div className={classes.row} key={d.Id ?? i}>{columns.map(c => getRow(c, d))}</div>;
+        return <div className={classes.row} key={d.id ?? i}>{columns.map(c => getRow(c, d))}</div>;
     });
 
     return (<>
