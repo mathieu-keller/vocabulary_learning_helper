@@ -18,7 +18,6 @@ type GridProps<d extends dataType> = {
 type dataType = { id?: string; [key: string]: string | undefined };
 
 function Grid<d extends dataType>(props: GridProps<d>): JSX.Element {
-
     const sortData = (data: d[]): d[] => {
         return data.sort((da, db) => {
             if (da.Id && db.Id) {

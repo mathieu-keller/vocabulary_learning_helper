@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import Grid from "../../components/UI/Grid/Grid";
 import {deleteCall, get, post} from "../../utility/restCaller";
 import VocabularyEditModal from "../../components/UI/Modal/VocabularyEditModal";
@@ -18,51 +18,17 @@ const VocabularyView = (): JSX.Element => {
         get<Vocab[]>('/vocab', setVocabs);
     }, []);
 
-    const setEditHandler = (data: Vocab): void => {
-        setEditData({new: data, old: data});
-    };
-    const cancelHandler = (): void => {
-        setEditData(undefined);
-    };
-    const onChangeHandler = (field: string, value: string): void => {
-        if (editData) {
-            const newEditData: any = {...editData.new};
-            newEditData[field] = value;
-            setEditData({new: newEditData as Vocab, old: editData.old});
-        }
-    };
-    const addRowHandler = (): void => {
-        const emptyVocab = {german: '', japanese: '', kanji: ''};
-        setEditData({
-            new: emptyVocab,
-            old: emptyVocab
-        });
-    };
-    const saveHandler = (): void => {
-        if (editData) {
-            post<Vocab>('/vocab', editData.new, (data: Vocab) => {
-                const foundedVocabs = vocabs.filter(vocab => vocab.id).filter(vocab => vocab.id !== data.id);
-                setVocabs([...foundedVocabs, data]);
-                addRowHandler();
-            });
-        }
-    };
+    const emptyEditData = {new: {german: '', japanese: '', kanji: ''}, old: {german: '', japanese: '', kanji: ''}};
 
-    const deleteHandler = (data: Vocab): void => {
-        deleteCall<Vocab, string>('/vocab', data, ((d) => setVocabs(vocabs.filter(vocab => vocab.id !== d))));
-    };
-
-
-    return (<>
-        <VocabularyEditModal cancelHandler={cancelHandler}
-                             onChangeHandler={onChangeHandler}
-                             saveHandler={saveHandler}
-                             show={editData !== undefined}
-                             modalClosed={cancelHandler}
-                             editData={editData}
-        />
-        <Grid<Vocab>
-            addRowHandler={addRowHandler}
+    const grid = useMemo(() => {
+        const deleteHandler = (data: Vocab): void => {
+            deleteCall<Vocab, string>('/vocab', data, ((d) => setVocabs(vocabs.filter(vocab => vocab.id !== d))));
+        };
+        const setEditHandler = (data: Vocab): void => {
+            setEditData({new: data, old: data});
+        };
+        return (<Grid<Vocab>
+            addRowHandler={()=> setEditData(emptyEditData)}
             setEditHandler={setEditHandler}
             deleteHandler={deleteHandler}
             columns={[
@@ -72,7 +38,41 @@ const VocabularyView = (): JSX.Element => {
                 {title: 'Kanji', field: 'kanji', width: '33%'}
             ]}
             data={vocabs}
-        /></>);
+        />);
+    }, [vocabs]);
+    const editModal = useMemo(()=>{
+        const cancelHandler = (): void => {
+            setEditData(undefined);
+        };
+        const onChangeHandler = (field: string, value: string): void => {
+            if (editData) {
+                const newEditData: any = {...editData.new};
+                newEditData[field] = value;
+                setEditData({new: newEditData as Vocab, old: editData.old});
+            }
+        };
+        const saveHandler = (): void => {
+            if (editData) {
+                post<Vocab>('/vocab', editData.new, (data: Vocab) => {
+                    const foundedVocabs = vocabs.filter(vocab => vocab.id).filter(vocab => vocab.id !== data.id);
+                    setVocabs([...foundedVocabs, data]);
+                    setEditData(emptyEditData);
+                });
+            }
+        };
+        return (<VocabularyEditModal cancelHandler={cancelHandler}
+                                     onChangeHandler={onChangeHandler}
+                                     saveHandler={saveHandler}
+                                     show={editData !== undefined}
+                                     modalClosed={cancelHandler}
+                                     editData={editData}
+        />);
+    },[editData]);
+
+    return (<>
+        {editModal}
+        {grid}
+        </>);
 };
 
 export default VocabularyView;
