@@ -1,7 +1,9 @@
 import React, {CSSProperties} from 'react';
 import classes from './Grid.module.scss';
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faEdit, faPlusSquare, faTrashAlt} from '@fortawesome/free-solid-svg-icons';
+import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@material-ui/core";
+import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
+import DeleteForeverOutlinedIcon from '@material-ui/icons/DeleteForeverOutlined';
+import AddIcon from '@material-ui/icons/Add';
 
 type Column = { title: string; field: string; width?: string }
 
@@ -16,6 +18,7 @@ type GridProps<d extends dataType> = {
 type dataType = { id?: string; [key: string]: string | undefined };
 
 function Grid<d extends dataType>(props: GridProps<d>): JSX.Element {
+
     const sortData = (data: d[]): d[] => {
         return data.sort((da, db) => {
             if (da.Id && db.Id) {
@@ -28,45 +31,48 @@ function Grid<d extends dataType>(props: GridProps<d>): JSX.Element {
         });
     };
 
-    function getRow(c: Column, data: d): JSX.Element {
+    const getRow = (c: Column, data: d): JSX.Element => {
         const cellStyle: CSSProperties = c.width ? {maxWidth: c.width, width: c.width} : {};
         let row: JSX.Element;
         if (c.field === 'edit') {
             const {deleteHandler, setEditHandler} = props;
             row = <>
                 <div style={{float: 'left'}} onClick={() => setEditHandler(data)}>
-                    <FontAwesomeIcon aria-label='edit entry' title='edit entry' className='icon' icon={faEdit}/>
+                    <EditOutlinedIcon className={'icon'}/>
                 </div>
                 <div style={{float: 'left'}} onClick={() => deleteHandler(data)}>
-                    <FontAwesomeIcon aria-label='delete entry' title='delete entry' className='icon' icon={faTrashAlt}/>
+                    <DeleteForeverOutlinedIcon className={'icon'}/>
                 </div>
             </>;
         } else {
             row = <>{data[c.field]}</>;
         }
-        return <div className={classes.cell} key={c.field} style={cellStyle}>{row}</div>;
-    }
+        return <TableCell className={classes.cell} style={cellStyle} key={c.field}>{row}</TableCell>;
+    };
 
     const {addRowHandler, columns, data} = props;
-    const header = columns.map(c => <div className={classes.head} key={c.field}
-                                         style={c.width ? {maxWidth: c.width, width: c.width} : {}}>{c.title}</div>);
+    const header = columns.map(c => <TableCell className={classes.head + " " + classes.cell}
+                                               style={c.width ? {maxWidth: c.width, width: c.width} : {}}
+                                               key={c.field}>{c.title}</TableCell>);
     const rows = sortData(data).map((d, i) => {
-        return <div className={classes.row} key={d.id ?? i}>{columns.map(c => getRow(c, d))}</div>;
+        return <TableRow className={classes.row} key={d.id ?? i}>{columns.map(c => getRow(c, d))}</TableRow>;
     });
-
     return (<>
-        <FontAwesomeIcon aria-label='add entry' title='add entry' onClick={addRowHandler} style={{float: 'right'}}
-                         className='icon' icon={faPlusSquare}/>
-        <div className={classes.table}>
-            <div className={classes.heading}>
-                <div className={classes.row}>
-                    {header}
-                </div>
-            </div>
-            <div className={classes.body}>
-                {rows}
-            </div>
+        <div aria-label='add entry' title='add entry' onClick={addRowHandler} style={{float: 'right'}}>
+            <AddIcon className={'icon'}/>
         </div>
+        <TableContainer component={Paper}>
+            <Table className={classes.table}>
+                <TableHead>
+                    <TableRow>
+                        {header}
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {rows}
+                </TableBody>
+            </Table>
+        </TableContainer>
     </>);
 }
 

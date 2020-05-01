@@ -4,12 +4,11 @@ const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
     .BundleAnalyzerPlugin;
 const NullPlugin = require('webpack-null-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-
 module.exports = env => {
     var production = env && env.NODE_ENV === 'production';
     var bundleAnalyze = env && env.ANALYZE;
     return {
-        entry: './src/index.tsx',
+        entry: ['./src/index.tsx'],
         mode: production ? 'production' : 'development',
         performance: {
             hints: production ? "warning" : false
@@ -52,17 +51,24 @@ module.exports = env => {
                     ],
                 },
                 {
-                    test: /\.css$/,
+                    test: /\.scss$/,
+                    exclude: /\.module\.scss$/,
                     use: ['style-loader', {
                         loader: "css-loader", options: {
                             sourceMap: !production
                         }
-                    }],
+                    },
+                        {
+                            loader: 'sass-loader',
+                            options: {
+                                sourceMap: !production
+                            }
+                        }],
                 },
             ]
         },
         resolve: {
-            extensions: ['.tsx', '.ts', '.js', '.css', '.scss'],
+            extensions: ['.tsx', '.ts', '.js', '.css', '.scss']
         },
         output: {
             filename: 'bundle.js',

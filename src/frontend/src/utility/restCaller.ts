@@ -1,10 +1,9 @@
-import {errorToast} from "./Toast";
 
 const printErrorMessageInToast = (r: Response): void => {
     if (r.status >= 200 && r.status <= 299) {
-        errorToast(r.status + ": " + r.statusText, "status code is not expected.");
+        console.error(r.status + ": " + r.statusText, "status code is not expected.");
     } else {
-        r.text().then(t => errorToast(r.status + ": " + r.statusText, t));
+        r.text().then(t => console.error(r.status + ": " + r.statusText, t));
     }
 };
 
@@ -15,7 +14,7 @@ export function get<d>(url: string, getResponse: (data: d) => void, expectedCode
         } else {
             printErrorMessageInToast(r);
         }
-    }).catch(reason => errorToast("error", reason));
+    }).catch(reason => console.error("error", reason));
 }
 
 export function post<d>(url: string, data: d, getResponse: (data: d) => void, expectedCode = 201): void {
@@ -32,7 +31,7 @@ export function post<d>(url: string, data: d, getResponse: (data: d) => void, ex
             printErrorMessageInToast(r);
         }
     }).catch(reason => {
-        errorToast("error", reason);
+        console.error("error", reason);
     });
 }
 
@@ -49,5 +48,5 @@ export function deleteCall<c, r>(url: string, data: c, getResponse: (data: r) =>
         } else {
             printErrorMessageInToast(r);
         }
-    }).catch(reason => errorToast("error", reason));
+    }).catch(reason => console.error("error", reason));
 }

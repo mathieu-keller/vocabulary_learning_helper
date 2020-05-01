@@ -1,7 +1,7 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import ModalWindow, {ModalWindowProps} from "./ModalWindow";
-import {CancelButton, Input, SubmitButton} from "../Input";
 import {Vocab} from "../../../containers/vocabulary/VocabularyView";
+import {Button, TextField} from "@material-ui/core";
 
 type VocabularyEditModalProps = {
     saveHandler: () => void;
@@ -11,22 +11,38 @@ type VocabularyEditModalProps = {
 } & ModalWindowProps;
 
 const VocabularyEditModal = ({show, modalClosed, editData, saveHandler, cancelHandler, onChangeHandler}: VocabularyEditModalProps): JSX.Element => {
+    const firstInput = useRef<HTMLInputElement>(null);
     const onKeyDownHandler = (e: React.KeyboardEvent<HTMLInputElement>): void => {
         {
             if (e.keyCode === 13) {
                 saveHandler();
+                firstInput.current?.focus();
             }
         }
     };
     return (<ModalWindow modalClosed={modalClosed} show={show}>
-            <Input type='text' name='german' title='German' placeholder='German' value={editData?.new.german}
-                   onKeyDown={onKeyDownHandler} onChange={(e) => onChangeHandler(e.target.name, e.target.value)}/>
-            <Input type='text' name='japanese' title='Japanese' placeholder='Japanese' value={editData?.new.japanese}
-                   onKeyDown={onKeyDownHandler} onChange={(e) => onChangeHandler(e.target.name, e.target.value)}/>
-            <Input type='text' name='kanji' title='Kanji' placeholder='Kanji' value={editData?.new.kanji}
-                   onKeyDown={onKeyDownHandler} onChange={(e) => onChangeHandler(e.target.name, e.target.value)}/>
-            <CancelButton style={{width: '50%', height: '30px'}} onClick={cancelHandler}/>
-            <SubmitButton style={{width: '50%', height: '30px'}} onClick={saveHandler}/>
+            <TextField inputRef={firstInput} id="german" label="German" variant="filled" value={editData?.new.german}
+                       style={{width: '100%'}}
+                       onKeyDown={onKeyDownHandler} onChange={(e) => onChangeHandler('german', e.target.value)}
+                       InputLabelProps={{
+                           shrink: true,
+                       }}
+            />
+            <TextField id="japanese" label="Japanese" variant="filled" value={editData?.new.japanese}
+                       style={{width: '100%'}}
+                       onKeyDown={onKeyDownHandler} onChange={(e) => onChangeHandler('japanese', e.target.value)}
+                       InputLabelProps={{
+                           shrink: true,
+                       }}/>
+            <TextField id="kanji" label="Kanji" variant="filled" value={editData?.new.kanji} style={{width: '100%'}}
+                       onKeyDown={onKeyDownHandler} onChange={(e) => onChangeHandler('kanji', e.target.value)}
+                       InputLabelProps={{
+                           shrink: true,
+                       }}/>
+            <div style={{float: 'right'}}>
+                <Button variant="contained" onClick={cancelHandler}>Cancel</Button>
+                <Button variant="contained" color="primary" onClick={saveHandler}> Save </Button>
+            </div>
         </ModalWindow>
     );
 };

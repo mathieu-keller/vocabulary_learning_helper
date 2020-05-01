@@ -1,12 +1,21 @@
 import React from 'react';
-import {Link} from "react-router-dom";
-import classes from './Navbar.module.scss';
+import {AppBar, Tab, Tabs, Toolbar, Typography} from '@material-ui/core';
+import {RouteComponentProps, withRouter} from 'react-router-dom';
 
-export default (): JSX.Element => {
+const Navbar = (props: RouteComponentProps): JSX.Element => {
     return (
-        <ul className={classes.menuBar}>
-            <li><Link className={classes.link} to='/'>Home</Link></li>
-            <li><Link className={classes.link} to='/vocabulary'>Vocabulary</Link></li>
-        </ul>
+        <AppBar position="static">
+            <Toolbar>
+                <Typography variant="h6" noWrap>
+                    Japanese learning helper
+                </Typography>
+                <Tabs value={props.location.pathname} onChange={(e,v)=>props.history.push(v)}>
+                    <Tab label="Home" value={'/'}/>
+                    <Tab label="vocabulary" value={'/vocabulary'}/>
+                </Tabs>
+            </Toolbar>
+        </AppBar>
     );
 };
+
+export default withRouter(Navbar);
