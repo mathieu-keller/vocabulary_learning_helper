@@ -20,10 +20,10 @@ type dataType = { id?: string; [key: string]: string | undefined };
 function Grid<d extends dataType>(props: GridProps<d>): JSX.Element {
     const sortData = (data: d[]): d[] => {
         return data.sort((da, db) => {
-            if (da.Id && db.Id) {
-                if (da.Id < db.Id)
+            if (da.id && db.id) {
+                if (da.id < db.id)
                     return -1;
-                if (da.Id > db.Id)
+                if (da.id > db.id)
                     return 1;
             }
             return 0;
