@@ -3,17 +3,19 @@ package resource
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/afrima/japanese_learning_helper/src/backend/entity"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
+
+	"github.com/afrima/japanese_learning_helper/src/backend/entity/vocabulary"
 )
 
 func InitVocabularyResource(r *mux.Router) {
-	r.HandleFunc("/vocab", insertVocab).Methods(http.MethodPost)
-	r.HandleFunc("/vocab", getVocab).Methods(http.MethodGet)
-	r.HandleFunc("/vocab", deleteVocab).Methods(http.MethodDelete)
+	r.Handle("/vocab", isAuthorized(insertVocab, "")).Methods(http.MethodPost)
+	r.Handle("/vocab", isAuthorized(getVocab, "")).Methods(http.MethodGet)
+	r.Handle("/vocab", isAuthorized(deleteVocab, "")).Methods(http.MethodDelete)
 }
 
 func insertVocab(w http.ResponseWriter, r *http.Request) {
@@ -24,7 +26,7 @@ func insertVocab(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
-	var vocab entity.Vocab
+	var vocab vocabulary.Vocab
 	if err = json.Unmarshal(reqBody, &vocab); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, err)
@@ -33,7 +35,7 @@ func insertVocab(w http.ResponseWriter, r *http.Request) {
 	}
 	if err = vocab.InsertVocab(); err != nil {
 		switch err.(type) {
-		case entity.VocabErrors:
+		case vocabulary.VocabErrors:
 			w.WriteHeader(http.StatusBadRequest)
 		default:
 			w.WriteHeader(http.StatusInternalServerError)
@@ -55,7 +57,7 @@ func insertVocab(w http.ResponseWriter, r *http.Request) {
 func getVocab(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	vocabs, err := entity.GetVocabs()
+	vocabs, err := vocabulary.GetVocabs()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
@@ -77,7 +79,7 @@ func deleteVocab(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
-	var vocab entity.Vocab
+	var vocab vocabulary.Vocab
 	if err = json.Unmarshal(reqBody, &vocab); err != nil || vocab.Id.IsZero() {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, err)

@@ -1,21 +1,16 @@
-package entity
+package vocabulary
 
 import (
 	"context"
-	"github.com/afrima/japanese_learning_helper/src/backend/database"
+	"log"
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
-	"time"
-)
 
-type Vocab struct {
-	Id       primitive.ObjectID `bson:"_id, omitempty" json:"id"`
-	German   string `bson:"german, omitempty" json:"german"`
-	Japanese string `bson:"japanese, omitempty" json:"japanese"`
-	Kanji    string `bson:"kanji, omitempty" json:"kanji"`
-}
+	"github.com/afrima/japanese_learning_helper/src/backend/database"
+)
 
 type VocabErrors struct {
 	errorText string
