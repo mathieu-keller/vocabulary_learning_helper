@@ -16,7 +16,9 @@ const VocabularyEditModal = ({show, modalClosed, editData, saveHandler, cancelHa
         {
             if (e.keyCode === 13) {
                 saveHandler();
-                firstInput.current?.focus();
+                if(firstInput.current) {
+                    firstInput.current.focus();
+                }
             }
         }
     };

@@ -18,8 +18,8 @@ type GridProps<d extends dataType> = {
 type dataType = { id?: string; [key: string]: string | undefined };
 
 function Grid<d extends dataType>(props: GridProps<d>): JSX.Element {
-    const sortData = (data: d[]): d[] => {
-        return data.sort((da, db) => {
+    const sortData = (gridData: d[]): d[] => {
+        return gridData.sort((da, db) => {
             if (da.id && db.id) {
                 if (da.id < db.id)
                     return -1;
@@ -30,21 +30,21 @@ function Grid<d extends dataType>(props: GridProps<d>): JSX.Element {
         });
     };
 
-    const getRow = (c: Column, data: d): JSX.Element => {
+    const getRow = (c: Column, gridData: d): JSX.Element => {
         const cellStyle: CSSProperties = c.width ? {maxWidth: c.width, width: c.width} : {};
         let row: JSX.Element;
         if (c.field === 'edit') {
             const {deleteHandler, setEditHandler} = props;
             row = <>
-                <div style={{float: 'left'}} onClick={() => setEditHandler(data)}>
+                <div style={{float: 'left'}} onClick={() => setEditHandler(gridData)}>
                     <EditOutlinedIcon className={'icon'}/>
                 </div>
-                <div style={{float: 'left'}} onClick={() => deleteHandler(data)}>
+                <div style={{float: 'left'}} onClick={() => deleteHandler(gridData)}>
                     <DeleteForeverOutlinedIcon className={'icon'}/>
                 </div>
             </>;
         } else {
-            row = <>{data[c.field]}</>;
+            row = <>{gridData[c.field]}</>;
         }
         return <TableCell className={classes.cell} style={cellStyle} key={c.field}>{row}</TableCell>;
     };

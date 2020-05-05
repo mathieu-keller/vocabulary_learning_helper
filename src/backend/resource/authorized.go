@@ -9,35 +9,31 @@ import (
 	"os"
 	"time"
 
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/afrima/japanese_learning_helper/src/backend/entity/user"
 )
 
-var authKey = os.Getenv("auth_key")
+type authError struct {
+	errorText string
+}
 
-func isAuthorized(endpoint func(http.ResponseWriter, *http.Request), neededRole string) http.Handler {
+func (autError authError) Error() string {
+	return autError.errorText
+}
+func isAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header["Token"] != nil {
-			token, err := jwt.Parse(r.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
-				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-					return nil, fmt.Errorf("There was an error")
-				}
-				return authKey, nil
-			})
+			token, err := getToken(r)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
-				fmt.Fprintf(w, err.Error())
+				fmt.Fprintf(w, "%s", err.Error())
 			}
 			if token != nil && token.Valid {
-				claims := token.Claims.(jwt.MapClaims)
-				roles := claims["roles"].(map[string]string)
-				if (roles != nil && roles[neededRole] != "") || (neededRole == "") {
-					endpoint(w, r)
-					return
-				}
+				endpoint(w, r)
+				return
 			}
 		}
 		w.WriteHeader(http.StatusUnauthorized)
@@ -45,19 +41,28 @@ func isAuthorized(endpoint func(http.ResponseWriter, *http.Request), neededRole 
 	})
 }
 
+func getToken(r *http.Request) (*jwt.Token, error) {
+	token, err := jwt.Parse(r.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, authError{"there was an error"}
+		}
+		return os.Getenv("auth_key"), nil
+	})
+	return token, err
+}
+
 func GenerateJWT(userName string) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
-
+	const expTime = time.Minute * 30
+	claims["exp"] = time.Now().Add(expTime).Unix()
 	claims["authorized"] = true
 	claims["client"] = userName
-	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
 
-	tokenString, err := token.SignedString([]byte(authKey))
+	tokenString, err := token.SignedString([]byte(os.Getenv("auth_key")))
 
 	if err != nil {
-		fmt.Errorf("Something Went Wrong: %s", err.Error())
 		return "", err
 	}
 
@@ -128,7 +133,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 func registration(w http.ResponseWriter, r *http.Request) {
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
 		log.Print(err)
 		return

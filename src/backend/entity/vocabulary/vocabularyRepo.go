@@ -7,6 +7,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/afrima/japanese_learning_helper/src/backend/database"
@@ -18,13 +19,15 @@ type VocabErrors struct {
 
 func GetVocabs() ([]Vocab, error) {
 	collection := database.GetDatabase().Collection("Vocabulary")
-	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	const duration = 30 * time.Second
+	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
+	defer closeCtx()
 	cur, err := collection.Find(ctx, bson.D{})
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
-	defer cur.Close(ctx)
+	defer closeCursor(ctx, cur)
 	returnValue := make([]Vocab, 0, 20)
 	for cur.Next(ctx) {
 		var result Vocab
@@ -47,42 +50,51 @@ func (vocab *Vocab) InsertVocab() error {
 		return VocabErrors{"German and Japanese must be filled"}
 	}
 	collection := database.GetDatabase().Collection("Vocabulary")
-	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
-	if vocab.Id.IsZero() {
-		vocab.Id = primitive.NewObjectIDFromTimestamp(time.Now())
+	const duration = 30 * time.Second
+	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
+	defer closeCtx()
+	if vocab.ID.IsZero() {
+		vocab.ID = primitive.NewObjectIDFromTimestamp(time.Now())
 		_, err := collection.InsertOne(ctx, vocab)
 		return err
-	} else {
-		pByte, err := bson.Marshal(vocab)
-		if err != nil {
-			return err
-		}
-
-		var obj bson.M
-		err = bson.Unmarshal(pByte, &obj)
-		if err != nil {
-			return err
-		}
-		opts := options.Update().SetUpsert(true)
-		filter := bson.D{{"_id", vocab.Id}}
-		update := bson.D{{Key: "$set", Value: obj}}
-		_, err = collection.UpdateOne(
-			context.Background(),
-			filter,
-			update,
-			opts,
-		)
+	}
+	pByte, err := bson.Marshal(vocab)
+	if err != nil {
 		return err
 	}
+
+	var obj bson.M
+	err = bson.Unmarshal(pByte, &obj)
+	if err != nil {
+		return err
+	}
+	opts := options.Update().SetUpsert(true)
+	filter := bson.D{{Key: "_id", Value: vocab.ID}}
+	update := bson.D{{Key: "$set", Value: obj}}
+	_, err = collection.UpdateOne(
+		context.Background(),
+		filter,
+		update,
+		opts,
+	)
+	return err
 }
 
 func (vocab Vocab) Delete() error {
 	collection := database.GetDatabase().Collection("Vocabulary")
-	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
-	_, err := collection.DeleteOne(ctx, bson.D{{"_id", vocab.Id}})
+	const duration = 30 * time.Second
+	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
+	defer closeCtx()
+	_, err := collection.DeleteOne(ctx, bson.D{{Key: "_id", Value: vocab.ID}})
 	return err
 }
 
 func (vocabErrors VocabErrors) Error() string {
 	return vocabErrors.errorText
+}
+
+func closeCursor(ctx context.Context, cur *mongo.Cursor) {
+	if err := cur.Close(ctx); err != nil {
+		log.Print(err)
+	}
 }

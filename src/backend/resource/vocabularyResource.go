@@ -13,9 +13,9 @@ import (
 )
 
 func InitVocabularyResource(r *mux.Router) {
-	r.Handle("/vocab", isAuthorized(insertVocab, "")).Methods(http.MethodPost)
-	r.Handle("/vocab", isAuthorized(getVocab, "")).Methods(http.MethodGet)
-	r.Handle("/vocab", isAuthorized(deleteVocab, "")).Methods(http.MethodDelete)
+	r.Handle("/vocab", isAuthorized(insertVocab)).Methods(http.MethodPost)
+	r.Handle("/vocab", isAuthorized(getVocab)).Methods(http.MethodGet)
+	r.Handle("/vocab", isAuthorized(deleteVocab)).Methods(http.MethodDelete)
 }
 
 func insertVocab(w http.ResponseWriter, r *http.Request) {
@@ -54,7 +54,7 @@ func insertVocab(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getVocab(w http.ResponseWriter, r *http.Request) {
+func getVocab(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	vocabs, err := vocabulary.GetVocabs()
@@ -80,7 +80,7 @@ func deleteVocab(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var vocab vocabulary.Vocab
-	if err = json.Unmarshal(reqBody, &vocab); err != nil || vocab.Id.IsZero() {
+	if err = json.Unmarshal(reqBody, &vocab); err != nil || vocab.ID.IsZero() {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, err)
 		log.Print(err)
@@ -94,7 +94,7 @@ func deleteVocab(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/text")
 	w.WriteHeader(http.StatusOK)
-	if err = json.NewEncoder(w).Encode(vocab.Id); err != nil {
+	if err = json.NewEncoder(w).Encode(vocab.ID); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
 		log.Print(err)

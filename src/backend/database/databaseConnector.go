@@ -13,7 +13,8 @@ import (
 var database *mongo.Database
 
 func connectToDatabase() {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	const duration = 10 * time.Second
+	ctx, cancel := context.WithTimeout(context.Background(), duration)
 	defer cancel()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(
 		"mongodb+srv://"+os.Getenv("dbUser")+":"+os.Getenv("dbPassword")+"@"+os.Getenv("dbAddress"),
@@ -27,8 +28,7 @@ func connectToDatabase() {
 func GetDatabase() *mongo.Database {
 	if database != nil {
 		return database
-	} else {
-		connectToDatabase()
-		return database
 	}
+	connectToDatabase()
+	return database
 }
