@@ -46,7 +46,7 @@ func getToken(r *http.Request) (*jwt.Token, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, authError{"there was an error"}
 		}
-		return os.Getenv("auth_key"), nil
+		return []byte(os.Getenv("auth_key")), nil
 	})
 	return token, err
 }
@@ -56,10 +56,11 @@ func GenerateJWT(userName string) (string, error) {
 
 	claims := token.Claims.(jwt.MapClaims)
 	const expTime = time.Minute * 30
-	claims["exp"] = time.Now().Add(expTime).Unix()
+	claims["StandardClaims"] = jwt.StandardClaims{ExpiresAt: time.Now().Add(expTime).Unix()}
 	claims["authorized"] = true
 	claims["client"] = userName
 
+	// Create the JWT string
 	tokenString, err := token.SignedString([]byte(os.Getenv("auth_key")))
 
 	if err != nil {
@@ -75,8 +76,8 @@ func InitAuthorize(r *mux.Router) {
 }
 
 type LoginData struct {
-	UserName string
-	Password string
+	UserName string `json:"userName"`
+	Password string `json:"password"`
 }
 
 type LoginResponse struct {

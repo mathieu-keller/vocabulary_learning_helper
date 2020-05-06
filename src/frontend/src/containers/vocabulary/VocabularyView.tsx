@@ -13,7 +13,6 @@ export type Vocab = {
 const VocabularyView = (): JSX.Element => {
     const [vocabs, setVocabs] = useState<Vocab[]>([]);
     const [editData, setEditData] = useState<{ new: Vocab; old: Vocab }>();
-
     useEffect(() => {
         get<Vocab[]>('/vocab', setVocabs);
     }, []);
@@ -28,7 +27,7 @@ const VocabularyView = (): JSX.Element => {
             setEditData({new: data, old: data});
         };
         return (<Grid<Vocab>
-            addRowHandler={()=> setEditData(emptyEditData)}
+            addRowHandler={() => setEditData(emptyEditData)}
             setEditHandler={setEditHandler}
             deleteHandler={deleteHandler}
             columns={[
@@ -40,7 +39,7 @@ const VocabularyView = (): JSX.Element => {
             data={vocabs}
         />);
     }, [vocabs]);
-    const editModal = useMemo(()=>{
+    const editModal = useMemo(() => {
         const cancelHandler = (): void => {
             setEditData(undefined);
         };
@@ -53,7 +52,7 @@ const VocabularyView = (): JSX.Element => {
         };
         const saveHandler = (): void => {
             if (editData) {
-                post<Vocab>('/vocab', editData.new, (data: Vocab) => {
+                post<Vocab, Vocab>('/vocab', editData.new, (data: Vocab) => {
                     const foundedVocabs = vocabs.filter(vocab => vocab.id).filter(vocab => vocab.id !== data.id);
                     setVocabs([...foundedVocabs, data]);
                     setEditData(emptyEditData);
@@ -67,12 +66,12 @@ const VocabularyView = (): JSX.Element => {
                                      modalClosed={cancelHandler}
                                      editData={editData}
         />);
-    },[editData]);
+    }, [editData]);
 
     return (<>
         {editModal}
         {grid}
-        </>);
+    </>);
 };
 
 export default VocabularyView;

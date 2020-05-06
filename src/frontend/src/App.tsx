@@ -6,7 +6,7 @@ import {Skeleton} from "@material-ui/lab";
 const Navbar = lazy(() => import('./components/Navigation/Navbar'));
 const Home = lazy(() => import('./components/Home'));
 const VocabularyView = lazy(() => import('./containers/vocabulary/VocabularyView'));
-
+const LoginView = lazy(() => import('./containers/login/LoginView'));
 const App = (): JSX.Element => {
     const headerHeight = 64;
     return (
@@ -19,6 +19,14 @@ const App = (): JSX.Element => {
                                <Skeleton variant="rect" height={window.innerHeight - headerHeight} animation="wave"/>
                            }>
                                <VocabularyView/>
+                           </Suspense>}
+                       exact/>
+                <Route path='/login'
+                       render={() =>
+                           <Suspense fallback={
+                               <Skeleton variant="rect" height={window.innerHeight - headerHeight} animation="wave"/>
+                           }>
+                               <LoginView/>
                            </Suspense>}
                        exact/>
                 <Route path='/'
