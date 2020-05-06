@@ -12,6 +12,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/securecookie"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/afrima/japanese_learning_helper/src/backend/entity/user"
@@ -24,10 +25,21 @@ type authError struct {
 func (autError authError) Error() string {
 	return autError.errorText
 }
+
+var cookieKey = []byte(os.Getenv("cookieKey"))
+var tokenKey = []byte(os.Getenv("tokenKey"))
+var s = securecookie.New(cookieKey, nil)
+
 func isAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Header["Token"] != nil {
-			token, err := getToken(r)
+		if cryptToken, err := r.Cookie("token"); err == nil && cryptToken != nil {
+			var jwtToken string
+			err := s.Decode("token", cryptToken.Value, &jwtToken)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprintf(w, "%s", err.Error())
+			}
+			token, err := getToken(jwtToken)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Fprintf(w, "%s", err.Error())
@@ -42,12 +54,12 @@ func isAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handle
 	})
 }
 
-func getToken(r *http.Request) (*jwt.Token, error) {
-	token, err := jwt.Parse(r.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
+func getToken(jwtToken string) (*jwt.Token, error) {
+	token, err := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, authError{"there was an error"}
 		}
-		return []byte(os.Getenv("auth_key")), nil
+		return tokenKey, nil
 	})
 	return token, err
 }
@@ -62,7 +74,7 @@ func GenerateJWT(userName string) (string, error) {
 	claims["client"] = userName
 
 	// Create the JWT string
-	tokenString, err := token.SignedString([]byte(os.Getenv("auth_key")))
+	tokenString, err := token.SignedString(tokenKey)
 
 	if err != nil {
 		return "", err
@@ -126,14 +138,16 @@ func login(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
-	res := LoginResponse{token}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if err = json.NewEncoder(w).Encode(res); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		log.Print(err)
-		return
+	tokenValue, err := s.Encode("token", token)
+	if err == nil {
+		const exp = 30 * time.Minute
+		expiration := time.Now().Add(exp)
+		cookie := http.Cookie{
+			Name:    "token",
+			Value:   tokenValue,
+			Expires: expiration,
+		}
+		http.SetCookie(w, &cookie)
 	}
 }
 
@@ -187,12 +201,15 @@ func registration(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	if err = json.NewEncoder(w).Encode(LoginResponse{token}); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		log.Print(err)
-		return
+	tokenValue, err := s.Encode("token", token)
+	if err == nil {
+		const exp = 30 * time.Minute
+		expiration := time.Now().Add(exp)
+		cookie := http.Cookie{
+			Name:    "token",
+			Value:   tokenValue,
+			Expires: expiration,
+		}
+		http.SetCookie(w, &cookie)
 	}
 }

@@ -11,14 +11,7 @@ const LoginView = (): JSX.Element => {
     };
 
     const onSubmit = (): void => {
-        post<{ userName: string; password: string }, {
-            token: string;
-            userName: string;
-        }>('/login', loginData, (user) => {
-            const d = new Date();
-            d.setTime(d.getTime() + (30 * 60 * 1000));//30 minutes
-            document.cookie = "token="+user.token + ";expires=" + d.toUTCString();
-        }, 200);
+        post<{ userName: string; password: string }, {}>('/login', loginData, null, 200);
     };
 
     return (
