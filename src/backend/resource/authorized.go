@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -81,8 +82,7 @@ type LoginData struct {
 }
 
 type LoginResponse struct {
-	Token    string `json:"token"`
-	UserName string `json:"userName"`
+	Token string `json:"token"`
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
@@ -100,11 +100,17 @@ func login(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
+	loginData.UserName = strings.Title(strings.ToLower(loginData.UserName))
 	dbUser, err := user.GetUser(loginData.UserName)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
 		log.Print(err)
+		return
+	}
+	if dbUser == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, "unauthorized")
 		return
 	}
 	if err = bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(loginData.Password)); err != nil {
@@ -120,7 +126,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
-	res := LoginResponse{token, dbUser.UserName}
+	res := LoginResponse{token}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	if err = json.NewEncoder(w).Encode(res); err != nil {
@@ -146,6 +152,7 @@ func registration(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
+	loginData.UserName = strings.Title(strings.ToLower(loginData.UserName))
 	userInDB, err := user.GetUser(loginData.UserName)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -182,7 +189,7 @@ func registration(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	if err = json.NewEncoder(w).Encode(LoginResponse{token, loginData.UserName}); err != nil {
+	if err = json.NewEncoder(w).Encode(LoginResponse{token}); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
 		log.Print(err)
