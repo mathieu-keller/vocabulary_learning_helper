@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
 )
 
@@ -21,6 +22,14 @@ func (autError authError) Error() string {
 var cookieKey = []byte(os.Getenv("cookieKey"))
 var tokenKey = []byte(os.Getenv("tokenKey"))
 var s = securecookie.New(cookieKey, nil)
+
+func InitAuthorized(r *mux.Router) {
+	r.Handle("/refresh-token", isAuthorized(refreshToken)).Methods(http.MethodGet)
+}
+
+func refreshToken(w http.ResponseWriter, _ *http.Request) {
+	setHTTPOnlyToken(w)
+}
 
 func isAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -74,14 +83,12 @@ func getToken(jwtToken string) (*jwt.Token, error) {
 	return token, err
 }
 
-func GenerateJWT(userName string) (string, error) {
+func GenerateJWT() (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
 	const expTime = time.Minute * 30
 	claims["exp"] = time.Now().Add(expTime).Unix()
-	claims["authorized"] = true
-	claims["client"] = userName
 
 	// Create the JWT string
 	tokenString, err := token.SignedString(tokenKey)

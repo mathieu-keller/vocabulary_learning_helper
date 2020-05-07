@@ -5,28 +5,37 @@ const printErrorMessageInToast = (r: Response): void => {
         r.text().then(t => console.error(r.status + ": " + r.statusText, t));
     }
 };
+type GetResponseType<r> = (data?: r | string) => void;
 
-export function get<d>(url: string, getResponse: (data: d) => void, expectedCode = 200): void {
+export function get<d>(url: string, getResponse?: null | GetResponseType<d>, expectedCode = 200): void {
     fetch(url).then((r: Response) => {
-        if (r.status === expectedCode) {
-            r.json().then((j: d) => getResponse(j));
-        } else {
-            printErrorMessageInToast(r);
+        if (getResponse) {
+            if (r.status === expectedCode) {
+                const contentType = r.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    r.json().then((j: d) => {
+                        getResponse(j);
+                    });
+                } else {
+                    r.text().then((value => getResponse(value)));
+                }
+            } else {
+                printErrorMessageInToast(r);
+            }
         }
     }).catch(reason => console.error("error", reason));
 }
 
-type GetResponseType<r> = (data?: r | string) => void;
 
-export function post<d, r>(url: string, data: d | null, getResponse: null | GetResponseType<r>, expectedCode = 201): void {
+export function post<d, r>(url: string, data: d | null, getResponse?: null | GetResponseType<r>, expectedCode = 201): void {
     fetch(url, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data)
     }).then((r: Response) => {
         if (r.status === expectedCode) {
-            const contentType = r.headers.get("content-type");
             if (getResponse) {
+                const contentType = r.headers.get("content-type");
                 if (contentType && contentType.indexOf("application/json") !== -1) {
                     r.json().then((j: r) => {
                         getResponse(j);

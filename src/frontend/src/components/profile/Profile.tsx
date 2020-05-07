@@ -6,7 +6,7 @@ type ProfileType = {
     logoutHandler: () => void;
 }
 
-const Profile = ({logoutHandler}: ProfileType) => {
+const Profile = ({logoutHandler}: ProfileType): JSX.Element => {
     return (
         <Paper className={classes.paper}>
             <Grid container justify="center" className={classes.buttonContainer}>

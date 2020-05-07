@@ -61,7 +61,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
-	setHTTPOnlyToken(w, loginData)
+	setHTTPOnlyToken(w)
 }
 
 func checkUserCredentials(dbUser *user.User, loginData LoginData) error {
@@ -116,7 +116,7 @@ func registration(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
-	setHTTPOnlyToken(w, loginData)
+	setHTTPOnlyToken(w)
 }
 
 func saveNewUser(loginData LoginData) error {
@@ -131,8 +131,8 @@ func saveNewUser(loginData LoginData) error {
 	return nil
 }
 
-func setHTTPOnlyToken(w http.ResponseWriter, loginData LoginData) {
-	token, err := GenerateJWT(loginData.UserName)
+func setHTTPOnlyToken(w http.ResponseWriter) {
+	token, err := GenerateJWT()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
