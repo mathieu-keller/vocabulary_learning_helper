@@ -15,7 +15,7 @@ func main() {
 	flag.StringVar(&dir, "dir", "./dist", "the directory to serve files from. Defaults to the current dir")
 	flag.Parse()
 	r := mux.NewRouter()
-	resource.InitAuthorize(r)
+	resource.InitLogin(r)
 	resource.InitVocabularyResource(r)
 	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(dir))))
 	err := http.ListenAndServe(":8080", r)

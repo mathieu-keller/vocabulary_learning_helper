@@ -1,21 +1,13 @@
 package resource
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
-	"golang.org/x/crypto/bcrypt"
-
-	"github.com/afrima/japanese_learning_helper/src/backend/entity/user"
 )
 
 type authError struct {
@@ -41,8 +33,8 @@ func isAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handle
 			}
 			token, err := getToken(jwtToken)
 			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				fmt.Fprintf(w, "%s", err.Error())
+				getTokenError(w, err)
+				return
 			}
 			if token != nil && token.Valid {
 				endpoint(w, r)
@@ -52,6 +44,24 @@ func isAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handle
 		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprintf(w, "Not Authorized")
 	})
+}
+
+func getTokenError(w http.ResponseWriter, err error) {
+	switch switchErr := err.(type) {
+	case *jwt.ValidationError:
+		{
+			if switchErr.Errors == jwt.ValidationErrorExpired {
+				w.WriteHeader(http.StatusUnauthorized)
+				fmt.Fprintf(w, "Not Authorized")
+			} else {
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprintf(w, "%s", err.Error())
+			}
+		}
+	default:
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "%s", err.Error())
+	}
 }
 
 func getToken(jwtToken string) (*jwt.Token, error) {
@@ -69,7 +79,7 @@ func GenerateJWT(userName string) (string, error) {
 
 	claims := token.Claims.(jwt.MapClaims)
 	const expTime = time.Minute * 30
-	claims["StandardClaims"] = jwt.StandardClaims{ExpiresAt: time.Now().Add(expTime).Unix()}
+	claims["exp"] = time.Now().Add(expTime).Unix()
 	claims["authorized"] = true
 	claims["client"] = userName
 
@@ -81,135 +91,4 @@ func GenerateJWT(userName string) (string, error) {
 	}
 
 	return tokenString, nil
-}
-
-func InitAuthorize(r *mux.Router) {
-	r.HandleFunc("/login", login).Methods(http.MethodPost)
-	r.HandleFunc("/registration", registration).Methods(http.MethodPost)
-}
-
-type LoginData struct {
-	UserName string `json:"userName"`
-	Password string `json:"password"`
-}
-
-type LoginResponse struct {
-	Token string `json:"token"`
-}
-
-func login(w http.ResponseWriter, r *http.Request) {
-	reqBody, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, err)
-		log.Print(err)
-		return
-	}
-	var loginData LoginData
-	if err = json.Unmarshal(reqBody, &loginData); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, err)
-		log.Print(err)
-		return
-	}
-	loginData.UserName = strings.Title(strings.ToLower(loginData.UserName))
-	dbUser, err := user.GetUser(loginData.UserName)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		log.Print(err)
-		return
-	}
-	if dbUser == nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, "unauthorized")
-		return
-	}
-	if err = bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(loginData.Password)); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, err)
-		log.Print(err)
-		return
-	}
-	token, err := GenerateJWT(dbUser.UserName)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		log.Print(err)
-		return
-	}
-	tokenValue, err := s.Encode("token", token)
-	if err == nil {
-		const exp = 30 * time.Minute
-		expiration := time.Now().Add(exp)
-		cookie := http.Cookie{
-			Name:    "token",
-			Value:   tokenValue,
-			Expires: expiration,
-		}
-		http.SetCookie(w, &cookie)
-	}
-}
-
-func registration(w http.ResponseWriter, r *http.Request) {
-	reqBody, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		log.Print(err)
-		return
-	}
-	var loginData LoginData
-	if err = json.Unmarshal(reqBody, &loginData); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, err)
-		log.Print(err)
-		return
-	}
-	loginData.UserName = strings.Title(strings.ToLower(loginData.UserName))
-	userInDB, err := user.GetUser(loginData.UserName)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		log.Print(err)
-		return
-	}
-	if userInDB != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, "Username is already taken!")
-		return
-	}
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte(loginData.Password), bcrypt.DefaultCost)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		log.Print(err)
-		return
-	}
-	userToRegister := user.User{UserName: loginData.UserName, Password: string(passwordHash)}
-
-	if err = userToRegister.Insert(); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Print(err)
-		fmt.Fprint(w, err)
-		return
-	}
-	token, err := GenerateJWT(loginData.UserName)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		log.Print(err)
-		return
-	}
-	tokenValue, err := s.Encode("token", token)
-	if err == nil {
-		const exp = 30 * time.Minute
-		expiration := time.Now().Add(exp)
-		cookie := http.Cookie{
-			Name:    "token",
-			Value:   tokenValue,
-			Expires: expiration,
-		}
-		http.SetCookie(w, &cookie)
-	}
 }

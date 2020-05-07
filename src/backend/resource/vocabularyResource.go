@@ -12,22 +12,22 @@ import (
 	"github.com/afrima/japanese_learning_helper/src/backend/entity/vocabulary"
 )
 
+const (
+	ContentType     = "Content-Type"
+	ContentTypeJSON = "application/json"
+	ContentTypeText = "application/text"
+)
+
 func InitVocabularyResource(r *mux.Router) {
-	r.Handle("/vocab", isAuthorized(insertVocab)).Methods(http.MethodPost)
-	r.Handle("/vocab", isAuthorized(getVocab)).Methods(http.MethodGet)
-	r.Handle("/vocab", isAuthorized(deleteVocab)).Methods(http.MethodDelete)
+	const path = "/vocab"
+	r.Handle(path, isAuthorized(insertVocab)).Methods(http.MethodPost)
+	r.Handle(path, isAuthorized(getVocab)).Methods(http.MethodGet)
+	r.Handle(path, isAuthorized(deleteVocab)).Methods(http.MethodDelete)
 }
 
 func insertVocab(w http.ResponseWriter, r *http.Request) {
-	reqBody, err := ioutil.ReadAll(r.Body)
+	vocab, err := getVocabFromBody(r)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, err)
-		log.Print(err)
-		return
-	}
-	var vocab vocabulary.Vocab
-	if err = json.Unmarshal(reqBody, &vocab); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, err)
 		log.Print(err)
@@ -44,7 +44,8 @@ func insertVocab(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, err)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
+
+	w.Header().Set(ContentType, ContentTypeJSON)
 	w.WriteHeader(http.StatusCreated)
 	if err = json.NewEncoder(w).Encode(vocab); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -55,7 +56,7 @@ func insertVocab(w http.ResponseWriter, r *http.Request) {
 }
 
 func getVocab(w http.ResponseWriter, _ *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set(ContentType, ContentTypeJSON)
 	w.WriteHeader(http.StatusOK)
 	vocabs, err := vocabulary.GetVocabs()
 	if err != nil {
@@ -72,15 +73,8 @@ func getVocab(w http.ResponseWriter, _ *http.Request) {
 }
 
 func deleteVocab(w http.ResponseWriter, r *http.Request) {
-	reqBody, err := ioutil.ReadAll(r.Body)
+	vocab, err := getVocabFromBody(r)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, err)
-		log.Print(err)
-		return
-	}
-	var vocab vocabulary.Vocab
-	if err = json.Unmarshal(reqBody, &vocab); err != nil || vocab.ID.IsZero() {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, err)
 		log.Print(err)
@@ -92,7 +86,7 @@ func deleteVocab(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
-	w.Header().Set("Content-Type", "application/text")
+	w.Header().Set(ContentType, ContentTypeText)
 	w.WriteHeader(http.StatusOK)
 	if err = json.NewEncoder(w).Encode(vocab.ID); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -100,4 +94,16 @@ func deleteVocab(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
+}
+
+func getVocabFromBody(r *http.Request) (vocabulary.Vocab, error) {
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return vocabulary.Vocab{}, err
+	}
+	var vocab vocabulary.Vocab
+	if err = json.Unmarshal(reqBody, &vocab); err != nil {
+		return vocabulary.Vocab{}, err
+	}
+	return vocab, nil
 }
