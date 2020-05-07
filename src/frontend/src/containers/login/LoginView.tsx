@@ -1,9 +1,12 @@
 import React, {useState} from 'react';
 import Login from "../../components/Login/Login";
 import {post} from "../../utility/restCaller";
+import {useStore} from "../../store/store";
+import {RouteComponentProps} from "react-router-dom";
 
-const LoginView = (): JSX.Element => {
+const LoginView = (props: RouteComponentProps): JSX.Element => {
     const [loginData, setLoginData] = useState({userName: "", password: ""});
+    const dispatch = useStore(false)[1];
     const onChange = (field: 'userName' | 'password', value: string): void => {
         const data = {...loginData};
         data[field] = value;
@@ -11,7 +14,10 @@ const LoginView = (): JSX.Element => {
     };
 
     const onSubmit = (): void => {
-        post<{ userName: string; password: string }, {}>('/login', loginData, null, 200);
+        post<{ userName: string; password: string }, {}>('/login', loginData, () => {
+            props.history.push("/");
+            dispatch('LOGIN', true);
+        }, 200);
     };
 
     return (

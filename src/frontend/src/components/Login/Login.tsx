@@ -17,7 +17,8 @@ const Login = ({loginData, onChange, onSubmit}: LoginProps): JSX.Element => {
                     <Person/>
                 </Grid>
                 <Grid item md={true} sm={true} xs={true}>
-                    <TextField label="Username" type="text" onChange={(e) => onChange('userName', e.target.value)}
+                    <TextField label="Username" type="text"
+                               onChange={(e) => onChange('userName', e.target.value)}
                                value={loginData.userName} fullWidth autoFocus required/>
                 </Grid>
             </Grid>
@@ -26,7 +27,8 @@ const Login = ({loginData, onChange, onSubmit}: LoginProps): JSX.Element => {
                     <Lock/>
                 </Grid>
                 <Grid item md={true} sm={true} xs={true}>
-                    <TextField label="Password" type="password" onChange={(e) => onChange('password', e.target.value)}
+                    <TextField label="Password" type="password"
+                               onChange={(e) => onChange('password', e.target.value)}
                                value={loginData.password} fullWidth required/>
                 </Grid>
             </Grid>

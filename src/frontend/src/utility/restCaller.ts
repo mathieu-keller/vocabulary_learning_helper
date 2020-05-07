@@ -16,7 +16,7 @@ export function get<d>(url: string, getResponse: (data: d) => void, expectedCode
     }).catch(reason => console.error("error", reason));
 }
 
-type GetResponseType<r> = (data: r) => void;
+type GetResponseType<r> = (data?: r | string) => void;
 
 export function post<d, r>(url: string, data: d, getResponse: null | GetResponseType<r>, expectedCode = 201): void {
     fetch(url, {
@@ -25,8 +25,15 @@ export function post<d, r>(url: string, data: d, getResponse: null | GetResponse
         body: JSON.stringify(data)
     }).then((r: Response) => {
         if (r.status === expectedCode) {
+            const contentType = r.headers.get("content-type");
             if (getResponse) {
-                r.json().then((j: r) => getResponse(j));
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    r.json().then((j: r) => {
+                        getResponse(j);
+                    });
+                } else {
+                    r.text().then((value => getResponse(value)));
+                }
             }
         } else {
             printErrorMessageInToast(r);
