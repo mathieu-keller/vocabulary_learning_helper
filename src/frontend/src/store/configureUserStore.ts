@@ -6,8 +6,11 @@ export type UserStore = {
 
 const configureUserStore = (): void => {
     const actions = {
-        LOGIN: (currentStore: Store, isLogin: boolean): Store => {
-            return {...currentStore, user: {isLogin}};
+        LOGIN: (currentStore: Store): Store => {
+            return {...currentStore, user: {isLogin: true}};
+        },
+        LOGOUT: (currentStore: Store): Store => {
+            return {...currentStore, user: {isLogin: false}};
         }
     };
     initStore(actions, {user: {isLogin: false}});

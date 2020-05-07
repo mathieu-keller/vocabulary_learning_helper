@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import Grid from "../../components/UI/Grid/Grid";
+import Grid from "../../components/ui/Grid/Grid";
 import {deleteCall, get, post} from "../../utility/restCaller";
-import VocabularyEditModal from "../../components/UI/Modal/VocabularyEditModal";
+import VocabularyEditModal from "../../components/ui/Modal/VocabularyEditModal";
 
 export type Vocab = {
     id?: string;

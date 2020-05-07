@@ -18,6 +18,7 @@ import (
 
 func InitLogin(r *mux.Router) {
 	r.HandleFunc("/login", login).Methods(http.MethodPost)
+	r.HandleFunc("/logout", logout).Methods(http.MethodPost)
 	r.HandleFunc("/registration", registration).Methods(http.MethodPost)
 }
 
@@ -28,6 +29,15 @@ type LoginData struct {
 
 type LoginResponse struct {
 	Token string `json:"token"`
+}
+
+func logout(w http.ResponseWriter, _ *http.Request) {
+	c := http.Cookie{
+		Name:    "token",
+		Value:   "",
+		Expires: time.Unix(0, 0),
+	}
+	http.SetCookie(w, &c)
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
@@ -100,7 +110,7 @@ func registration(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "Username is already taken!")
 		return
 	}
-	if err = saveNewUser(err, loginData); err != nil {
+	if err = saveNewUser(loginData); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
 		log.Print(err)
@@ -109,7 +119,7 @@ func registration(w http.ResponseWriter, r *http.Request) {
 	setHTTPOnlyToken(w, loginData)
 }
 
-func saveNewUser(err error, loginData LoginData) error {
+func saveNewUser(loginData LoginData) error {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(loginData.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err

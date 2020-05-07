@@ -8,13 +8,13 @@ let globalState: Store = {};
 let listeners: React.Dispatch<React.SetStateAction<Store>>[] = [];
 let actions: { [key: string]: any } = {};
 
-type returnType = [Store, (actionIdentifier: string, payload: any) => void] ;
+type returnType = [Store, (actionIdentifier: string, payload?: any) => void] ;
 
 
 export const useStore = (shouldListen = true): returnType => {
     const setState = useState(globalState)[1];
 
-    const dispatch = (actionIdentifier: string, payload: any): void => {
+    const dispatch = (actionIdentifier: string, payload?: any): void => {
         const newState = actions[actionIdentifier](globalState, payload);
         globalState = {...globalState, ...newState};
 

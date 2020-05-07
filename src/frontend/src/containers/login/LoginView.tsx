@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import Login from "../../components/Login/Login";
+import Login from "../../components/login/Login";
 import {post} from "../../utility/restCaller";
 import {useStore} from "../../store/store";
 import {RouteComponentProps} from "react-router-dom";
@@ -16,7 +16,7 @@ const LoginView = (props: RouteComponentProps): JSX.Element => {
     const onSubmit = (): void => {
         post<{ userName: string; password: string }, {}>('/login', loginData, () => {
             props.history.push("/");
-            dispatch('LOGIN', true);
+            dispatch('LOGIN');
         }, 200);
     };
 

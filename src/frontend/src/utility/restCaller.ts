@@ -18,7 +18,7 @@ export function get<d>(url: string, getResponse: (data: d) => void, expectedCode
 
 type GetResponseType<r> = (data?: r | string) => void;
 
-export function post<d, r>(url: string, data: d, getResponse: null | GetResponseType<r>, expectedCode = 201): void {
+export function post<d, r>(url: string, data: d | null, getResponse: null | GetResponseType<r>, expectedCode = 201): void {
     fetch(url, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
