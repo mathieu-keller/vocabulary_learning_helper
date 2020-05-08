@@ -33,7 +33,6 @@ type LoginResponse struct {
 
 func logout(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set(ContentType, ContentTypeJSON)
-	w.WriteHeader(http.StatusOK)
 	c := http.Cookie{
 		Name:    "token",
 		Value:   "",
@@ -65,7 +64,6 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set(ContentType, ContentTypeJSON)
-	w.WriteHeader(http.StatusOK)
 	setHTTPOnlyToken(w)
 	fmt.Fprint(w, "{\"login\":true}")
 }
