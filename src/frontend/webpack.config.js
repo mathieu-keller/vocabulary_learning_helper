@@ -4,6 +4,8 @@ const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
     .BundleAnalyzerPlugin;
 const NullPlugin = require('webpack-null-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
+const CompressionPlugin = require('compression-webpack-plugin');
+
 module.exports = env => {
     var production = env && env.NODE_ENV === 'production';
     var bundleAnalyze = env && env.ANALYZE;
@@ -79,6 +81,9 @@ module.exports = env => {
         },
         plugins: [
             bundleAnalyze ? new BundleAnalyzerPlugin() : new NullPlugin(),
+            production ? new CompressionPlugin({
+                algorithm: 'gzip',
+            }) : new NullPlugin(),
             new HtmlWebpackPlugin(
                 Object.assign(
                     {},

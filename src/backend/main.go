@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 
 	"github.com/afrima/japanese_learning_helper/src/backend/resource"
@@ -19,7 +20,7 @@ func main() {
 	resource.InitLogin(r)
 	resource.InitVocabularyResource(r)
 	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(dir))))
-	err := http.ListenAndServe(":8080", r)
+	err := http.ListenAndServe(":8080", handlers.CompressHandler(r))
 	if err != nil {
 		log.Fatal(err)
 	}

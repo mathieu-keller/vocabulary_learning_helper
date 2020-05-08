@@ -1,7 +1,7 @@
 FROM node:14-alpine AS NodeBuilder
 WORKDIR /app
 COPY src/frontend .
-RUN yarn install --network-timeout 300000
+RUN yarn install
 RUN npm run build:prod
 
 FROM golang:1.14-alpine AS GOBuilder
