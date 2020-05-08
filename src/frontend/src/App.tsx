@@ -4,9 +4,10 @@ import '../public/App.scss';
 import {Skeleton} from "@material-ui/lab";
 import {get} from "./utility/restCaller";
 import {useStore} from "./store/store";
+import {ToastContainer} from "react-toastify";
+import NavigationBar from './components/navigation/NavigationBar';
+import Home from './components/Home';
 
-const NavigationBar = lazy(() => import('./components/navigation/NavigationBar'));
-const Home = lazy(() => import('./components/Home'));
 const VocabularyView = lazy(() => import('./containers/vocabulary/VocabularyView'));
 const LoginView = lazy(() => import('./containers/login/LoginView'));
 const ProfileView = lazy(() => import('./containers/profile/ProfileView'));
@@ -28,8 +29,8 @@ const App = (): JSX.Element => {
     }, [store.user?.isLogin]);
     return (
         <>
-            <Suspense
-                fallback={<Skeleton variant="rect" height={headerHeight} animation="wave"/>}><NavigationBar/></Suspense>
+            <ToastContainer/>
+            <NavigationBar/>
             <Switch>
                 <Route path='/profile'
                        render={(props) =>
@@ -55,14 +56,7 @@ const App = (): JSX.Element => {
                                <LoginView {...props}/>
                            </Suspense>}
                        exact/>
-                <Route path='/'
-                       render={() =>
-                           <Suspense fallback={
-                               <Skeleton variant="rect" height={window.innerHeight - headerHeight} animation="wave"/>
-                           }>
-                               <Home/>
-                           </Suspense>}
-                       exact/>
+                <Route path='/' component={Home} exact/>
             </Switch>
         </>);
 };
