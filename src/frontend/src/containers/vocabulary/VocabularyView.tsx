@@ -21,7 +21,7 @@ const VocabularyView = (): JSX.Element => {
 
     const grid = useMemo(() => {
         const deleteHandler = (data: Vocab): void => {
-            deleteCall<Vocab, string>('/vocab', data, ((d) => setVocabs(vocabs.filter(vocab => vocab.id !== d))));
+            deleteCall<Vocab, Vocab>('/vocab', data, ((d) => setVocabs(vocabs.filter(vocab => vocab.id !== d.id))));
         };
         const setEditHandler = (data: Vocab): void => {
             setEditData({new: data, old: data});

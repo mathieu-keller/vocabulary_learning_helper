@@ -2,6 +2,7 @@ package resource
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -25,52 +26,50 @@ var s = securecookie.New(cookieKey, nil)
 
 func InitAuthorized(r *mux.Router) {
 	r.Handle("/refresh-token", isAuthorized(refreshToken)).Methods(http.MethodGet)
+	r.HandleFunc("/check-login", checkLogin).Methods(http.MethodGet)
 }
 
 func refreshToken(w http.ResponseWriter, _ *http.Request) {
 	setHTTPOnlyToken(w)
 }
 
+func checkLogin(w http.ResponseWriter, r *http.Request) {
+	if isTokenValid(r) {
+		w.Header().Set(ContentType, ContentTypeJSON)
+		w.WriteHeader(http.StatusOK)
+		setHTTPOnlyToken(w)
+		fmt.Fprint(w, "{\"login\":true}")
+	} else {
+		fmt.Fprint(w, "{\"login\":false}")
+	}
+}
+
 func isAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if cryptToken, err := r.Cookie("token"); err == nil && cryptToken != nil {
-			var jwtToken string
-			err := s.Decode("token", cryptToken.Value, &jwtToken)
-			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				fmt.Fprintf(w, "%s", err.Error())
-			}
-			token, err := getToken(jwtToken)
-			if err != nil {
-				getTokenError(w, err)
-				return
-			}
-			if token != nil && token.Valid {
-				endpoint(w, r)
-				return
-			}
+		if isTokenValid(r) {
+			endpoint(w, r)
+			return
 		}
 		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprintf(w, "Not Authorized")
 	})
 }
 
-func getTokenError(w http.ResponseWriter, err error) {
-	switch switchErr := err.(type) {
-	case *jwt.ValidationError:
-		{
-			if switchErr.Errors == jwt.ValidationErrorExpired {
-				w.WriteHeader(http.StatusUnauthorized)
-				fmt.Fprintf(w, "Not Authorized")
-			} else {
-				w.WriteHeader(http.StatusInternalServerError)
-				fmt.Fprintf(w, "%s", err.Error())
-			}
+func isTokenValid(r *http.Request) bool {
+	if cryptToken, err := r.Cookie("token"); err == nil && cryptToken != nil {
+		var jwtToken string
+		err := s.Decode("token", cryptToken.Value, &jwtToken)
+		if err != nil {
+			log.Println(err)
+			return false
 		}
-	default:
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, "%s", err.Error())
+		token, err := getToken(jwtToken)
+		if err != nil {
+			return false
+		}
+		return token != nil && token.Valid
 	}
+	return false
 }
 
 func getToken(jwtToken string) (*jwt.Token, error) {
@@ -98,4 +97,25 @@ func GenerateJWT() (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+func setHTTPOnlyToken(w http.ResponseWriter) {
+	token, err := GenerateJWT()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+		log.Print(err)
+		return
+	}
+	tokenValue, err := s.Encode("token", token)
+	if err == nil {
+		const exp = 30 * time.Minute
+		expiration := time.Now().Add(exp)
+		cookie := http.Cookie{
+			Name:    "token",
+			Value:   tokenValue,
+			Expires: expiration,
+		}
+		http.SetCookie(w, &cookie)
+	}
 }

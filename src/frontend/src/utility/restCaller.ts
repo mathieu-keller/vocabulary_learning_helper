@@ -7,7 +7,7 @@ const printErrorMessageInToast = (r: Response): void => {
         r.text().then(t => errorToast(r.status + ": " + r.statusText, t));
     }
 };
-type GetResponseType<r> = (data?: r | string) => void;
+type GetResponseType<r> = (data: r) => void;
 
 function processResponse<d>(r: Response, expectedCode: number, getResponse?: null | GetResponseType<d>): void {
     if (r.status === expectedCode) {
@@ -17,8 +17,6 @@ function processResponse<d>(r: Response, expectedCode: number, getResponse?: nul
                 r.json().then((j: d) => {
                     getResponse(j);
                 });
-            } else {
-                r.text().then((value => getResponse(value)));
             }
         }
     } else {

@@ -18,7 +18,7 @@ import (
 
 func InitLogin(r *mux.Router) {
 	r.HandleFunc("/login", login).Methods(http.MethodPost)
-	r.HandleFunc("/logout", logout).Methods(http.MethodPost)
+	r.Handle("/logout", isAuthorized(logout)).Methods(http.MethodPost)
 	r.HandleFunc("/registration", registration).Methods(http.MethodPost)
 }
 
@@ -129,25 +129,4 @@ func saveNewUser(loginData LoginData) error {
 		return err
 	}
 	return nil
-}
-
-func setHTTPOnlyToken(w http.ResponseWriter) {
-	token, err := GenerateJWT()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		log.Print(err)
-		return
-	}
-	tokenValue, err := s.Encode("token", token)
-	if err == nil {
-		const exp = 30 * time.Minute
-		expiration := time.Now().Add(exp)
-		cookie := http.Cookie{
-			Name:    "token",
-			Value:   tokenValue,
-			Expires: expiration,
-		}
-		http.SetCookie(w, &cookie)
-	}
 }

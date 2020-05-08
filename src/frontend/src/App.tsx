@@ -12,12 +12,13 @@ const VocabularyView = lazy(() => import('./containers/vocabulary/VocabularyView
 const LoginView = lazy(() => import('./containers/login/LoginView'));
 const ProfileView = lazy(() => import('./containers/profile/ProfileView'));
 const App = (): JSX.Element => {
-    const headerHeight = 64;
     const [store, dispatch] = useStore();
     const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
     useEffect(() => {
-        get<{}>('/refresh-token', () => {
-            dispatch('LOGIN');
+        get<{ login: boolean }>('/check-login', (r) => {
+            if (r.login) {
+                dispatch('LOGIN');
+            }
         });
     }, []);
     useEffect(() => {

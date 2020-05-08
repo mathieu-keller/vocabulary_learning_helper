@@ -15,7 +15,6 @@ import (
 const (
 	ContentType     = "Content-Type"
 	ContentTypeJSON = "application/json"
-	ContentTypeText = "application/text"
 )
 
 func InitVocabularyResource(r *mux.Router) {
@@ -86,9 +85,9 @@ func deleteVocab(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
-	w.Header().Set(ContentType, ContentTypeText)
+	w.Header().Set(ContentType, ContentTypeJSON)
 	w.WriteHeader(http.StatusOK)
-	if err = json.NewEncoder(w).Encode(vocab.ID); err != nil {
+	if err = json.NewEncoder(w).Encode(vocab); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
 		log.Print(err)
