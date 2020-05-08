@@ -14,9 +14,11 @@ const LoginView = (props: RouteComponentProps): JSX.Element => {
     };
 
     const onSubmit = (): void => {
-        post<{ userName: string; password: string }, {}>('/login', loginData, () => {
-            props.history.push("/");
-            dispatch('LOGIN');
+        post<{ userName: string; password: string }, { login: boolean }>('/login', loginData, (r) => {
+            if (r.login) {
+                props.history.push("/");
+                dispatch('LOGIN');
+            }
         }, 200);
     };
 

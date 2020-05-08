@@ -32,12 +32,15 @@ type LoginResponse struct {
 }
 
 func logout(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set(ContentType, ContentTypeJSON)
+	w.WriteHeader(http.StatusOK)
 	c := http.Cookie{
 		Name:    "token",
 		Value:   "",
 		Expires: time.Unix(0, 0),
 	}
 	http.SetCookie(w, &c)
+	fmt.Fprint(w, "{\"logout\":true}")
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
@@ -61,7 +64,10 @@ func login(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
+	w.Header().Set(ContentType, ContentTypeJSON)
+	w.WriteHeader(http.StatusOK)
 	setHTTPOnlyToken(w)
+	fmt.Fprint(w, "{\"login\":true}")
 }
 
 func checkUserCredentials(dbUser *user.User, loginData LoginData) error {
@@ -116,7 +122,10 @@ func registration(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
+	w.Header().Set(ContentType, ContentTypeJSON)
+	w.WriteHeader(http.StatusOK)
 	setHTTPOnlyToken(w)
+	fmt.Fprint(w, "{\"login\":true}")
 }
 
 func saveNewUser(loginData LoginData) error {

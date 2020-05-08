@@ -7,9 +7,11 @@ import {RouteComponentProps} from "react-router-dom";
 const ProfileView = (props: RouteComponentProps): JSX.Element => {
     const dispatch = useStore(false)[1];
     const logoutHandler = (): void => {
-        post<{}, {}>('/logout', null, () => {
-            props.history.push('/');
-            dispatch('LOGOUT');
+        post<{}, { logout: boolean }>('/logout', null, (r) => {
+            if (r.logout) {
+                props.history.push('/');
+                dispatch('LOGOUT');
+            }
         }, 200);
     };
 
