@@ -1,12 +1,12 @@
-import React, {lazy, Suspense, useEffect, useState} from 'react';
+import React, {lazy, useEffect, useState} from 'react';
 import {Route, Switch} from 'react-router-dom';
 import '../public/App.scss';
-import {Skeleton} from "@material-ui/lab";
 import {get} from "./utility/restCaller";
 import {useStore} from "./store/store";
 import {ToastContainer} from "react-toastify";
-import NavigationBar from './components/navigation/NavigationBar';
+import NavigationBar from './components/navigation/navigationBar/NavigationBar';
 import Home from './components/Home';
+import ProtectedRoute from "./components/navigation/route/ProtectedRoute";
 
 const VocabularyView = lazy(() => import('./containers/vocabulary/VocabularyView'));
 const LoginView = lazy(() => import('./containers/login/LoginView'));
@@ -32,30 +32,11 @@ const App = (): JSX.Element => {
             <ToastContainer/>
             <NavigationBar/>
             <Switch>
-                <Route path='/profile'
-                       render={(props) =>
-                           <Suspense fallback={
-                               <Skeleton variant="rect" height={window.innerHeight - headerHeight} animation="wave"/>
-                           }>
-                               <ProfileView {...props}/>
-                           </Suspense>}
-                       exact/>
-                <Route path='/vocabulary'
-                       render={() =>
-                           <Suspense fallback={
-                               <Skeleton variant="rect" height={window.innerHeight - headerHeight} animation="wave"/>
-                           }>
-                               <VocabularyView/>
-                           </Suspense>}
-                       exact/>
-                <Route path='/login'
-                       render={(props) =>
-                           <Suspense fallback={
-                               <Skeleton variant="rect" height={window.innerHeight - headerHeight} animation="wave"/>
-                           }>
-                               <LoginView {...props}/>
-                           </Suspense>}
-                       exact/>
+                <ProtectedRoute path='/profile' isAllowed={store.user?.isLogin}
+                                render={(props) => <ProfileView {...props}/>}/>
+                <ProtectedRoute path='/vocabulary' isAllowed={store.user?.isLogin} render={() => <VocabularyView/>}/>
+                <ProtectedRoute path='/login' isAllowed={!store.user?.isLogin}
+                                render={(props) => <LoginView {...props}/>}/>
                 <Route path='/' component={Home} exact/>
             </Switch>
         </>);
