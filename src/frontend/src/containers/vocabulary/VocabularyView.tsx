@@ -11,23 +11,26 @@ export type Vocab = {
 }
 
 const VocabularyView = (): JSX.Element => {
+    const emptyEditData = {german: '', japanese: '', kanji: ''};
     const [vocabs, setVocabs] = useState<Vocab[]>([]);
-    const [editData, setEditData] = useState<{ new: Vocab; old: Vocab }>();
+    const [editData, setEditData] = useState<Vocab>(emptyEditData);
+    const [showEditModal, setShowEditModal] = useState<boolean>(false);
+
+
     useEffect(() => {
         get<Vocab[]>('/vocab', setVocabs);
     }, []);
-
-    const emptyEditData = {new: {german: '', japanese: '', kanji: ''}, old: {german: '', japanese: '', kanji: ''}};
 
     const grid = useMemo(() => {
         const deleteHandler = (data: Vocab): void => {
             deleteCall<Vocab, Vocab>('/vocab', data, ((d) => setVocabs(vocabs.filter(vocab => vocab.id !== d.id))));
         };
         const setEditHandler = (data: Vocab): void => {
-            setEditData({new: data, old: data});
+            setEditData(data);
+            setShowEditModal(true);
         };
         return (<Grid<Vocab>
-            addRowHandler={() => setEditData(emptyEditData)}
+            addRowHandler={() => setEditHandler(emptyEditData)}
             setEditHandler={setEditHandler}
             deleteHandler={deleteHandler}
             columns={[
@@ -41,18 +44,19 @@ const VocabularyView = (): JSX.Element => {
     }, [vocabs]);
     const editModal = useMemo(() => {
         const cancelHandler = (): void => {
-            setEditData(undefined);
+            setEditData(emptyEditData);
+            setShowEditModal(false);
         };
         const onChangeHandler = (field: string, value: string): void => {
-            if (editData) {
-                const newEditData: any = {...editData.new};
+            if (editData && (field === 'german' || field === 'japanese' || field === 'kanji')) {
+                const newEditData: Vocab = {...editData};
                 newEditData[field] = value;
-                setEditData({new: newEditData as Vocab, old: editData.old});
+                setEditData(newEditData);
             }
         };
         const saveHandler = (): void => {
             if (editData) {
-                post<Vocab, Vocab>('/vocab', editData.new, (data: Vocab) => {
+                post<Vocab, Vocab>('/vocab', editData, (data) => {
                     const foundedVocabs = vocabs.filter(vocab => vocab.id).filter(vocab => vocab.id !== data.id);
                     setVocabs([...foundedVocabs, data]);
                     setEditData(emptyEditData);
@@ -62,11 +66,11 @@ const VocabularyView = (): JSX.Element => {
         return (<VocabularyEditModal cancelHandler={cancelHandler}
                                      onChangeHandler={onChangeHandler}
                                      saveHandler={saveHandler}
-                                     show={editData !== undefined}
+                                     show={showEditModal}
                                      modalClosed={cancelHandler}
                                      editData={editData}
         />);
-    }, [editData]);
+    }, [editData, showEditModal]);
 
     return (<>
         {editModal}
