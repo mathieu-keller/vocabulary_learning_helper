@@ -6,28 +6,31 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
+	primitive "go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/afrima/japanese_learning_helper/src/backend/database"
 )
 
 type VocabErrors struct {
-	errorText string
+	ErrorText string
 }
 
-func GetVocabs() ([]Vocab, error) {
+func GetVocabs(listID string) ([]Vocab, error) {
+	id, err := primitive.ObjectIDFromHex(listID)
+	if err != nil {
+		return nil, err
+	}
 	collection := database.GetDatabase().Collection("Vocabulary")
 	const duration = 30 * time.Second
 	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
 	defer closeCtx()
-	cur, err := collection.Find(ctx, bson.D{})
+	cur, err := collection.Find(ctx, bson.D{{Key: "listID", Value: id}})
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
-	defer closeCursor(ctx, cur)
+	defer database.CloseCursor(ctx, cur)
 	returnValue := make([]Vocab, 0, 20)
 	for cur.Next(ctx) {
 		var result Vocab
@@ -89,12 +92,15 @@ func (vocab Vocab) Delete() error {
 	return err
 }
 
-func (vocabErrors VocabErrors) Error() string {
-	return vocabErrors.errorText
+func DeleteWithListID(listID primitive.ObjectID) error {
+	collection := database.GetDatabase().Collection("Vocabulary")
+	const duration = 30 * time.Second
+	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
+	defer closeCtx()
+	_, err := collection.DeleteMany(ctx, bson.D{{Key: "listID", Value: listID}})
+	return err
 }
 
-func closeCursor(ctx context.Context, cur *mongo.Cursor) {
-	if err := cur.Close(ctx); err != nil {
-		log.Print(err)
-	}
+func (vocabErrors VocabErrors) Error() string {
+	return vocabErrors.ErrorText
 }

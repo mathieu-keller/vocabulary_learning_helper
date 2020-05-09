@@ -8,6 +8,7 @@ import NavigationBar from './components/navigation/navigationBar/NavigationBar';
 import Home from './components/Home';
 import ProtectedRoute from "./components/navigation/route/ProtectedRoute";
 
+const VocabularyListView = lazy(() => import('./containers/vocabulary/VocabularyListView'));
 const VocabularyView = lazy(() => import('./containers/vocabulary/VocabularyView'));
 const LoginView = lazy(() => import('./containers/login/LoginView'));
 const ProfileView = lazy(() => import('./containers/profile/ProfileView'));
@@ -35,7 +36,10 @@ const App = (): JSX.Element => {
             <Switch>
                 <ProtectedRoute path='/profile' isAllowed={store.user?.isLogin}
                                 render={(props) => <ProfileView {...props}/>}/>
-                <ProtectedRoute path='/vocabulary' isAllowed={store.user?.isLogin} render={() => <VocabularyView/>}/>
+                <ProtectedRoute path='/vocabulary/:id' isAllowed={store.user?.isLogin}
+                                render={(props) => <VocabularyView {...props}/>}/>
+                <ProtectedRoute path='/vocabulary' isAllowed={store.user?.isLogin}
+                                render={(props) => <VocabularyListView {...props}/>}/>
                 <ProtectedRoute path='/login' isAllowed={!store.user?.isLogin}
                                 render={(props) => <LoginView {...props}/>}/>
                 <Route path='/' component={Home} exact/>

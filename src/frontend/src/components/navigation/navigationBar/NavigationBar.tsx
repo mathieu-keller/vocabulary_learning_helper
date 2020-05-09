@@ -11,10 +11,11 @@ const NavigationBar = (props: RouteComponentProps): JSX.Element => {
         <Tab label={"Login"} icon={<AccountCircle/>} value={'/login'}/>;
     const vocabularyTab = store.user?.isLogin ?
         <Tab label="vocabulary" icon={<Translate/>} value={'/vocabulary'}/> : null;
+
     return (
         <AppBar position="static">
             <Toolbar>
-                <Tabs className={classes.tabs} value={props.location.pathname}
+                <Tabs className={classes.tabs} value={'/' + props.location.pathname.split('/', 2)[1]}
                       onChange={(e, v) => props.history.push(v)}>
                     <Tab label="Home" icon={<Home/>} value={'/'}/>
                     {vocabularyTab}

@@ -37,7 +37,6 @@
   },
   "scripts": {
     "run": "webpack-dev-server",
-    "build:dev": "webpack",
     "build:prod": "webpack --env.NODE_ENV='production'",
     "build:analyze": "webpack --env.NODE_ENV='production' --env.ANALYZE=true",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src --color",

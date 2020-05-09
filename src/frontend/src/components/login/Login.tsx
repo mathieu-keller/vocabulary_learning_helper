@@ -24,6 +24,7 @@ const Login = ({loginData, onChange, onSubmit}: LoginProps): JSX.Element => {
                 <Grid item md={true} sm={true} xs={true}>
                     <TextField label="Username" type="text"
                                onChange={(e) => onChange('userName', e.target.value)}
+                               onKeyDown={onKeyDownHandler}
                                value={loginData.userName} fullWidth autoFocus required/>
                 </Grid>
             </Grid>

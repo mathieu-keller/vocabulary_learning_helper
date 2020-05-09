@@ -18,6 +18,7 @@ func main() {
 	r := mux.NewRouter()
 	resource.InitAuthorized(r)
 	resource.InitLogin(r)
+	resource.InitVocabularyListResource(r)
 	resource.InitVocabularyResource(r)
 	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(dir))))
 	err := http.ListenAndServe(":8080", handlers.CompressHandler(r))

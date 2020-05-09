@@ -5,7 +5,7 @@ import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import DeleteForeverOutlinedIcon from '@material-ui/icons/DeleteForeverOutlined';
 import AddIcon from '@material-ui/icons/Add';
 
-type Column = { title: string; field: string; width?: string }
+type Column = { title: string; field: string; width?: string; }
 
 type GridProps<d extends dataType> = {
     columns: Column[];
@@ -13,6 +13,7 @@ type GridProps<d extends dataType> = {
     setEditHandler: (data: d) => void;
     addRowHandler: () => void;
     deleteHandler: (data: d) => void;
+    onDoubleClick?: (data: d) => void;
 }
 
 type dataType = { id?: string; [key: string]: string | undefined };
@@ -46,15 +47,17 @@ function Grid<d extends dataType>(props: GridProps<d>): JSX.Element {
         } else {
             row = <>{gridData[c.field]}</>;
         }
-        return <TableCell className={classes.cell} style={cellStyle} key={c.field}>{row}</TableCell>;
+        return <TableCell className={classes.cell} style={cellStyle}
+                          key={c.field}>{row}</TableCell>;
     };
 
-    const {addRowHandler, columns, data} = props;
+    const {addRowHandler, columns, data, onDoubleClick} = props;
     const header = columns.map(c => <TableCell className={classes.head + " " + classes.cell}
                                                style={c.width ? {maxWidth: c.width, width: c.width} : {}}
                                                key={c.field}>{c.title}</TableCell>);
     const rows = sortData(data).map((d, i) => {
-        return <TableRow className={classes.row} key={d.id ?? i}>{columns.map(c => getRow(c, d))}</TableRow>;
+        return <TableRow onDoubleClick={() => onDoubleClick ? onDoubleClick(d) : null} className={classes.row}
+                         key={d.id ?? i}>{columns.map(c => getRow(c, d))}</TableRow>;
     });
     return (<>
         <div aria-label='add entry' title='add entry' onClick={addRowHandler} style={{float: 'right'}}>

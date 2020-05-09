@@ -32,3 +32,9 @@ func GetDatabase() *mongo.Database {
 	connectToDatabase()
 	return database
 }
+
+func CloseCursor(ctx context.Context, cur *mongo.Cursor) {
+	if err := cur.Close(ctx); err != nil {
+		log.Print(err)
+	}
+}

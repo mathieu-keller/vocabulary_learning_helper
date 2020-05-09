@@ -18,9 +18,9 @@ const (
 )
 
 func InitVocabularyResource(r *mux.Router) {
-	const path = "/vocab"
+	const path = "/vocabulary"
 	r.Handle(path, isAuthorized(insertVocab)).Methods(http.MethodPost)
-	r.Handle(path, isAuthorized(getVocab)).Methods(http.MethodGet)
+	r.Handle(path+"/{id}", isAuthorized(getVocab)).Methods(http.MethodGet)
 	r.Handle(path, isAuthorized(deleteVocab)).Methods(http.MethodDelete)
 }
 
@@ -54,10 +54,11 @@ func insertVocab(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getVocab(w http.ResponseWriter, _ *http.Request) {
+func getVocab(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
 	w.Header().Set(ContentType, ContentTypeJSON)
 	w.WriteHeader(http.StatusOK)
-	vocabs, err := vocabulary.GetVocabs()
+	vocabs, err := vocabulary.GetVocabs(id)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
