@@ -10,6 +10,11 @@ type LoginProps = {
 };
 
 const Login = ({loginData, onChange, onSubmit}: LoginProps): JSX.Element => {
+    const onKeyDownHandler = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+        if (e.keyCode === 13) {
+            onSubmit();
+        }
+    };
     return (
         <Paper className={classes.paper}>
             <Grid className={classes.login} container spacing={8} alignItems="flex-end">
@@ -28,6 +33,7 @@ const Login = ({loginData, onChange, onSubmit}: LoginProps): JSX.Element => {
                 </Grid>
                 <Grid item md={true} sm={true} xs={true}>
                     <TextField label="Password" type="password"
+                               onKeyDown={onKeyDownHandler}
                                onChange={(e) => onChange('password', e.target.value)}
                                value={loginData.password} fullWidth required/>
                 </Grid>

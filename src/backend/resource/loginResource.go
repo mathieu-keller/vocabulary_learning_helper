@@ -70,11 +70,11 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 func checkUserCredentials(dbUser *user.User, loginData LoginData) error {
 	if dbUser == nil {
-		return errors.New("unauthorized")
+		return errors.New("credentials wrong")
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(loginData.Password)); err != nil {
 		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-			return errors.New("unauthorized")
+			return errors.New("credentials wrong")
 		}
 		return err
 	}
