@@ -1,6 +1,6 @@
 import React from 'react';
-import Backdrop from "../Backdrop/Backdrop";
-import classes from "./EditModal.module.scss";
+import Backdrop from "../backdrop/Backdrop";
+import classes from "./Modal.module.scss";
 
 export type ModalWindowProps = {
     show: boolean;

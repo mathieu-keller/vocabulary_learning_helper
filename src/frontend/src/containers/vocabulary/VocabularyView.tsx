@@ -1,8 +1,9 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import Grid from "../../components/ui/Grid/Grid";
+import Grid from "../../components/ui/grid/Grid";
 import {deleteCall, get, post} from "../../utility/restCaller";
-import VocabularyEditModal from "../../components/ui/Modal/VocabularyEditModal";
+import VocabularyEditModal from "../../components/ui/modal/VocabularyEditModal";
 import {RouteComponentProps} from "react-router-dom";
+import {Paper} from "@material-ui/core";
 
 export type Vocab = {
     id?: string;
@@ -75,10 +76,10 @@ const VocabularyView = (props: RouteComponentProps<{ id: string }>): JSX.Element
         />);
     }, [editData, showEditModal]);
 
-    return (<>
+    return (<Paper>
         {editModal}
         {grid}
-    </>);
+    </Paper>);
 };
 
 export default VocabularyView;

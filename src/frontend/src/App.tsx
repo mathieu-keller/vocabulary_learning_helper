@@ -12,6 +12,7 @@ const VocabularyListView = lazy(() => import('./containers/vocabulary/Vocabulary
 const VocabularyView = lazy(() => import('./containers/vocabulary/VocabularyView'));
 const LoginView = lazy(() => import('./containers/login/LoginView'));
 const ProfileView = lazy(() => import('./containers/profile/ProfileView'));
+const TestSettings = lazy(() => import('./containers/learn/test/TestSettings'));
 const App = (): JSX.Element => {
     const [store, dispatch] = useStore();
     const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
@@ -24,7 +25,7 @@ const App = (): JSX.Element => {
     }, []);
     useEffect(() => {
         if (store.user?.isLogin) {
-            setTimer(setInterval(() => get<{}>('/refresh-token'), 900000));//15 minutes
+            setTimer(setInterval(() => get<{}>('/refresh-token'), 450000));//7,5 minutes
         } else if (timer) {
             clearInterval(timer);
         }
@@ -40,6 +41,8 @@ const App = (): JSX.Element => {
                                 render={(props) => <VocabularyView {...props}/>}/>
                 <ProtectedRoute path='/vocabulary' isAllowed={store.user?.isLogin}
                                 render={(props) => <VocabularyListView {...props}/>}/>
+                <ProtectedRoute path='/learn' isAllowed={store.user?.isLogin}
+                                render={() => <TestSettings/>}/>
                 <ProtectedRoute path='/login' isAllowed={!store.user?.isLogin}
                                 render={(props) => <LoginView {...props}/>}/>
                 <Route path='/' component={Home} exact/>

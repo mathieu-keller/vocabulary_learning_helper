@@ -1,8 +1,9 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {deleteCall, get, post} from "../../utility/restCaller";
-import Grid from "../../components/ui/Grid/Grid";
 import {RouteComponentProps} from "react-router-dom";
-import VocabularyListEditModal from "../../components/ui/Modal/VocabularyListEditModal";
+import VocabularyListEditModal from "../../components/ui/modal/VocabularyListEditModal";
+import Grid from "../../components/ui/grid/Grid";
+import {Paper} from "@material-ui/core";
 
 export type VocabularyList = {
     id?: string;
@@ -76,10 +77,10 @@ const VocabularyListView = (props: RouteComponentProps): JSX.Element => {
         />);
     }, [editData, showEditModal]);
     return (
-        <div>
+        <Paper>
             {grid}
             {editModal}
-        </div>
+        </Paper>
     );
 };
 

@@ -65,6 +65,7 @@ func isTokenValid(r *http.Request) bool {
 		}
 		token, err := getToken(jwtToken)
 		if err != nil {
+			log.Println(err)
 			return false
 		}
 		return token != nil && token.Valid
@@ -95,7 +96,6 @@ func GenerateJWT() (string, error) {
 	if err != nil {
 		return "", err
 	}
-
 	return tokenString, nil
 }
 
