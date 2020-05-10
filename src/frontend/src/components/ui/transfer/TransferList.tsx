@@ -18,14 +18,15 @@ type ValueObj = { value: string; name: string };
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
+            height: '100%',
             margin: 'auto',
         },
         cardHeader: {
             padding: theme.spacing(1, 2),
         },
         list: {
-            width: 200,
-            height: 230,
+            width: '100%',
+            height: '100%',
             backgroundColor: theme.palette.background.paper,
             overflow: 'auto',
         },
@@ -54,10 +55,11 @@ type TransferListProps = {
     setLeft: (value: ValueObj[]) => void;
     right: ValueObj[];
     setRight: (value: ValueObj[]) => void;
+    leftTitle: string;
+    rightTitle: string;
 };
 
-const TransferList = ({checked, setChecked, left, setLeft, right, setRight}: TransferListProps): JSX.Element => {
-    const classes = useStyles();
+const TransferList = ({checked, setChecked, left, setLeft, right, setRight, leftTitle, rightTitle}: TransferListProps): JSX.Element => {
 
     const leftChecked = intersection(checked, left);
     const rightChecked = intersection(checked, right);
@@ -96,9 +98,9 @@ const TransferList = ({checked, setChecked, left, setLeft, right, setRight}: Tra
         setRight(not(right, rightChecked));
         setChecked(not(checked, rightChecked));
     };
-
+    const classes = useStyles();
     const customList = (title: React.ReactNode, items: ValueObj[]): JSX.Element => (
-        <Card>
+        <Card className={classes.root}>
             <CardHeader
                 className={classes.cardHeader}
                 avatar={
@@ -114,7 +116,7 @@ const TransferList = ({checked, setChecked, left, setLeft, right, setRight}: Tra
                 subheader={`${numberOfChecked(items)}/${items.length} selected`}
             />
             <Divider/>
-            <List className={classes.list} dense component="div" role="list">
+            <List dense component="div" role="list" className={classes.list}>
                 {items.map((valueObj: ValueObj) => {
                     const {value, name} = valueObj;
                     const labelId = `transfer-list-all-item-${value}-label`;
@@ -139,14 +141,13 @@ const TransferList = ({checked, setChecked, left, setLeft, right, setRight}: Tra
     );
 
     return (
-        <Grid container spacing={2} justify="center" alignItems="center" className={classes.root}>
-            <Grid item>{customList('Choices', left)}</Grid>
-            <Grid item>
+        <Grid container justify="flex-start" alignItems="stretch">
+            <Grid item xs={5}>{customList(leftTitle, left)}</Grid>
+            <Grid item xs={2} style={{display: 'flex'}} alignItems="center">
                 <Grid container direction="column" alignItems="center">
                     <Button
                         variant="outlined"
                         size="small"
-                        className={classes.button}
                         onClick={handleCheckedRight}
                         disabled={leftChecked.length === 0}
                         aria-label="move selected right"
@@ -156,7 +157,6 @@ const TransferList = ({checked, setChecked, left, setLeft, right, setRight}: Tra
                     <Button
                         variant="outlined"
                         size="small"
-                        className={classes.button}
                         onClick={handleCheckedLeft}
                         disabled={rightChecked.length === 0}
                         aria-label="move selected left"
@@ -165,7 +165,7 @@ const TransferList = ({checked, setChecked, left, setLeft, right, setRight}: Tra
                     </Button>
                 </Grid>
             </Grid>
-            <Grid item>{customList('Chosen', right)}</Grid>
+            <Grid item xs={5}>{customList(rightTitle, right)}</Grid>
         </Grid>
     );
 };
