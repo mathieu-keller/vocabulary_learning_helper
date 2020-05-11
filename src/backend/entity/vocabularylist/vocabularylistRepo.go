@@ -24,15 +24,10 @@ func GetVocabularyList() ([]VocabularyList, error) {
 		return nil, err
 	}
 	defer database.CloseCursor(ctx, cur)
-	returnValue := make([]VocabularyList, 0, 20)
-	for cur.Next(ctx) {
-		var result VocabularyList
-		err := cur.Decode(&result)
-		if err != nil {
-			log.Println(err)
-			return nil, err
-		}
-		returnValue = append(returnValue, result)
+	var returnValue []VocabularyList
+	if err := cur.All(ctx, &returnValue); err != nil {
+		log.Println(err)
+		return nil, err
 	}
 	if err := cur.Err(); err != nil {
 		log.Println(err)

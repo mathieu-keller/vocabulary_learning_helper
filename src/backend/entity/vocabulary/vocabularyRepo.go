@@ -32,17 +32,8 @@ func GetVocabs(listID string) ([]Vocab, error) {
 		return nil, err
 	}
 	defer database.CloseCursor(ctx, cur)
-	returnValue := make([]Vocab, 0, 20)
-	for cur.Next(ctx) {
-		var result Vocab
-		err := cur.Decode(&result)
-		if err != nil {
-			log.Println(err)
-			return nil, err
-		}
-		returnValue = append(returnValue, result)
-	}
-	if err := cur.Err(); err != nil {
+	returnValue, err := getValuesFromCursor(ctx, cur)
+	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
@@ -115,15 +106,18 @@ func GetRandomVocabularyByListIds(ids []primitive.ObjectID, limit int8) ([]Vocab
 		return nil, err
 	}
 	defer database.CloseCursor(ctx, cur)
-	returnValue := make([]Vocab, 0, 20)
-	for cur.Next(ctx) {
-		var result Vocab
-		err := cur.Decode(&result)
-		if err != nil {
-			log.Println(err)
-			return nil, err
-		}
-		returnValue = append(returnValue, result)
+	returnValue, err := getValuesFromCursor(ctx, cur)
+	if err != nil {
+		return nil, err
+	}
+	return returnValue, nil
+}
+
+func getValuesFromCursor(ctx context.Context, cur *mongo.Cursor) ([]Vocab, error) {
+	var returnValue []Vocab
+	if err := cur.All(ctx, &returnValue); err != nil {
+		log.Println(err)
+		return nil, err
 	}
 	if err := cur.Err(); err != nil {
 		log.Println(err)
