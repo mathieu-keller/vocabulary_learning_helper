@@ -6,7 +6,8 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
-	primitive "go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/afrima/japanese_learning_helper/src/backend/database"
@@ -99,6 +100,36 @@ func DeleteWithListID(listID primitive.ObjectID) error {
 	defer closeCtx()
 	_, err := collection.DeleteMany(ctx, bson.D{{Key: "listID", Value: listID}})
 	return err
+}
+
+func GetRandomVocabularyByListIds(ids []primitive.ObjectID, limit int8) ([]Vocab, error) {
+	collection := database.GetDatabase().Collection("Vocabulary")
+	const duration = 30 * time.Second
+	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
+	defer closeCtx()
+	cur, err := collection.Aggregate(ctx, mongo.Pipeline{
+		bson.D{{Key: "$match", Value: bson.M{"listID": bson.M{"$in": ids}}}},
+		bson.D{{Key: "$sample", Value: bson.M{"size": limit}}},
+	})
+	if err != nil {
+		return nil, err
+	}
+	defer database.CloseCursor(ctx, cur)
+	returnValue := make([]Vocab, 0, 20)
+	for cur.Next(ctx) {
+		var result Vocab
+		err := cur.Decode(&result)
+		if err != nil {
+			log.Println(err)
+			return nil, err
+		}
+		returnValue = append(returnValue, result)
+	}
+	if err := cur.Err(); err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	return returnValue, nil
 }
 
 func (vocabErrors VocabErrors) Error() string {

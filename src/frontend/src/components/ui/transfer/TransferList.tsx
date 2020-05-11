@@ -143,27 +143,29 @@ const TransferList = ({checked, setChecked, left, setLeft, right, setRight, left
     return (
         <Grid container justify="flex-start" alignItems="stretch">
             <Grid item xs={5}>{customList(leftTitle, left)}</Grid>
-            <Grid item xs={2} style={{display: 'flex'}} alignItems="center">
-                <Grid container direction="column" alignItems="center">
-                    <Button
-                        variant="outlined"
-                        size="small"
-                        onClick={handleCheckedRight}
-                        disabled={leftChecked.length === 0}
-                        aria-label="move selected right"
-                    >
-                        &gt;
-                    </Button>
-                    <Button
-                        variant="outlined"
-                        size="small"
-                        onClick={handleCheckedLeft}
-                        disabled={rightChecked.length === 0}
-                        aria-label="move selected left"
-                    >
-                        &lt;
-                    </Button>
-                </Grid>
+            <Grid item xs={2}>
+                <div style={{display: 'flex', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                    <Grid xs={10} container direction="column">
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={handleCheckedRight}
+                            disabled={leftChecked.length === 0}
+                            aria-label="move selected right"
+                        >
+                            &gt;
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={handleCheckedLeft}
+                            disabled={rightChecked.length === 0}
+                            aria-label="move selected left"
+                        >
+                            &lt;
+                        </Button>
+                    </Grid>
+                </div>
             </Grid>
             <Grid item xs={5}>{customList(rightTitle, right)}</Grid>
         </Grid>
