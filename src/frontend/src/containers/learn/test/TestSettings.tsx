@@ -4,8 +4,11 @@ import {get, post} from "../../../utility/restCaller";
 import {VocabularyList} from "../../vocabulary/VocabularyListView";
 import {Button, Grid, Paper, TextField} from "@material-ui/core";
 import {Vocab} from "../../vocabulary/VocabularyView";
+import {useStore} from "../../../store/store";
+import {RouteComponentProps} from "react-router-dom";
 
-const TestSettings = (): JSX.Element => {
+const TestSettings = (props: RouteComponentProps): JSX.Element => {
+    const dispatch = useStore(false)[1];
     const [checked, setChecked] = React.useState<{ value: string; name: string }[]>([]);
     const [left, setLeft] = React.useState<{ value: string; name: string }[]>([]);
     const [right, setRight] = React.useState<{ value: string; name: string }[]>([]);
@@ -16,10 +19,11 @@ const TestSettings = (): JSX.Element => {
         });
     }, []);
     const onSubmit = (): void => {
-        post<{ listIds: string[]; limit: number }, Vocab[]>('/test',
+        post<{ listIds: string[]; limit: number }, Vocab[]>('/generate-test',
             {listIds: right.map(ri => ri.value), limit: maxVocabularyCount},
             (r) => {
-                console.log(r);
+                dispatch('SET_TEST_DATA', r);
+                props.history.push('/learn/test');
             }, 200);
     };
 

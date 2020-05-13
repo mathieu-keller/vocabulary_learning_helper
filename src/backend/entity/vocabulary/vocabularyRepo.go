@@ -17,7 +17,26 @@ type VocabErrors struct {
 	ErrorText string
 }
 
-func GetVocabs(listID string) ([]Vocab, error) {
+func GetVocabularyByIDs(ids []primitive.ObjectID) ([]Vocab, error) {
+	collection := database.GetDatabase().Collection("Vocabulary")
+	const duration = 30 * time.Second
+	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
+	defer closeCtx()
+	cur, err := collection.Find(ctx, bson.D{{Key: "_id", Value: bson.M{"$in": ids}}})
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	defer database.CloseCursor(ctx, cur)
+	returnValue, err := getValuesFromCursor(ctx, cur)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	return returnValue, nil
+}
+
+func GetVocabularyByListID(listID string) ([]Vocab, error) {
 	id, err := primitive.ObjectIDFromHex(listID)
 	if err != nil {
 		return nil, err
@@ -37,11 +56,14 @@ func GetVocabs(listID string) ([]Vocab, error) {
 		log.Println(err)
 		return nil, err
 	}
+	if returnValue == nil {
+		returnValue = make([]Vocab, 0)
+	}
 	return returnValue, nil
 }
 
 func (vocab *Vocab) InsertVocab() error {
-	if vocab.German == "" || (vocab.Japanese == "" && vocab.Kanji == "") {
+	if vocab.German == "" || vocab.Japanese == "" {
 		return VocabErrors{"German and Japanese must be filled"}
 	}
 	collection := database.GetDatabase().Collection("Vocabulary")

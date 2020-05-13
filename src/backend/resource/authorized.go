@@ -36,7 +36,6 @@ func refreshToken(w http.ResponseWriter, _ *http.Request) {
 func checkLogin(w http.ResponseWriter, r *http.Request) {
 	if isTokenValid(r) {
 		w.Header().Set(ContentType, ContentTypeJSON)
-		w.WriteHeader(http.StatusOK)
 		setHTTPOnlyToken(w)
 		fmt.Fprint(w, "{\"login\":true}")
 	} else {

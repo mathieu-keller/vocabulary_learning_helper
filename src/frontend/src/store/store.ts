@@ -1,8 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {UserStore} from "./configureUserStore";
+import {TestStore} from "./configureTestStore";
 
 export type Store = {
     user?: UserStore;
+    test?: TestStore;
 }
 let globalState: Store = {};
 let listeners: React.Dispatch<React.SetStateAction<Store>>[] = [];

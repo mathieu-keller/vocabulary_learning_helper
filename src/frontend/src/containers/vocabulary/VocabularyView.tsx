@@ -9,7 +9,6 @@ export type Vocab = {
     id?: string;
     german: string;
     japanese: string;
-    kanji: string;
     listId: string;
 }
 
@@ -39,9 +38,8 @@ const VocabularyView = (props: RouteComponentProps<{ id: string }>): JSX.Element
             deleteHandler={deleteHandler}
             columns={[
                 {title: '#', field: 'edit'},
-                {title: 'German', field: 'german', width: '33%'},
-                {title: 'Japanese', field: 'japanese', width: '33%'},
-                {title: 'Kanji', field: 'kanji', width: '33%'}
+                {title: 'German', field: 'german', width: '50%'},
+                {title: 'Japanese', field: 'japanese', width: '50%'},
             ]}
             data={vocabs}
         />);
@@ -52,7 +50,7 @@ const VocabularyView = (props: RouteComponentProps<{ id: string }>): JSX.Element
             setShowEditModal(false);
         };
         const onChangeHandler = (field: string, value: string): void => {
-            if (editData && (field === 'german' || field === 'japanese' || field === 'kanji')) {
+            if (editData && (field === 'german' || field === 'japanese')) {
                 const newEditData: Vocab = {...editData};
                 newEditData[field] = value;
                 setEditData(newEditData);

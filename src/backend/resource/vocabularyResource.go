@@ -24,11 +24,68 @@ func InitVocabularyResource(r *mux.Router) {
 	r.Handle(path+"/{id}", isAuthorized(getVocab)).Methods(http.MethodGet)
 	r.Handle(path, isAuthorized(deleteVocab)).Methods(http.MethodDelete)
 	r.Handle("/generate-test", isAuthorized(generateTest)).Methods(http.MethodPost)
+	r.Handle("/check-test", isAuthorized(checkTest)).Methods(http.MethodPost)
 }
 
 type TestRequestBody struct {
 	ListIDs []primitive.ObjectID `json:"listIds"`
 	Limit   int8                 `json:"limit"`
+}
+
+type UserDBVocabs struct {
+	UserJapanese string
+	UserGerman   string
+	DBJapanese   string
+	DBGerman     string
+}
+
+type CorrectTest struct {
+	Vocabs  []UserDBVocabs `json:"vocabs"`
+	Correct int8           `json:"correct"`
+}
+
+func checkTest(w http.ResponseWriter, r *http.Request) {
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	var vocabs []vocabulary.Vocab
+	if err = json.Unmarshal(reqBody, &vocabs); err != nil {
+		log.Println(err)
+		return
+	}
+	vocabularyIds := make([]primitive.ObjectID, 0, len(vocabs))
+	for _, vocab := range vocabs {
+		vocabularyIds = append(vocabularyIds, vocab.ID)
+	}
+	correctVocabs, err := vocabulary.GetVocabularyByIDs(vocabularyIds)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	userDBVocabs := make([]UserDBVocabs, 0, len(correctVocabs))
+	correct := int8(0)
+correct:
+	for _, correctVocab := range correctVocabs {
+		for _, vocab := range vocabs {
+			if correctVocab.ID == vocab.ID {
+				userDBVocabs = append(userDBVocabs, UserDBVocabs{DBGerman: correctVocab.German, DBJapanese: correctVocab.Japanese, UserGerman: vocab.German, UserJapanese: vocab.Japanese})
+				if correctVocab.Japanese == vocab.Japanese {
+					correct++
+				}
+				continue correct
+			}
+		}
+	}
+	correction := CorrectTest{Vocabs: userDBVocabs, Correct: correct}
+	w.Header().Set(ContentType, ContentTypeJSON)
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(correction); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+		log.Print(err)
+	}
 }
 
 func generateTest(w http.ResponseWriter, r *http.Request) {
@@ -41,11 +98,16 @@ func generateTest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	vocabs, err := vocabulary.GetRandomVocabularyByListIds(testReqBody.ListIDs, testReqBody.Limit)
+	vocabs2 := make([]vocabulary.Vocab, 0, len(vocabs))
+	for _, vocab := range vocabs {
+		vocab.Japanese = ""
+		vocabs2 = append(vocabs2, vocab)
+	}
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	sendVocabularies(w, vocabs)
+	sendVocabularies(w, vocabs2)
 }
 
 func insertVocab(w http.ResponseWriter, r *http.Request) {
@@ -67,12 +129,12 @@ func insertVocab(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, err)
 		return
 	}
-	sendVocabulary(w, vocab)
+	sendVocabulary(w, vocab, http.StatusCreated)
 }
 
 func getVocab(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	vocabs, err := vocabulary.GetVocabs(id)
+	vocabs, err := vocabulary.GetVocabularyByListID(id)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
@@ -96,7 +158,7 @@ func deleteVocab(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
-	sendVocabulary(w, vocab)
+	sendVocabulary(w, vocab, http.StatusOK)
 }
 
 func getVocabFromBody(r *http.Request) (vocabulary.Vocab, error) {
@@ -121,9 +183,9 @@ func sendVocabularies(w http.ResponseWriter, vocabs []vocabulary.Vocab) {
 	}
 }
 
-func sendVocabulary(w http.ResponseWriter, vocabs vocabulary.Vocab) {
+func sendVocabulary(w http.ResponseWriter, vocabs vocabulary.Vocab, statusCode int) {
 	w.Header().Set(ContentType, ContentTypeJSON)
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(statusCode)
 	if err := json.NewEncoder(w).Encode(vocabs); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)

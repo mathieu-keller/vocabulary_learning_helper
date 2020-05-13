@@ -39,11 +39,6 @@ const VocabularyEditModal = ({show, modalClosed, editData, saveHandler, cancelHa
                        InputLabelProps={{
                            shrink: true,
                        }}/>
-            <TextField id="kanji" label="Kanji" variant="filled" value={editData.kanji} style={{width: '100%'}}
-                       onKeyDown={onKeyDownHandler} onChange={(e) => onChangeHandler('kanji', e.target.value)}
-                       InputLabelProps={{
-                           shrink: true,
-                       }}/>
             <div style={{float: 'right'}}>
                 <Button variant="contained" onClick={cancelHandler}>Cancel</Button>
                 <Button variant="contained" color="primary" onClick={save}> Save </Button>
