@@ -4,6 +4,7 @@ import {Vocab} from "../../vocabulary/VocabularyView";
 import {Button, Card, CardActions, CardContent, TextField, Typography} from "@material-ui/core";
 import {useStore} from "../../../store/store";
 import {toast} from "react-toastify";
+import {RouteComponentProps} from "react-router-dom";
 
 type TestResultVocab = {
     UserJapanese: string;
@@ -17,7 +18,7 @@ type TestResult = {
     correct: number;
 }
 
-const TestView = (): JSX.Element => {
+const TestView = (props: RouteComponentProps): JSX.Element => {
     const store = useStore()[0];
     const [vocabulary, setVocabulary] = useState<Vocab[]>([]);
     const [index, setIndex] = useState<number>(0);
@@ -30,6 +31,7 @@ const TestView = (): JSX.Element => {
     const submit = (): void => {
         post<Vocab[], TestResult>('/check-test', vocabulary, (r) => {
             toast.success(`${r.correct}/${vocabulary.length}`);
+            props.history.push('/learn');
         }, 200);
     };
     const onChange = (vocab: Vocab, field: 'german' | 'japanese', value: string): void => {
@@ -58,7 +60,7 @@ const TestView = (): JSX.Element => {
                 <Typography variant="h5" component="h2">
                     {selectedVocabulary.german}
                 </Typography>
-                <Typography variant="body2" component="p">
+                <Typography variant="body2" component="div">
                     <TextField label='Japanese'
                                style={{width: '100%'}}
                                onChange={(e) => onChange(selectedVocabulary, 'japanese', e.target.value)}
