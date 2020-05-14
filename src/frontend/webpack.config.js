@@ -66,14 +66,6 @@ module.exports = env => {
                             }
                         }],
                 },
-                {
-                    test: /\.(ico|png|jpe?g|gif|webmanifest)$/i,
-                    use: [
-                        {
-                            loader: 'file-loader',
-                        },
-                    ],
-                },
             ]
         },
         resolve: {

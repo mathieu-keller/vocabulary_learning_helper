@@ -23,8 +23,8 @@ func InitVocabularyResource(r *mux.Router) {
 	r.Handle(path, isAuthorized(insertVocab)).Methods(http.MethodPost)
 	r.Handle(path+"/{id}", isAuthorized(getVocab)).Methods(http.MethodGet)
 	r.Handle(path, isAuthorized(deleteVocab)).Methods(http.MethodDelete)
-	r.Handle("/generate-test", isAuthorized(generateTest)).Methods(http.MethodPost)
-	r.Handle("/check-test", isAuthorized(checkTest)).Methods(http.MethodPost)
+	r.HandleFunc("/generate-test", generateTest).Methods(http.MethodPost)
+	r.HandleFunc("/check-test", checkTest).Methods(http.MethodPost)
 }
 
 type TestRequestBody struct {

@@ -23,6 +23,7 @@ const NavigationBar = (props: RouteComponentProps): JSX.Element => {
             <Tabs className={classes.tabs} value={'/' + props.location.pathname.split('/', 2)[1]}
                   onChange={(e, v) => props.history.push(v)}>
                 <Tab label="Home" icon={<Home/>} value={'/'}/>
+                <Tab label="Learn" icon={<School/>} value={'/learn'}/>
                 <Tab label="Login" icon={<AccountCircle/>} value={'/login'}/>
             </Tabs>
         );
