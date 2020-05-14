@@ -7,10 +7,11 @@ import TestResultView from "../../../components/test/TestResultView";
 import {RouteComponentProps} from "react-router-dom";
 
 export type TestResultVocab = {
-    UserJapanese: string;
-    UserGerman: string;
-    DBJapanese: string;
-    DBGerman: string;
+    id: string;
+    userJapanese: string;
+    userGerman: string;
+    dbJapanese: string;
+    dbGerman: string;
 }
 
 type TestResult = {

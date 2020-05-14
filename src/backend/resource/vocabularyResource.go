@@ -33,10 +33,11 @@ type TestRequestBody struct {
 }
 
 type UserDBVocabs struct {
-	UserJapanese string
-	UserGerman   string
-	DBJapanese   string
-	DBGerman     string
+	ID           primitive.ObjectID `json:"id"`
+	UserJapanese string             `json:"userJapanese"`
+	UserGerman   string             `json:"userGerman"`
+	DBJapanese   string             `json:"dbJapanese"`
+	DBGerman     string             `json:"dbGerman"`
 }
 
 type CorrectTest struct {
@@ -70,7 +71,7 @@ correct:
 	for _, correctVocab := range correctVocabs {
 		for _, vocab := range vocabs {
 			if correctVocab.ID == vocab.ID {
-				userDBVocabs = append(userDBVocabs, UserDBVocabs{DBGerman: correctVocab.German, DBJapanese: correctVocab.Japanese, UserGerman: vocab.German, UserJapanese: vocab.Japanese})
+				userDBVocabs = append(userDBVocabs, UserDBVocabs{ID: correctVocab.ID, DBGerman: correctVocab.German, DBJapanese: correctVocab.Japanese, UserGerman: vocab.German, UserJapanese: vocab.Japanese})
 				if correctVocab.Japanese == vocab.Japanese {
 					correct++
 				}

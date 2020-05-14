@@ -10,21 +10,21 @@ type TestResultViewProps = {
 const TestResultView = ({vocabs, correct}: TestResultViewProps): JSX.Element => {
     const getTextField = (vocab: TestResultVocab): JSX.Element | null => {
         let germanError, japaneseError = false;
-        if (vocab.DBGerman !== vocab.UserGerman) {
+        if (vocab.dbGerman !== vocab.userGerman) {
             germanError = true;
         }
-        if (vocab.DBJapanese !== vocab.UserJapanese) {
+        if (vocab.dbJapanese !== vocab.userJapanese) {
             japaneseError = true;
         }
         if (germanError || japaneseError) {
-            return (<>
+            return (<React.Fragment key={vocab.id}>
                     <Grid item xs={6}>
                         <TextField
                             style={{width: '100%'}}
                             error={germanError}
                             label="German"
-                            defaultValue={vocab.UserGerman}
-                            helperText={germanError ? vocab.DBGerman : ' '}
+                            defaultValue={vocab.userGerman}
+                            helperText={germanError ? vocab.dbGerman : ' '}
                             variant="filled"
                             disabled
                         />
@@ -34,13 +34,13 @@ const TestResultView = ({vocabs, correct}: TestResultViewProps): JSX.Element => 
                             style={{width: '100%'}}
                             error={japaneseError}
                             label="Japanese"
-                            defaultValue={vocab.UserJapanese}
-                            helperText={japaneseError ? vocab.DBJapanese : ' '}
+                            defaultValue={vocab.userJapanese}
+                            helperText={japaneseError ? vocab.dbJapanese : ' '}
                             variant="filled"
                             disabled
                         />
                     </Grid>
-                </>
+                </React.Fragment>
             );
         }
         return null;
