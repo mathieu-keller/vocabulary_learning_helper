@@ -13,6 +13,7 @@ export type Vocab = {
 }
 
 const VocabularyView = (props: RouteComponentProps<{ id: string }>): JSX.Element => {
+    document.title = 'Trainer - Vocabulary';
     const listId = props.match.params.id;
     const emptyEditData = {german: '', japanese: '', kanji: '', listId: listId};
     const [vocabs, setVocabs] = useState<Vocab[]>([]);

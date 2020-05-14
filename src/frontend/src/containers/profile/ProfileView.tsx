@@ -5,6 +5,7 @@ import {post} from "../../utility/restCaller";
 import {RouteComponentProps} from "react-router-dom";
 
 const ProfileView = (props: RouteComponentProps): JSX.Element => {
+    document.title = 'Trainer - Profile';
     const dispatch = useStore(false)[1];
     const logoutHandler = (): void => {
         post<{}, { logout: boolean }>('/logout', null, (r) => {

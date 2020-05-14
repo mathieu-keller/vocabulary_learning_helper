@@ -5,6 +5,7 @@ import {useStore} from "../../store/store";
 import {RouteComponentProps} from "react-router-dom";
 
 const LoginView = (props: RouteComponentProps): JSX.Element => {
+    document.title = 'Trainer - Login';
     const [loginData, setLoginData] = useState({userName: "", password: ""});
     const dispatch = useStore(false)[1];
     const onChange = (field: 'userName' | 'password', value: string): void => {

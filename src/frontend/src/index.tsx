@@ -4,7 +4,6 @@ import {HashRouter} from "react-router-dom";
 import configureUserStore from './store/configureUserStore';
 import configureTestStore from './store/configureTestStore';
 import {Skeleton} from "@material-ui/lab";
-
 const App = lazy(() => import('./App'));
 
 configureUserStore();

@@ -8,6 +8,7 @@ import {useStore} from "../../../store/store";
 import {RouteComponentProps} from "react-router-dom";
 
 const TestSettings = (props: RouteComponentProps): JSX.Element => {
+    document.title = 'Trainer - Test Settings';
     const dispatch = useStore(false)[1];
     const [checked, setChecked] = React.useState<{ value: string; name: string }[]>([]);
     const [left, setLeft] = React.useState<{ value: string; name: string }[]>([]);

@@ -18,6 +18,7 @@ type TestResult = {
 }
 
 const TestView = (): JSX.Element => {
+    document.title = 'Trainer - Test';
     const store = useStore()[0];
     const [vocabulary, setVocabulary] = useState<Vocab[]>([]);
     const [index, setIndex] = useState<number>(0);
@@ -54,11 +55,14 @@ const TestView = (): JSX.Element => {
         return (<TestResultView vocabs={result.vocabs} correct={result.correct}/>);
     }
     return (
-        <TestCard
-            selectedVocabulary={selectedVocabulary}
-            onChange={onChange}
-            next={next}
-        />
+        <>
+            <h2>{index + 1}/{vocabulary.length}</h2>
+            <TestCard
+                selectedVocabulary={selectedVocabulary}
+                onChange={onChange}
+                next={next}
+            />
+        </>
     );
 };
 

@@ -11,6 +11,7 @@ export type VocabularyList = {
 }
 
 const VocabularyListView = (props: RouteComponentProps): JSX.Element => {
+    document.title = 'Trainer - Vocabulary Lists';
     const [vocabularyLists, setVocabularyLists] = useState<VocabularyList[]>([]);
     const [editData, setEditData] = useState<VocabularyList>({name: ''});
     const [showEditModal, setShowEditModal] = useState<boolean>(false);

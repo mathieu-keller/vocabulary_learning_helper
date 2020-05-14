@@ -66,6 +66,14 @@ module.exports = env => {
                             }
                         }],
                 },
+                {
+                    test: /\.(ico|png|jpe?g|gif|webmanifest)$/i,
+                    use: [
+                        {
+                            loader: 'file-loader',
+                        },
+                    ],
+                },
             ]
         },
         resolve: {
@@ -86,6 +94,7 @@ module.exports = env => {
                     {
                         inject: true,
                         template: "./public/index.html",
+                        favicon: "./public/favicon.ico"
                     }, production ? {
                         minify: {
                             removeComments: true,

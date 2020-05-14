@@ -7,10 +7,10 @@ import {ToastContainer} from "react-toastify";
 import NavigationBar from './components/navigation/navigationBar/NavigationBar';
 import Home from './components/Home';
 import ProtectedRoute from "./components/navigation/route/ProtectedRoute";
+import LoginView from "./containers/login/LoginView";
 
 const VocabularyListView = lazy(() => import('./containers/vocabulary/VocabularyListView'));
 const VocabularyView = lazy(() => import('./containers/vocabulary/VocabularyView'));
-const LoginView = lazy(() => import('./containers/login/LoginView'));
 const ProfileView = lazy(() => import('./containers/profile/ProfileView'));
 const TestSettings = lazy(() => import('./containers/learn/test/TestSettings'));
 const TestView = lazy(() => import('./containers/learn/test/TestView'));

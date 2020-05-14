@@ -19,6 +19,7 @@ const useStyles = makeStyles({
     },
 });
 const Home = (): JSX.Element => {
+    document.title = 'Trainer - Home';
     const classes = useStyles();
     const bull = <span className={classes.bullet}>•</span>;
     return (
