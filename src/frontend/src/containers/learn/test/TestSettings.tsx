@@ -58,7 +58,7 @@ const TestSettings = (props: RouteComponentProps): JSX.Element => {
 
             </Grid>
             <div style={{display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end', width: '100%'}}>
-                <Button onClick={onSubmit} variant="contained" color="primary">
+                <Button onClick={onSubmit} disabled={right.length < 1} variant="contained" color="primary">
                     Start Test
                 </Button>
             </div>

@@ -43,7 +43,7 @@ const App = (): JSX.Element => {
                 <ProtectedRoute path='/vocabulary' isAllowed={store.user?.isLogin}
                                 render={(props) => <VocabularyListView {...props}/>}/>
                 <ProtectedRoute path='/learn/test' isAllowed={true}
-                                render={() => <TestView/>}/>
+                                render={(props) => <TestView {...props}/>}/>
                 <ProtectedRoute path='/learn' isAllowed={true}
                                 render={(props) => <TestSettings {...props}/>}/>
                 <ProtectedRoute path='/login' isAllowed={!store.user?.isLogin}

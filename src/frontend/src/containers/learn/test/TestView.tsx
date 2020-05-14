@@ -4,6 +4,7 @@ import {Vocab} from "../../vocabulary/VocabularyView";
 import {useStore} from "../../../store/store";
 import TestCard from "../../../components/test/TestCard";
 import TestResultView from "../../../components/test/TestResultView";
+import {RouteComponentProps} from "react-router-dom";
 
 export type TestResultVocab = {
     UserJapanese: string;
@@ -17,7 +18,7 @@ type TestResult = {
     correct: number;
 }
 
-const TestView = (): JSX.Element => {
+const TestView = (props: RouteComponentProps): JSX.Element => {
     document.title = 'Trainer - Test';
     const store = useStore()[0];
     const [vocabulary, setVocabulary] = useState<Vocab[]>([]);
@@ -27,6 +28,9 @@ const TestView = (): JSX.Element => {
         const test = store.test;
         if (test) {
             setVocabulary(test.testVocabulary);
+            if (test.testVocabulary.length < 1) {
+                props.history.push('/learn');
+            }
         }
     }, [store.test?.testVocabulary]);
     const submit = (): void => {
