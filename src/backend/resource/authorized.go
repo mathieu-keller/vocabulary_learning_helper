@@ -10,6 +10,8 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
+
+	"github.com/afrima/japanese_learning_helper/src/backend/utility"
 )
 
 type authError struct {
@@ -24,26 +26,26 @@ var cookieKey = []byte(os.Getenv("cookieKey"))
 var tokenKey = []byte(os.Getenv("tokenKey"))
 var s = securecookie.New(cookieKey, nil)
 
-func InitAuthorized(r *mux.Router) {
-	r.Handle("/refresh-token", isAuthorized(refreshToken)).Methods(http.MethodGet)
+func Init(r *mux.Router) {
+	r.Handle("/refresh-token", IsAuthorized(refreshToken)).Methods(http.MethodGet)
 	r.HandleFunc("/check-login", checkLogin).Methods(http.MethodGet)
 }
 
 func refreshToken(w http.ResponseWriter, _ *http.Request) {
-	setHTTPOnlyToken(w)
+	SetHTTPOnlyToken(w)
 }
 
 func checkLogin(w http.ResponseWriter, r *http.Request) {
 	if isTokenValid(r) {
-		w.Header().Set(ContentType, ContentTypeJSON)
-		setHTTPOnlyToken(w)
+		w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
+		SetHTTPOnlyToken(w)
 		fmt.Fprint(w, "{\"login\":true}")
 	} else {
 		fmt.Fprint(w, "{\"login\":false}")
 	}
 }
 
-func isAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
+func IsAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if isTokenValid(r) {
 			endpoint(w, r)
@@ -98,7 +100,7 @@ func GenerateJWT() (string, error) {
 	return tokenString, nil
 }
 
-func setHTTPOnlyToken(w http.ResponseWriter) {
+func SetHTTPOnlyToken(w http.ResponseWriter) {
 	token, err := GenerateJWT()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

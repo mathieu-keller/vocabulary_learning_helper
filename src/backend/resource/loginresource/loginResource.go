@@ -1,4 +1,4 @@
-package resource
+package loginresource
 
 import (
 	"encoding/json"
@@ -13,12 +13,14 @@ import (
 	"github.com/gorilla/mux"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/afrima/japanese_learning_helper/src/backend/entity/user"
+	"github.com/afrima/japanese_learning_helper/src/backend/entity/userentity"
+	"github.com/afrima/japanese_learning_helper/src/backend/resource"
+	"github.com/afrima/japanese_learning_helper/src/backend/utility"
 )
 
-func InitLogin(r *mux.Router) {
+func Init(r *mux.Router) {
 	r.HandleFunc("/login", login).Methods(http.MethodPost)
-	r.Handle("/logout", isAuthorized(logout)).Methods(http.MethodPost)
+	r.Handle("/logout", resource.IsAuthorized(logout)).Methods(http.MethodPost)
 	r.HandleFunc("/registration", registration).Methods(http.MethodPost)
 }
 
@@ -32,7 +34,7 @@ type LoginResponse struct {
 }
 
 func logout(w http.ResponseWriter, _ *http.Request) {
-	w.Header().Set(ContentType, ContentTypeJSON)
+	w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
 	c := http.Cookie{
 		Name:    "token",
 		Value:   "",
@@ -50,7 +52,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
-	dbUser, err := user.GetUser(loginData.UserName)
+	dbUser, err := userentity.GetUser(loginData.UserName)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
@@ -63,12 +65,12 @@ func login(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
-	w.Header().Set(ContentType, ContentTypeJSON)
-	setHTTPOnlyToken(w)
+	w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
+	resource.SetHTTPOnlyToken(w)
 	fmt.Fprint(w, "{\"login\":true}")
 }
 
-func checkUserCredentials(dbUser *user.User, loginData LoginData) error {
+func checkUserCredentials(dbUser *userentity.User, loginData LoginData) error {
 	if dbUser == nil {
 		return errors.New("credentials wrong")
 	}
@@ -102,7 +104,7 @@ func registration(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
-	userInDB, err := user.GetUser(loginData.UserName)
+	userInDB, err := userentity.GetUser(loginData.UserName)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
@@ -120,9 +122,9 @@ func registration(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
-	w.Header().Set(ContentType, ContentTypeJSON)
+	w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
 	w.WriteHeader(http.StatusOK)
-	setHTTPOnlyToken(w)
+	resource.SetHTTPOnlyToken(w)
 	fmt.Fprint(w, "{\"login\":true}")
 }
 
@@ -131,7 +133,7 @@ func saveNewUser(loginData LoginData) error {
 	if err != nil {
 		return err
 	}
-	userToRegister := user.User{UserName: loginData.UserName, Password: string(passwordHash)}
+	userToRegister := userentity.User{UserName: loginData.UserName, Password: string(passwordHash)}
 	if err = userToRegister.Insert(); err != nil {
 		return err
 	}

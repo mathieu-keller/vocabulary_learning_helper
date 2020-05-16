@@ -1,4 +1,4 @@
-package vocabularylist
+package vocabularylistentity
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/afrima/japanese_learning_helper/src/backend/database"
-	"github.com/afrima/japanese_learning_helper/src/backend/entity/vocabulary"
+	"github.com/afrima/japanese_learning_helper/src/backend/entity/vocabularyentity"
 )
 
 func GetVocabularyList() ([]VocabularyList, error) {
@@ -38,7 +38,7 @@ func GetVocabularyList() ([]VocabularyList, error) {
 
 func (vocabularyList *VocabularyList) Insert() error {
 	if vocabularyList.Name == "" {
-		return vocabulary.VocabErrors{ErrorText: "German and Japanese must be filled"}
+		return Error{ErrorText: "Vocabulary list need a name!"}
 	}
 	collection := database.GetDatabase().Collection("VocabularyList")
 	const duration = 30 * time.Second
@@ -80,5 +80,38 @@ func (vocabularyList VocabularyList) Delete() error {
 	if err != nil {
 		return err
 	}
-	return vocabulary.DeleteWithListID(vocabularyList.ID)
+	return vocabularyentity.DeleteWithListID(vocabularyList.ID)
+}
+
+func DeleteWithCategoryID(categoryID primitive.ObjectID) error {
+	collection := database.GetDatabase().Collection("VocabularyList")
+	const duration = 30 * time.Second
+	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
+	defer closeCtx()
+	cur, err := collection.Find(ctx, bson.D{{Key: "_id", Value: categoryID}})
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	defer database.CloseCursor(ctx, cur)
+	var vocabularyLists []VocabularyList
+	if err := cur.All(ctx, &vocabularyLists); err != nil {
+		log.Println(err)
+		return err
+	}
+	if err := cur.Err(); err != nil {
+		log.Println(err)
+		return err
+	}
+	for _, vocabularyList := range vocabularyLists {
+		err = vocabularyentity.DeleteWithListID(vocabularyList.ID)
+		if err != nil {
+			return err
+		}
+		_, err := collection.DeleteOne(ctx, bson.D{{Key: "_id", Value: vocabularyList.ID}})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

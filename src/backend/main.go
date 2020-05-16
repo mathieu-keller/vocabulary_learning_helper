@@ -9,6 +9,10 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/afrima/japanese_learning_helper/src/backend/resource"
+	"github.com/afrima/japanese_learning_helper/src/backend/resource/categoryresource"
+	"github.com/afrima/japanese_learning_helper/src/backend/resource/loginresource"
+	"github.com/afrima/japanese_learning_helper/src/backend/resource/vocabularylistresource"
+	"github.com/afrima/japanese_learning_helper/src/backend/resource/vocabularyresource"
 )
 
 func main() {
@@ -16,10 +20,11 @@ func main() {
 	flag.StringVar(&dir, "dir", "./dist", "the directory to serve files from. Defaults to the current dir")
 	flag.Parse()
 	r := mux.NewRouter()
-	resource.InitAuthorized(r)
-	resource.InitLogin(r)
-	resource.InitVocabularyListResource(r)
-	resource.InitVocabularyResource(r)
+	resource.Init(r)
+	loginresource.Init(r)
+	categoryresource.Init(r)
+	vocabularyresource.Init(r)
+	vocabularylistresource.Init(r)
 	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(dir))))
 	err := http.ListenAndServe(":8080", handlers.CompressHandler(r))
 	if err != nil {

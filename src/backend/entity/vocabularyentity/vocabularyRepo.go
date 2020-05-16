@@ -1,4 +1,4 @@
-package vocabulary
+package vocabularyentity
 
 import (
 	"context"
@@ -13,11 +13,7 @@ import (
 	"github.com/afrima/japanese_learning_helper/src/backend/database"
 )
 
-type VocabErrors struct {
-	ErrorText string
-}
-
-func GetVocabularyByIDs(ids []primitive.ObjectID) ([]Vocab, error) {
+func GetVocabularyByIDs(ids []primitive.ObjectID) ([]Vocabulary, error) {
 	collection := database.GetDatabase().Collection("Vocabulary")
 	const duration = 30 * time.Second
 	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
@@ -36,7 +32,7 @@ func GetVocabularyByIDs(ids []primitive.ObjectID) ([]Vocab, error) {
 	return returnValue, nil
 }
 
-func GetVocabularyByListID(listID string) ([]Vocab, error) {
+func GetVocabularyByListID(listID string) ([]Vocabulary, error) {
 	id, err := primitive.ObjectIDFromHex(listID)
 	if err != nil {
 		return nil, err
@@ -57,25 +53,25 @@ func GetVocabularyByListID(listID string) ([]Vocab, error) {
 		return nil, err
 	}
 	if returnValue == nil {
-		returnValue = make([]Vocab, 0)
+		returnValue = make([]Vocabulary, 0)
 	}
 	return returnValue, nil
 }
 
-func (vocab *Vocab) InsertVocab() error {
-	if vocab.German == "" || vocab.Japanese == "" {
-		return VocabErrors{"German and Japanese must be filled"}
+func (vocabulary *Vocabulary) InsertVocab() error {
+	if len(vocabulary.Values) < 2 {
+		return Error{ErrorText: "2 Values must be filled"}
 	}
 	collection := database.GetDatabase().Collection("Vocabulary")
 	const duration = 30 * time.Second
 	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
 	defer closeCtx()
-	if vocab.ID.IsZero() {
-		vocab.ID = primitive.NewObjectIDFromTimestamp(time.Now())
-		_, err := collection.InsertOne(ctx, vocab)
+	if vocabulary.ID.IsZero() {
+		vocabulary.ID = primitive.NewObjectIDFromTimestamp(time.Now())
+		_, err := collection.InsertOne(ctx, vocabulary)
 		return err
 	}
-	pByte, err := bson.Marshal(vocab)
+	pByte, err := bson.Marshal(vocabulary)
 	if err != nil {
 		return err
 	}
@@ -86,7 +82,7 @@ func (vocab *Vocab) InsertVocab() error {
 		return err
 	}
 	opts := options.Update().SetUpsert(true)
-	filter := bson.D{{Key: "_id", Value: vocab.ID}}
+	filter := bson.D{{Key: "_id", Value: vocabulary.ID}}
 	update := bson.D{{Key: "$set", Value: obj}}
 	_, err = collection.UpdateOne(
 		context.Background(),
@@ -97,12 +93,12 @@ func (vocab *Vocab) InsertVocab() error {
 	return err
 }
 
-func (vocab Vocab) Delete() error {
+func (vocabulary Vocabulary) Delete() error {
 	collection := database.GetDatabase().Collection("Vocabulary")
 	const duration = 30 * time.Second
 	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
 	defer closeCtx()
-	_, err := collection.DeleteOne(ctx, bson.D{{Key: "_id", Value: vocab.ID}})
+	_, err := collection.DeleteOne(ctx, bson.D{{Key: "_id", Value: vocabulary.ID}})
 	return err
 }
 
@@ -115,7 +111,7 @@ func DeleteWithListID(listID primitive.ObjectID) error {
 	return err
 }
 
-func GetRandomVocabularyByListIds(ids []primitive.ObjectID, limit int8) ([]Vocab, error) {
+func GetRandomVocabularyByListIds(ids []primitive.ObjectID, limit int8) ([]Vocabulary, error) {
 	collection := database.GetDatabase().Collection("Vocabulary")
 	const duration = 30 * time.Second
 	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
@@ -135,8 +131,8 @@ func GetRandomVocabularyByListIds(ids []primitive.ObjectID, limit int8) ([]Vocab
 	return returnValue, nil
 }
 
-func getValuesFromCursor(ctx context.Context, cur *mongo.Cursor) ([]Vocab, error) {
-	var returnValue []Vocab
+func getValuesFromCursor(ctx context.Context, cur *mongo.Cursor) ([]Vocabulary, error) {
+	var returnValue []Vocabulary
 	if err := cur.All(ctx, &returnValue); err != nil {
 		log.Println(err)
 		return nil, err
@@ -148,6 +144,11 @@ func getValuesFromCursor(ctx context.Context, cur *mongo.Cursor) ([]Vocab, error
 	return returnValue, nil
 }
 
-func (vocabErrors VocabErrors) Error() string {
-	return vocabErrors.ErrorText
+func (vocabulary *Vocabulary)GetValueByKey(key string) *Value {
+	for _, value := range vocabulary.Values {
+		if value.Key == key {
+			return &value
+		}
+	}
+	return nil
 }
