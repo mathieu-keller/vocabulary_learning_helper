@@ -120,3 +120,9 @@ func SetHTTPOnlyToken(w http.ResponseWriter) {
 		http.SetCookie(w, &cookie)
 	}
 }
+
+func SendError(statusCode int, w http.ResponseWriter, err error) {
+	w.WriteHeader(statusCode)
+	log.Println(err)
+	fmt.Fprint(w, err)
+}
