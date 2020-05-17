@@ -18,7 +18,7 @@ func Init(r *mux.Router) {
 	const path = "/vocabulary-list"
 	r.HandleFunc(path+"/{id}", getVocabularyList).Methods(http.MethodGet)
 	r.HandleFunc(path, insertVocabularyList).Methods(http.MethodPost)
-	r.Handle(path, resource.IsAuthorized(deleteVocabularyList)).Methods(http.MethodDelete)
+	r.Handle(path+"/{id}", resource.IsAuthorized(deleteVocabularyList)).Methods(http.MethodDelete)
 }
 
 func getVocabularyList(w http.ResponseWriter, r *http.Request) {
@@ -70,14 +70,8 @@ func insertVocabularyList(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteVocabularyList(w http.ResponseWriter, r *http.Request) {
-	vocabularyList, err := getVocabularyListFromBody(r)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, err)
-		log.Print(err)
-		return
-	}
-	if err = vocabularyList.Delete(); err != nil {
+	id := mux.Vars(r)["id"]
+	if err := vocabularylistentity.Delete(id); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
 		log.Print(err)
@@ -85,7 +79,7 @@ func deleteVocabularyList(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
 	w.WriteHeader(http.StatusOK)
-	if err = json.NewEncoder(w).Encode(vocabularyList); err != nil {
+	if err := json.NewEncoder(w).Encode(id); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
 		log.Print(err)

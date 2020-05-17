@@ -31,7 +31,7 @@ const VocabularyView = (props: RouteComponentProps<{ categoryID: string; listID:
     useEffect(() => {
         get<Vocab[]>(`/vocabulary/${listId}`, setVocabs);
         get<Category>(`/category/${categoryId}`, (r) => setColumns(r.columns));
-    }, []);
+    }, [listId, categoryId]);
 
     const grid = useMemo(() => {
         const deleteHandler = (data: Vocab): void => {

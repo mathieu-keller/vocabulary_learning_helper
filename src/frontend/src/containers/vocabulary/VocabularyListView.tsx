@@ -25,21 +25,27 @@ const VocabularyListView = (props: RouteComponentProps<{ categoryID: string }>):
                 }
             }
         );
-    }, []);
+    }, [categoryID]);
     const grid = useMemo(() => {
-        const deleteHandler = (data: VocabularyList): void => {
-            deleteCall<VocabularyList, VocabularyList>('/vocabulary-list', data,
-                ((d) => setVocabularyLists(vocabularyLists
-                    .filter(vocabularyList => vocabularyList.id !== d.id))));
+        const deleteHandler = (id?: string): void => {
+            if (id) {
+                deleteCall<{}, string>(`/vocabulary-list/${id}`, {},
+                    ((resId) => setVocabularyLists(vocabularyLists
+                        .filter(vocabularyList => vocabularyList.id !== resId))));
+            }
         };
         const setEditHandler = (data: VocabularyList): void => {
             setShowEditModal(true);
             setEditData(data);
         };
-        const onDoubleClick = (id: string): void => {
-            props.history.push(`/vocabulary/${categoryID}/${id}`);
+        const onDoubleClick = (id?: string): void => {
+            if (id) {
+                props.history.push(`/vocabulary/${categoryID}/${id}`);
+            }
         };
-        return (<CardGrid<VocabularyList[]>
+        return (<CardGrid
+            deleteHandler={deleteHandler}
+            setEditHandler={setEditHandler}
             onClick={onDoubleClick}
             cards={vocabularyLists}
             addAction={() => setEditHandler({name: '', categoryId: categoryID})}

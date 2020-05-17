@@ -75,16 +75,20 @@ func (vocabularyList *VocabularyList) Insert() error {
 	return err
 }
 
-func (vocabularyList VocabularyList) Delete() error {
+func Delete(vocabularyListID string) error {
+	id, err := primitive.ObjectIDFromHex(vocabularyListID)
+	if err != nil {
+		return err
+	}
 	collection := database.GetDatabase().Collection("VocabularyList")
 	const duration = 30 * time.Second
 	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
 	defer closeCtx()
-	_, err := collection.DeleteOne(ctx, bson.D{{Key: "_id", Value: vocabularyList.ID}})
+	_, err = collection.DeleteOne(ctx, bson.D{{Key: "_id", Value: id}})
 	if err != nil {
 		return err
 	}
-	return vocabularyentity.DeleteWithListID(vocabularyList.ID)
+	return vocabularyentity.DeleteWithListID(id)
 }
 
 func DeleteWithCategoryID(categoryID primitive.ObjectID) error {
@@ -92,7 +96,7 @@ func DeleteWithCategoryID(categoryID primitive.ObjectID) error {
 	const duration = 30 * time.Second
 	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
 	defer closeCtx()
-	cur, err := collection.Find(ctx, bson.D{{Key: "_id", Value: categoryID}})
+	cur, err := collection.Find(ctx, bson.D{{Key: "categoryID", Value: categoryID}})
 	if err != nil {
 		log.Println(err)
 		return err

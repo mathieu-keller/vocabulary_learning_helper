@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Paper} from "@material-ui/core";
-import {get, post} from "../../utility/restCaller";
+import {deleteCall, get, post} from "../../utility/restCaller";
 import CategoryEditModal from "../../components/ui/modal/CategoryEditModal";
 import CardGrid from "../../components/ui/grid/CardGrid";
 import {RouteComponentProps} from "react-router-dom";
@@ -56,6 +56,13 @@ const CategoryView = (props: RouteComponentProps): JSX.Element => {
         }
     };
 
+    const deleteHandler = (id?: string): void => {
+        if (id) {
+            deleteCall<{}, string>(`/category/${id}`, {},
+                ((resId) => setCategories(categories.filter(category => category.id !== resId))));
+        }
+    };
+
     return (<>
             <CategoryEditModal
                 addColumn={addColumn}
@@ -67,6 +74,7 @@ const CategoryView = (props: RouteComponentProps): JSX.Element => {
                 modalClosed={onClose}/>
             <Paper>
                 <CardGrid
+                    deleteHandler={deleteHandler}
                     onClick={onClick}
                     title='Choose Category:'
                     cards={categories}

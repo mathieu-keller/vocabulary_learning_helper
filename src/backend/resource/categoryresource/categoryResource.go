@@ -19,7 +19,7 @@ func Init(r *mux.Router) {
 	r.HandleFunc(path, get).Methods(http.MethodGet)
 	r.HandleFunc(path+"/{id}", getByID).Methods(http.MethodGet)
 	r.HandleFunc(path, insert).Methods(http.MethodPost)
-	r.Handle(path, resource.IsAuthorized(deleteCategory)).Methods(http.MethodDelete)
+	r.Handle(path+"/{id}", resource.IsAuthorized(deleteCategory)).Methods(http.MethodDelete)
 }
 
 func getByID(w http.ResponseWriter, r *http.Request) {
@@ -88,14 +88,8 @@ func insert(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteCategory(w http.ResponseWriter, r *http.Request) {
-	body, err := getCategoryFromBody(r)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, err)
-		log.Print(err)
-		return
-	}
-	if err = body.Delete(); err != nil {
+	id := mux.Vars(r)["id"]
+	if err := categoryentity.Delete(id); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
 		log.Print(err)
@@ -103,7 +97,7 @@ func deleteCategory(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
 	w.WriteHeader(http.StatusOK)
-	if err = json.NewEncoder(w).Encode(body); err != nil {
+	if err := json.NewEncoder(w).Encode(id); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
 		log.Print(err)

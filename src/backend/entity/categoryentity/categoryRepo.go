@@ -90,14 +90,18 @@ func (category *Category) Insert() error {
 	return err
 }
 
-func (category Category) Delete() error {
+func Delete(categoryID string) error {
+	id, err := primitive.ObjectIDFromHex(categoryID)
+	if err != nil {
+		return err
+	}
 	collection := database.GetDatabase().Collection("Category")
 	const duration = 30 * time.Second
 	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
 	defer closeCtx()
-	_, err := collection.DeleteOne(ctx, bson.D{{Key: "_id", Value: category.ID}})
+	_, err = collection.DeleteOne(ctx, bson.D{{Key: "_id", Value: id}})
 	if err != nil {
 		return err
 	}
-	return vocabularylistentity.DeleteWithCategoryID(category.ID)
+	return vocabularylistentity.DeleteWithCategoryID(id)
 }
