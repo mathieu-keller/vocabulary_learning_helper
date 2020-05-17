@@ -25,20 +25,24 @@ const VocabularyEditModal = ({show, modalClosed, editData, saveHandler, cancelHa
         }
     };
 
+    const TextFields = editData.values.map(value => (
+        <TextField key={value.key}
+                   inputRef={firstInput}
+                   id={value.key}
+                   label={value.key}
+                   variant="filled"
+                   value={value.value}
+                   style={{width: '100%'}}
+                   onKeyDown={onKeyDownHandler}
+                   onChange={(e) => onChangeHandler(value.key, e.target.value)}
+                   InputLabelProps={{
+                       shrink: true,
+                   }}
+        />
+    ));
+
     return (<ModalWindow modalClosed={modalClosed} show={show}>
-            <TextField inputRef={firstInput} id="german" label="German" variant="filled" value={editData.german}
-                       style={{width: '100%'}}
-                       onKeyDown={onKeyDownHandler} onChange={(e) => onChangeHandler('german', e.target.value)}
-                       InputLabelProps={{
-                           shrink: true,
-                       }}
-            />
-            <TextField id="japanese" label="Japanese" variant="filled" value={editData.japanese}
-                       style={{width: '100%'}}
-                       onKeyDown={onKeyDownHandler} onChange={(e) => onChangeHandler('japanese', e.target.value)}
-                       InputLabelProps={{
-                           shrink: true,
-                       }}/>
+            {TextFields}
             <div style={{float: 'right'}}>
                 <Button variant="contained" onClick={cancelHandler}>Cancel</Button>
                 <Button variant="contained" color="primary" onClick={save}> Save </Button>

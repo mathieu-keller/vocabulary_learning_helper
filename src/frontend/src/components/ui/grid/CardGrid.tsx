@@ -24,7 +24,7 @@ function CardGrid<c extends { id?: string; name: string }[]>(props: CardGridProp
         </Grid>
     ));
     return (<>
-            <h1>Choose a category:</h1>
+            <h1>{props.title}</h1>
             <hr/>
             <Grid container style={{width: '100%', margin: '0'}} spacing={1} direction="row"
                   justify="flex-start"

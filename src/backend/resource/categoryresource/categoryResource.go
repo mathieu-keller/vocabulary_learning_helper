@@ -17,8 +17,27 @@ import (
 func Init(r *mux.Router) {
 	const path = "/category"
 	r.HandleFunc(path, get).Methods(http.MethodGet)
+	r.HandleFunc(path+"/{id}", getByID).Methods(http.MethodGet)
 	r.HandleFunc(path, insert).Methods(http.MethodPost)
 	r.Handle(path, resource.IsAuthorized(deleteCategory)).Methods(http.MethodDelete)
+}
+
+func getByID(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
+	w.WriteHeader(http.StatusOK)
+	categoryList, err := categoryentity.GetCategoryByID(id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+		log.Print(err)
+		return
+	}
+	if err = json.NewEncoder(w).Encode(categoryList); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+		log.Print(err)
+	}
 }
 
 func get(w http.ResponseWriter, _ *http.Request) {

@@ -37,6 +37,24 @@ func GetCategory() ([]Category, error) {
 	return returnValue, nil
 }
 
+func GetCategoryByID(categoryID string) (Category, error) {
+	id, err := primitive.ObjectIDFromHex(categoryID)
+	if err != nil {
+		return Category{}, err
+	}
+	collection := database.GetDatabase().Collection("Category")
+	const duration = 30 * time.Second
+	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
+	defer closeCtx()
+	var returnValue Category
+	err = collection.FindOne(ctx, bson.D{{Key: "_id", Value: id}}).Decode(&returnValue)
+	if err != nil {
+		log.Println(err)
+		return Category{}, err
+	}
+	return returnValue, nil
+}
+
 func (category *Category) Insert() error {
 	if category.Name == "" || len(category.Columns) < 2 {
 		return vocabularyentity.Error{ErrorText: "Category need a name and 2 or more columns!"}

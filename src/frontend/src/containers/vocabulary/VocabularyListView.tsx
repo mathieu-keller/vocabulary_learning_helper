@@ -2,13 +2,13 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {deleteCall, get, post} from "../../utility/restCaller";
 import {RouteComponentProps} from "react-router-dom";
 import VocabularyListEditModal from "../../components/ui/modal/VocabularyListEditModal";
-import Grid from "../../components/ui/grid/Grid";
 import {Paper} from "@material-ui/core";
+import CardGrid from "../../components/ui/grid/CardGrid";
 
 export type VocabularyList = {
     id?: string;
     name: string;
-    categoryId: string;
+    categoryId?: string;
 }
 
 const VocabularyListView = (props: RouteComponentProps<{ categoryID: string }>): JSX.Element => {
@@ -36,20 +36,14 @@ const VocabularyListView = (props: RouteComponentProps<{ categoryID: string }>):
             setShowEditModal(true);
             setEditData(data);
         };
-        const onDoubleClick = (data: VocabularyList): void => {
-            props.history.push(`/vocabulary/${categoryID}/${data.id}`);
+        const onDoubleClick = (id: string): void => {
+            props.history.push(`/vocabulary/${categoryID}/${id}`);
         };
-        return (<Grid<VocabularyList>
-            addRowHandler={() => setEditHandler({name: '', categoryId: categoryID})}
-            setEditHandler={setEditHandler}
-            deleteHandler={deleteHandler}
-            columns={[
-                {title: '#', field: 'edit'},
-                {title: 'Name', field: 'name', width: '100%'},
-            ]}
-            data={vocabularyLists}
-            onDoubleClick={onDoubleClick}
-        />);
+        return (<CardGrid<VocabularyList[]>
+            onClick={onDoubleClick}
+            cards={vocabularyLists}
+            addAction={() => setEditHandler({name: '', categoryId: categoryID})}
+            title='Choose Vocabulary List:'/>);
     }, [vocabularyLists]);
 
     const editModal = useMemo(() => {

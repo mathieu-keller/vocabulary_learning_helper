@@ -17,8 +17,10 @@ const CategoryView = (props: RouteComponentProps): JSX.Element => {
     const [editCategory, setEditCategory] = useState<Category>(emptyCategory);
     const [showModal, setShowModal] = useState<boolean>(false);
     useEffect(() => {
-        get<Category[]>('/category', data => {
-            setCategories(data);
+        get<Category[] | null>('/category', data => {
+            if (data) {
+                setCategories(data);
+            }
         });
     }, []);
 
@@ -55,14 +57,20 @@ const CategoryView = (props: RouteComponentProps): JSX.Element => {
     };
 
     return (<>
-            <CategoryEditModal addColumn={addColumn} saveHandler={onSave} editData={editCategory}
-                               cancelHandler={onClose}
-                               onChangeHandler={onChange}
-                               show={showModal}
-                               modalClosed={onClose}/>
+            <CategoryEditModal
+                addColumn={addColumn}
+                saveHandler={onSave}
+                editData={editCategory}
+                cancelHandler={onClose}
+                onChangeHandler={onChange}
+                show={showModal}
+                modalClosed={onClose}/>
             <Paper>
-                <CardGrid onClick={onClick} title='Choose Category:' cards={categories}
-                          addAction={() => setShowModal(true)}/>
+                <CardGrid
+                    onClick={onClick}
+                    title='Choose Category:'
+                    cards={categories}
+                    addAction={() => setShowModal(true)}/>
             </Paper>
         </>
     );
