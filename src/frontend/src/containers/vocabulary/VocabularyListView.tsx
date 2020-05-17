@@ -8,16 +8,23 @@ import {Paper} from "@material-ui/core";
 export type VocabularyList = {
     id?: string;
     name: string;
+    categoryId: string;
 }
 
-const VocabularyListView = (props: RouteComponentProps): JSX.Element => {
+const VocabularyListView = (props: RouteComponentProps<{ categoryID: string }>): JSX.Element => {
     document.title = 'Trainer - Vocabulary Lists';
+    const categoryID = props.match.params.categoryID;
     const [vocabularyLists, setVocabularyLists] = useState<VocabularyList[]>([]);
-    const [editData, setEditData] = useState<VocabularyList>({name: ''});
+    const [editData, setEditData] = useState<VocabularyList>({name: '', categoryId: categoryID});
     const [showEditModal, setShowEditModal] = useState<boolean>(false);
 
     useEffect(() => {
-        get<VocabularyList[]>('/vocabulary-list', setVocabularyLists);
+        get<VocabularyList[] | null>(`/vocabulary-list/${categoryID}`, (r) => {
+                if (r) {
+                    setVocabularyLists(r);
+                }
+            }
+        );
     }, []);
     const grid = useMemo(() => {
         const deleteHandler = (data: VocabularyList): void => {
@@ -30,10 +37,10 @@ const VocabularyListView = (props: RouteComponentProps): JSX.Element => {
             setEditData(data);
         };
         const onDoubleClick = (data: VocabularyList): void => {
-            props.history.push('/vocabulary/' + data.id);
+            props.history.push(`/vocabulary/${categoryID}/${data.id}`);
         };
         return (<Grid<VocabularyList>
-            addRowHandler={() => setEditHandler({name: ''})}
+            addRowHandler={() => setEditHandler({name: '', categoryId: categoryID})}
             setEditHandler={setEditHandler}
             deleteHandler={deleteHandler}
             columns={[
@@ -47,7 +54,7 @@ const VocabularyListView = (props: RouteComponentProps): JSX.Element => {
 
     const editModal = useMemo(() => {
         const cancelHandler = (): void => {
-            setEditData({name: ''});
+            setEditData({name: '', categoryId: categoryID});
             setShowEditModal(false);
         };
         const onChangeHandler = (field: string, value: string): void => {
@@ -64,7 +71,7 @@ const VocabularyListView = (props: RouteComponentProps): JSX.Element => {
                         .filter(vocabularyList => vocabularyList.id)
                         .filter(vocabularyList => vocabularyList.id !== data.id);
                     setVocabularyLists([...foundedVocabs, data]);
-                    setEditData({name: ''});
+                    setEditData({name: '', categoryId: categoryID});
                     setShowEditModal(false);
                 });
             }

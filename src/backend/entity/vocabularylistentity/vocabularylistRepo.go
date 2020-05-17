@@ -13,12 +13,16 @@ import (
 	"github.com/afrima/japanese_learning_helper/src/backend/entity/vocabularyentity"
 )
 
-func GetVocabularyList() ([]VocabularyList, error) {
+func GetVocabularyList(categoryID string) ([]VocabularyList, error) {
+	id, err := primitive.ObjectIDFromHex(categoryID)
+	if err != nil {
+		return nil, err
+	}
 	collection := database.GetDatabase().Collection("VocabularyList")
 	const duration = 30 * time.Second
 	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
 	defer closeCtx()
-	cur, err := collection.Find(ctx, bson.D{})
+	cur, err := collection.Find(ctx, bson.D{{Key: "categoryID", Value: id}})
 	if err != nil {
 		log.Println(err)
 		return nil, err

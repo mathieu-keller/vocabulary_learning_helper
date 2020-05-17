@@ -15,7 +15,7 @@ import (
 )
 
 func GetCategory() ([]Category, error) {
-	collection := database.GetDatabase().Collection("VocabularyList")
+	collection := database.GetDatabase().Collection("Category")
 	const duration = 30 * time.Second
 	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
 	defer closeCtx()

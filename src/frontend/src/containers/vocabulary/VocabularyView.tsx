@@ -12,9 +12,9 @@ export type Vocab = {
     listId: string;
 }
 
-const VocabularyView = (props: RouteComponentProps<{ id: string }>): JSX.Element => {
+const VocabularyView = (props: RouteComponentProps<{ categoryID: string; listID: string }>): JSX.Element => {
     document.title = 'Trainer - Vocabulary';
-    const listId = props.match.params.id;
+    const listId = props.match.params.listID;
     const emptyEditData = {german: '', japanese: '', kanji: '', listId: listId};
     const [vocabs, setVocabs] = useState<Vocab[]>([]);
     const [editData, setEditData] = useState<Vocab>(emptyEditData);

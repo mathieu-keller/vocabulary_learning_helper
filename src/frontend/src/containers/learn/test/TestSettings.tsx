@@ -16,7 +16,7 @@ const TestSettings = (props: RouteComponentProps): JSX.Element => {
     const [maxVocabularyCount, setMaxVocabularyCount] = React.useState(25);
     useEffect(() => {
         get<VocabularyList[]>('/vocabulary-list', (r) => {
-            setLeft(r.map(m => ({name: m.name, value: m.id!})));
+            setLeft(r.map(m => ({name: m.name, value: m.id ? m.id : ''})));
         });
     }, []);
     const onSubmit = (): void => {

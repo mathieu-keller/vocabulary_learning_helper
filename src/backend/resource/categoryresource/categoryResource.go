@@ -24,14 +24,14 @@ func Init(r *mux.Router) {
 func get(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
 	w.WriteHeader(http.StatusOK)
-	vocabularyList, err := categoryentity.GetCategory()
+	categoryList, err := categoryentity.GetCategory()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
 		log.Print(err)
 		return
 	}
-	if err = json.NewEncoder(w).Encode(vocabularyList); err != nil {
+	if err = json.NewEncoder(w).Encode(categoryList); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
 		log.Print(err)

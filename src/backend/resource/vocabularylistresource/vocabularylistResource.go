@@ -16,15 +16,16 @@ import (
 
 func Init(r *mux.Router) {
 	const path = "/vocabulary-list"
-	r.HandleFunc(path, getVocabularyList).Methods(http.MethodGet)
+	r.HandleFunc(path+"/{id}", getVocabularyList).Methods(http.MethodGet)
 	r.HandleFunc(path, insertVocabularyList).Methods(http.MethodPost)
 	r.Handle(path, resource.IsAuthorized(deleteVocabularyList)).Methods(http.MethodDelete)
 }
 
-func getVocabularyList(w http.ResponseWriter, _ *http.Request) {
+func getVocabularyList(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
 	w.WriteHeader(http.StatusOK)
-	vocabularyList, err := vocabularylistentity.GetVocabularyList()
+	id := mux.Vars(r)["id"]
+	vocabularyList, err := vocabularylistentity.GetVocabularyList(id)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)

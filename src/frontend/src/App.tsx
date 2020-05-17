@@ -9,6 +9,7 @@ import Home from './components/Home';
 import ProtectedRoute from "./components/navigation/route/ProtectedRoute";
 import LoginView from "./containers/login/LoginView";
 
+const CategoryView = lazy(() => import('./containers/vocabulary/CategoryView'));
 const VocabularyListView = lazy(() => import('./containers/vocabulary/VocabularyListView'));
 const VocabularyView = lazy(() => import('./containers/vocabulary/VocabularyView'));
 const ProfileView = lazy(() => import('./containers/profile/ProfileView'));
@@ -38,10 +39,12 @@ const App = (): JSX.Element => {
             <Switch>
                 <ProtectedRoute path='/profile' isAllowed={store.user?.isLogin}
                                 render={(props) => <ProfileView {...props}/>}/>
-                <ProtectedRoute path='/vocabulary/:id' isAllowed={store.user?.isLogin}
+                <ProtectedRoute path='/vocabulary/:categoryID/:listID' isAllowed={store.user?.isLogin}
                                 render={(props) => <VocabularyView {...props}/>}/>
-                <ProtectedRoute path='/vocabulary' isAllowed={store.user?.isLogin}
+                <ProtectedRoute path='/vocabulary/:categoryID' isAllowed={store.user?.isLogin}
                                 render={(props) => <VocabularyListView {...props}/>}/>
+                <ProtectedRoute path='/vocabulary' isAllowed={true}
+                                render={(props) => <CategoryView {...props}/>}/>
                 <ProtectedRoute path='/learn/test' isAllowed={true}
                                 render={(props) => <TestView {...props}/>}/>
                 <ProtectedRoute path='/learn' isAllowed={true}

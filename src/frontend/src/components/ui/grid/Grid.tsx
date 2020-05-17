@@ -5,7 +5,11 @@ import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import DeleteForeverOutlinedIcon from '@material-ui/icons/DeleteForeverOutlined';
 import AddIcon from '@material-ui/icons/Add';
 
-type Column = { title: string; field: string; width?: string; }
+type Column = {
+    title: string;
+    field: string;
+    width?: string;
+}
 
 type GridProps<d extends dataType> = {
     columns: Column[];

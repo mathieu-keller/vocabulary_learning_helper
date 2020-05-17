@@ -8,7 +8,7 @@ export type TestCardProps = {
     onChange: (vocab: Vocab, field: 'japanese' | 'german', value: string) => void;
 }
 
-const TestCard = ({selectedVocabulary, next, onChange}: TestCardProps) => {
+const TestCard = ({selectedVocabulary, next, onChange}: TestCardProps): JSX.Element => {
     return (
         <Card style={{width: '50%', margin: 'auto'}}>
             <CardContent>
