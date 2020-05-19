@@ -21,7 +21,7 @@ const TestCard = ({selectedVocabulary, next, onChange, front, back}: TestCardPro
                     {selectedVocabulary.values.find(value => value.key === front)?.value}
                 </Typography>
                 <Typography variant="body2" component="div">
-                    <TextField label='Japanese'
+                    <TextField label={back}
                                style={{width: '100%'}}
                                onChange={(e) => onChange(selectedVocabulary, back, e.target.value)}
                                onKeyDown={(e) => e.keyCode === 13 ? next() : null}
