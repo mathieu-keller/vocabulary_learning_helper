@@ -11,7 +11,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
 
-	"github.com/afrima/japanese_learning_helper/src/backend/utility"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/utility"
 )
 
 type authError struct {

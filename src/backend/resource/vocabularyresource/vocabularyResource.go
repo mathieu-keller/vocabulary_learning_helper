@@ -10,10 +10,10 @@ import (
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/afrima/japanese_learning_helper/src/backend/entity/vocabularyentity"
-	"github.com/afrima/japanese_learning_helper/src/backend/resource"
-	"github.com/afrima/japanese_learning_helper/src/backend/service/vocabularyservice"
-	"github.com/afrima/japanese_learning_helper/src/backend/utility"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/entity/vocabularyentity"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/resource"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/service/vocabularyservice"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/utility"
 )
 
 func Init(r *mux.Router) {

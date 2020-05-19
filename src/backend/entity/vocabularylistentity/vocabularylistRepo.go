@@ -9,8 +9,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/afrima/japanese_learning_helper/src/backend/database"
-	"github.com/afrima/japanese_learning_helper/src/backend/entity/vocabularyentity"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/database"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/entity/vocabularyentity"
 )
 
 func GetVocabularyList(categoryID string) ([]VocabularyList, error) {

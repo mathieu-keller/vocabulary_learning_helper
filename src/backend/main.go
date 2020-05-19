@@ -8,11 +8,11 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 
-	"github.com/afrima/japanese_learning_helper/src/backend/resource"
-	"github.com/afrima/japanese_learning_helper/src/backend/resource/categoryresource"
-	"github.com/afrima/japanese_learning_helper/src/backend/resource/loginresource"
-	"github.com/afrima/japanese_learning_helper/src/backend/resource/vocabularylistresource"
-	"github.com/afrima/japanese_learning_helper/src/backend/resource/vocabularyresource"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/resource"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/resource/categoryresource"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/resource/loginresource"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/resource/vocabularylistresource"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/resource/vocabularyresource"
 )
 
 func main() {

@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/afrima/japanese_learning_helper/src/backend/database"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/database"
 )
 
 func GetUser(userName string) (*User, error) {

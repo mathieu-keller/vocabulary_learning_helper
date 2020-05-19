@@ -9,9 +9,9 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/afrima/japanese_learning_helper/src/backend/entity/categoryentity"
-	"github.com/afrima/japanese_learning_helper/src/backend/resource"
-	"github.com/afrima/japanese_learning_helper/src/backend/utility"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/entity/categoryentity"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/resource"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/utility"
 )
 
 func Init(r *mux.Router) {
