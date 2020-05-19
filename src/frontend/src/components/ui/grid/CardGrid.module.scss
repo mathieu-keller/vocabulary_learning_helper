@@ -1,0 +1,36 @@
+.gridContainer {
+  width: 100%;
+  margin: 0;
+}
+
+.card {
+  height: 100%;
+}
+
+.actionArea {
+  height: 100%;
+}
+
+.cardIcon {
+  font-size: 64px;
+}
+
+.typography {
+  padding: 32px;
+}
+
+.optionBar {
+  display: flex;
+  justify-content: flex-end;
+  background-color: #3f51b5;
+  width: 100%;
+}
+
+.optionIcon {
+  color: white;
+}
+
+.optionButton {
+  justify-content: flex-end;
+}
+

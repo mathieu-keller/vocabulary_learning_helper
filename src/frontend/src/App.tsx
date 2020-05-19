@@ -1,6 +1,5 @@
 import React, {lazy, useEffect, useState} from 'react';
 import {Route, Switch} from 'react-router-dom';
-import '../public/App.scss';
 import {get} from "./utility/restCaller";
 import {useStore} from "./store/store";
 import {ToastContainer} from "react-toastify";

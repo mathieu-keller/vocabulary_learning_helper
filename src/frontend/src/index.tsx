@@ -1,4 +1,5 @@
 import React, {lazy, Suspense} from 'react';
+import '../public/App.scss';
 import {render} from 'react-dom';
 import {HashRouter} from "react-router-dom";
 import configureUserStore from './store/configureUserStore';
