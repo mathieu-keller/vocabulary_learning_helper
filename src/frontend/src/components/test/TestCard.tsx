@@ -4,26 +4,28 @@ import {Vocab} from "../../containers/vocabulary/VocabularyView";
 
 export type TestCardProps = {
     selectedVocabulary: Vocab;
+    front: string;
+    back: string;
     next: () => void;
-    onChange: (vocab: Vocab, field: 'japanese' | 'german', value: string) => void;
+    onChange: (vocab: Vocab, field: string, value: string) => void;
 }
 
-const TestCard = ({selectedVocabulary, next, onChange}: TestCardProps): JSX.Element => {
+const TestCard = ({selectedVocabulary, next, onChange, front, back}: TestCardProps): JSX.Element => {
     return (
         <Card style={{width: '50%', margin: 'auto'}}>
             <CardContent>
                 <Typography color="textSecondary" gutterBottom>
-                    German
+                    {front}
                 </Typography>
                 <Typography variant="h5" component="h2">
-                    {selectedVocabulary.german}
+                    {selectedVocabulary.values.find(value => value.key === front)?.value}
                 </Typography>
                 <Typography variant="body2" component="div">
                     <TextField label='Japanese'
                                style={{width: '100%'}}
-                               onChange={(e) => onChange(selectedVocabulary, 'japanese', e.target.value)}
+                               onChange={(e) => onChange(selectedVocabulary, back, e.target.value)}
                                onKeyDown={(e) => e.keyCode === 13 ? next() : null}
-                               value={selectedVocabulary.japanese}
+                               value={selectedVocabulary.values.find(value => value.key === back)?.value}
                     />
                 </Typography>
             </CardContent>

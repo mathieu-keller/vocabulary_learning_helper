@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {post} from "../../../utility/restCaller";
-import {Vocab} from "../../vocabulary/VocabularyView";
+import {Vocab, VocabularyValue} from "../../vocabulary/VocabularyView";
 import {useStore} from "../../../store/store";
 import TestCard from "../../../components/test/TestCard";
 import TestResultView from "../../../components/test/TestResultView";
@@ -8,10 +8,10 @@ import {RouteComponentProps} from "react-router-dom";
 
 export type TestResultVocab = {
     id: string;
-    userJapanese: string;
-    userGerman: string;
-    dbJapanese: string;
-    dbGerman: string;
+    userFirst: VocabularyValue;
+    userSecond: VocabularyValue;
+    dbFirst: VocabularyValue;
+    dbSecond: VocabularyValue;
 }
 
 type TestResult = {
@@ -19,53 +19,61 @@ type TestResult = {
     correct: number;
 }
 
-const TestView = (props: RouteComponentProps): JSX.Element => {
+const TestView = (props: RouteComponentProps): JSX.Element | null => {
     document.title = 'Trainer - Test';
     const store = useStore()[0];
-    const [vocabulary, setVocabulary] = useState<Vocab[]>([]);
+    if (!store.test) return null;
+    const testVocabularies = store.test.testVocabulary;
+    const [vocabularies, setVocabularies] = useState<Vocab[]>([]);
     const [index, setIndex] = useState<number>(0);
     const [result, setResult] = useState<TestResult>();
     useEffect(() => {
         const test = store.test;
         if (test) {
-            setVocabulary(test.testVocabulary);
-            if (test.testVocabulary.length < 1) {
+            setVocabularies(testVocabularies.vocabularies);
+            if (testVocabularies.vocabularies.length < 1) {
                 props.history.push('/learn');
             }
         }
-    }, [store.test?.testVocabulary]);
+    }, [store.test.testVocabulary]);
     const submit = (): void => {
-        post<Vocab[], TestResult>('/check-test', vocabulary, (r) => {
-            setResult(r);
-        }, 200);
+        post<{ vocabularies: Vocab[]; firstValueField: string; secondValueField: string }, TestResult>('/check-test',
+            {vocabularies, firstValueField: testVocabularies.front, secondValueField: testVocabularies.back}, (r) => {
+                setResult(r);
+            }, 200);
     };
-    const onChange = (vocab: Vocab, field: 'german' | 'japanese', value: string): void => {
-        vocab[field] = value;
-        setVocabulary([...vocabulary]);
+    const onChange = (vocab: Vocab, field: string, value: string): void => {
+        const vocabulary = vocab.values.find(val => val.key === field);
+        if (vocabulary) {
+            vocabulary.value = value;
+            setVocabularies([...vocabularies]);
+        }
     };
     const next = (): void => {
         const nextIndex = index + 1;
-        if (vocabulary.length > nextIndex) {
+        if (vocabularies.length > nextIndex) {
             setIndex(nextIndex);
         } else {
             submit();
         }
     };
 
-    let selectedVocabulary: Vocab = {id: '', german: '', japanese: '', listId: ''};
-    if (vocabulary.length > 0) {
-        selectedVocabulary = vocabulary[index];
+    let selectedVocabulary: Vocab = {id: '', values: [], listId: ''};
+    if (vocabularies.length > 0) {
+        selectedVocabulary = vocabularies[index];
     }
     if (result) {
         return (<TestResultView vocabs={result.vocabs} correct={result.correct}/>);
     }
     return (
         <>
-            <h2>{index + 1}/{vocabulary.length}</h2>
+            <h2>{index + 1}/{vocabularies.length}</h2>
             <TestCard
                 selectedVocabulary={selectedVocabulary}
                 onChange={onChange}
                 next={next}
+                front={testVocabularies.front}
+                back={testVocabularies.back}
             />
         </>
     );

@@ -52,7 +52,7 @@ const CategoryView = (props: RouteComponentProps): JSX.Element => {
 
     const onClick = (id?: string): void => {
         if (id) {
-            props.history.push(`/vocabulary/${id}`);
+            props.history.push(`${props.location.pathname}/${id}`);
         }
     };
 

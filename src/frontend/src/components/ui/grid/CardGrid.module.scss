@@ -1,3 +1,5 @@
+@import "src/utility/color";
+
 .gridContainer {
   width: 100%;
   margin: 0;
@@ -28,6 +30,14 @@
 
 .optionIcon {
   color: white;
+}
+
+.editIcon {
+  color: $blue;
+}
+
+.deleteIcon {
+  color: $red;
 }
 
 .optionButton {

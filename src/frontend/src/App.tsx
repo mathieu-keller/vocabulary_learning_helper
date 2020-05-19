@@ -8,7 +8,7 @@ import Home from './components/Home';
 import ProtectedRoute from "./components/navigation/route/ProtectedRoute";
 import LoginView from "./containers/login/LoginView";
 
-const CategoryView = lazy(() => import('./containers/vocabulary/CategoryView'));
+const CategoryView = lazy(() => import('./containers/category/CategoryView'));
 const VocabularyListView = lazy(() => import('./containers/vocabulary/VocabularyListView'));
 const VocabularyView = lazy(() => import('./containers/vocabulary/VocabularyView'));
 const ProfileView = lazy(() => import('./containers/profile/ProfileView'));
@@ -46,8 +46,10 @@ const App = (): JSX.Element => {
                                 render={(props) => <CategoryView {...props}/>}/>
                 <ProtectedRoute path='/learn/test' isAllowed={true}
                                 render={(props) => <TestView {...props}/>}/>
-                <ProtectedRoute path='/learn' isAllowed={true}
+                <ProtectedRoute path='/learn/:categoryID' isAllowed={true}
                                 render={(props) => <TestSettings {...props}/>}/>
+                <ProtectedRoute path='/learn' isAllowed={true}
+                                render={(props) => <CategoryView {...props}/>}/>
                 <ProtectedRoute path='/login' isAllowed={!store.user?.isLogin}
                                 render={(props) => <LoginView {...props}/>}/>
                 <Route path='/' component={Home} exact/>

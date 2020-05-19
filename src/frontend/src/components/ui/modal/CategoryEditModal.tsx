@@ -1,7 +1,7 @@
 import React from 'react';
 import ModalWindow, {ModalWindowProps} from "./ModalWindow";
 import {Button, IconButton, TextField} from "@material-ui/core";
-import {Category} from "../../../containers/vocabulary/CategoryView";
+import {Category} from "../../../containers/category/CategoryView";
 import {Add} from "@material-ui/icons";
 
 type VocabularyEditModalProps = {

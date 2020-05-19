@@ -4,9 +4,9 @@ import {deleteCall, get, post} from "../../utility/restCaller";
 import VocabularyEditModal from "../../components/ui/modal/VocabularyEditModal";
 import {RouteComponentProps} from "react-router-dom";
 import {Paper} from "@material-ui/core";
-import {Category} from "./CategoryView";
+import {Category} from "../category/CategoryView";
 
-type VocabularyValue = {
+export type VocabularyValue = {
     key: string;
     value: string;
 }

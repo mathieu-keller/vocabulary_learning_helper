@@ -21,8 +21,8 @@ function CardGrid<c extends { id?: string; name: string }>(props: CardGridProps<
                 buttonContent={<Settings className={classes.optionIcon}/>}
                 buttonClassName={classes.optionButton}
                 menuItems={[
-                    {onClick: () => props.setEditHandler(card), content: <EditOutlined style={{color: '#3f51b5'}}/>},
-                    {onClick: () => props.deleteHandler(card.id), content: <DeleteForeverOutlined style={{color: '#dc004e'}}/>}
+                    {onClick: () => props.setEditHandler(card), content: <EditOutlined className={classes.editIcon}/>},
+                    {onClick: () => props.deleteHandler(card.id), content: <DeleteForeverOutlined className={classes.deleteIcon}/>}
                 ]}/>
         </div>
     );

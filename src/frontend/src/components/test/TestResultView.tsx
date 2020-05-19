@@ -9,22 +9,18 @@ type TestResultViewProps = {
 
 const TestResultView = ({vocabs, correct}: TestResultViewProps): JSX.Element => {
     const getTextField = (vocab: TestResultVocab): JSX.Element | null => {
-        let germanError, japaneseError = false;
-        if (vocab.dbGerman !== vocab.userGerman) {
-            germanError = true;
+        let failed = false;
+        if (vocab.dbSecond.value !== vocab.userSecond.value) {
+            failed = true;
         }
-        if (vocab.dbJapanese !== vocab.userJapanese) {
-            japaneseError = true;
-        }
-        if (germanError || japaneseError) {
+        if (failed) {
             return (<React.Fragment key={vocab.id}>
                     <Grid item xs={6}>
                         <TextField
                             style={{width: '100%'}}
-                            error={germanError}
-                            label="German"
-                            defaultValue={vocab.userGerman}
-                            helperText={germanError ? vocab.dbGerman : ' '}
+                            label={vocab.userFirst.key}
+                            defaultValue={vocab.userFirst.value}
+                            helperText={' '}
                             variant="filled"
                             disabled
                         />
@@ -32,10 +28,10 @@ const TestResultView = ({vocabs, correct}: TestResultViewProps): JSX.Element => 
                     <Grid item xs={6}>
                         <TextField
                             style={{width: '100%'}}
-                            error={japaneseError}
-                            label="Japanese"
-                            defaultValue={vocab.userJapanese}
-                            helperText={japaneseError ? vocab.dbJapanese : ' '}
+                            error={failed}
+                            label={vocab.userSecond.key}
+                            defaultValue={vocab.userSecond.value}
+                            helperText={failed ? vocab.dbSecond.value : ' '}
                             variant="filled"
                             disabled
                         />
