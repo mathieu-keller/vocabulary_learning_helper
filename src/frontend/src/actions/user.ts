@@ -1,7 +1,11 @@
 import {ReduxAction, ReduxActionWithPayload, userActions} from "./actions.types";
 import {Category} from "../containers/category/CategoryView";
+import {VocabularyList} from "../containers/vocabulary/VocabularyListView";
 
-export type UserActions = LoginAction | LogoutAction | SaveCategoriesAction;
+export type UserActions = LoginAction |
+    LogoutAction |
+    StoreCategoriesAction |
+    StoreVocabularyListsAction;
 
 type LoginAction = ReduxAction<userActions.LOGIN>
 export const login = (): LoginAction => ({
@@ -13,8 +17,14 @@ export const logout = (): LogoutAction => ({
     type: userActions.LOGOUT
 });
 
-type SaveCategoriesAction = ReduxActionWithPayload<userActions.SAVE_CATEGORIES, Category[]>
-export const saveCategories = (categories: Category[]): SaveCategoriesAction => ({
-    type: userActions.SAVE_CATEGORIES,
+type StoreCategoriesAction = ReduxActionWithPayload<userActions.STORE_CATEGORIES, Category[]>
+export const storeCategories = (categories: Category[]): StoreCategoriesAction => ({
+    type: userActions.STORE_CATEGORIES,
     payload: categories
+});
+
+type StoreVocabularyListsAction = ReduxActionWithPayload<userActions.STORE_VOCABULARY_LISTS, VocabularyList[]>
+export const storeVocabularyLists = (vocabularyLists: VocabularyList[]): StoreVocabularyListsAction => ({
+    type: userActions.STORE_VOCABULARY_LISTS,
+    payload: vocabularyLists
 });

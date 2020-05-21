@@ -5,9 +5,10 @@ import {VocabularyList} from "../../vocabulary/VocabularyListView";
 import {Button, Grid, List, ListItem, ListItemText, Paper, TextField} from "@material-ui/core";
 import {Vocab} from "../../vocabulary/VocabularyView";
 import {RouteComponentProps} from "react-router-dom";
-import {Category} from "../../category/CategoryView";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import * as testActions from "../../../actions/test";
+import {AppStore} from "../../../store/store.types";
+import {storeVocabularyLists} from "../../../actions/user";
 
 const TestSettings = (props: RouteComponentProps<{ categoryID: string }>): JSX.Element => {
     document.title = 'Trainer - Test Settings';
@@ -20,16 +21,27 @@ const TestSettings = (props: RouteComponentProps<{ categoryID: string }>): JSX.E
     const [columns, setColumns] = useState<string[]>([]);
     const [front, setFront] = useState<string>('');
     const [back, setBack] = useState<string>('');
+    const storedCategories = useSelector((store: AppStore) => store.user.categories);
+    const storedVocabularyLists = useSelector((store: AppStore) => store.user.vocabularyLists);
     useEffect(() => {
-        get<VocabularyList[]>(`/vocabulary-list/${categoryId}`, (r) => {
-            setLeft(r.map(m => ({name: m.name, value: m.id ? m.id : ''})));
-        });
-        get<Category>(`/category/${categoryId}`, (r) => {
-            setColumns(r.columns);
-            setFront(r.columns[0]);
-            setBack(r.columns[1]);
-        });
+        const vocabularyLists = storedVocabularyLists.filter(storedVocabularyList => storedVocabularyList.categoryId === categoryId);
+        if (vocabularyLists.length < 1) {
+            get<VocabularyList[]>(`/vocabulary-list/${categoryId}`, (r) => {
+                setLeft(r.map(m => ({name: m.name, value: m.id ? m.id : ''})));
+                dispatch(storeVocabularyLists([...storedVocabularyLists, ...r]));
+            });
+        } else {
+            setLeft(vocabularyLists.map(m => ({name: m.name, value: m.id ? m.id : ''})));
+        }
     }, [categoryId]);
+    useEffect(() => {
+        const category = storedCategories.find(storedCategory => storedCategory.id === categoryId);
+        if (category) {
+            setColumns(category.columns);
+            setFront(category.columns[0]);
+            setBack(category.columns[1]);
+        }
+    }, [categoryId, storedCategories]);
     const onSubmit = (): void => {
         post<{ listIds: string[]; limit: number; firstValueField: string; secondValueField: string }, Vocab[]>('/generate-test',
             {listIds: right.map(ri => ri.value), limit: maxVocabularyCount, firstValueField: front, secondValueField: back},

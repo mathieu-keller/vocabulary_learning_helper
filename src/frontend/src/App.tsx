@@ -27,6 +27,11 @@ const App = (): JSX.Element => {
                 dispatch(userActions.login());
             }
         });
+        get<Category[] | null>('/category', data => {
+            if (data) {
+                dispatch(userActions.storeCategories(data));
+            }
+        });
     }, []);
     useEffect(() => {
         if (isLogin) {
@@ -34,11 +39,6 @@ const App = (): JSX.Element => {
         } else if (timer) {
             clearInterval(timer);
         }
-        get<Category[] | null>('/category', data => {
-            if (data) {
-                dispatch(userActions.saveCategories(data));
-            }
-        });
     }, [isLogin]);
     return (
         <>

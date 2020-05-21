@@ -4,7 +4,8 @@ import {deleteCall, get, post} from "../../utility/restCaller";
 import VocabularyEditModal from "../../components/ui/modal/VocabularyEditModal";
 import {RouteComponentProps} from "react-router-dom";
 import {Paper} from "@material-ui/core";
-import {Category} from "../category/CategoryView";
+import {useSelector} from "react-redux";
+import {AppStore} from "../../store/store.types";
 
 export type VocabularyValue = {
     key: string;
@@ -26,12 +27,18 @@ const VocabularyView = (props: RouteComponentProps<{ categoryID: string; listID:
     const [vocabs, setVocabs] = useState<Vocab[]>([]);
     const [editData, setEditData] = useState<Vocab>(emptyEditData);
     const [showEditModal, setShowEditModal] = useState<boolean>(false);
-
+    const storedCategories = useSelector((store: AppStore) => store.user.categories);
 
     useEffect(() => {
         get<Vocab[]>(`/vocabulary/${listId}`, setVocabs);
-        get<Category>(`/category/${categoryId}`, (r) => setColumns(r.columns));
-    }, [listId, categoryId]);
+    }, [listId]);
+
+    useEffect(() => {
+        const category = storedCategories.find(storedCategory => storedCategory.id === categoryId);
+        if (category) {
+            setColumns(category.columns);
+        }
+    }, [categoryId, storedCategories]);
 
     const grid = useMemo(() => {
         const deleteHandler = (data: Vocab): void => {

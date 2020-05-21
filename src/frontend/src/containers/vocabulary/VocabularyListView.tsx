@@ -4,6 +4,9 @@ import {RouteComponentProps} from "react-router-dom";
 import VocabularyListEditModal from "../../components/ui/modal/VocabularyListEditModal";
 import {Paper} from "@material-ui/core";
 import CardGrid from "../../components/ui/grid/CardGrid";
+import {useDispatch, useSelector} from "react-redux";
+import {AppStore} from "../../store/store.types";
+import {storeVocabularyLists} from "../../actions/user";
 
 export type VocabularyList = {
     id?: string;
@@ -17,14 +20,22 @@ const VocabularyListView = (props: RouteComponentProps<{ categoryID: string }>):
     const [vocabularyLists, setVocabularyLists] = useState<VocabularyList[]>([]);
     const [editData, setEditData] = useState<VocabularyList>({name: '', categoryId: categoryID});
     const [showEditModal, setShowEditModal] = useState<boolean>(false);
-
+    const storedVocabularyLists = useSelector((store: AppStore) => store.user.vocabularyLists);
+    const dispatch = useDispatch();
     useEffect(() => {
-        get<VocabularyList[] | null>(`/vocabulary-list/${categoryID}`, (r) => {
-                if (r) {
-                    setVocabularyLists(r);
+        const vocabularyListForCategory = storedVocabularyLists
+            .filter(storedVocabularyList => storedVocabularyList.categoryId === categoryID);
+        if (vocabularyListForCategory.length < 1) {
+            get<VocabularyList[] | null>(`/vocabulary-list/${categoryID}`, (r) => {
+                    if (r) {
+                        dispatch(storeVocabularyLists([...storedVocabularyLists, ...r]));
+                        setVocabularyLists(r);
+                    }
                 }
-            }
-        );
+            );
+        } else {
+            setVocabularyLists(vocabularyListForCategory);
+        }
     }, [categoryID]);
     const grid = useMemo(() => {
         const deleteHandler = (id?: string): void => {

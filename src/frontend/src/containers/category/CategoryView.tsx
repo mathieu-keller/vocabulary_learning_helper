@@ -1,9 +1,12 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Paper} from "@material-ui/core";
-import {deleteCall, get, post} from "../../utility/restCaller";
+import {deleteCall, post} from "../../utility/restCaller";
 import CategoryEditModal from "../../components/ui/modal/CategoryEditModal";
 import CardGrid from "../../components/ui/grid/CardGrid";
 import {RouteComponentProps} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {AppStore} from "../../store/store.types";
+import {storeCategories} from "../../actions/user";
 
 export type Category = {
     id?: string;
@@ -13,16 +16,10 @@ export type Category = {
 
 const CategoryView = (props: RouteComponentProps): JSX.Element => {
     const emptyCategory = {name: '', columns: ["", ""]};
-    const [categories, setCategories] = useState<Category[]>([]);
     const [editCategory, setEditCategory] = useState<Category>(emptyCategory);
     const [showModal, setShowModal] = useState<boolean>(false);
-    useEffect(() => {
-        get<Category[] | null>('/category', data => {
-            if (data) {
-                setCategories(data);
-            }
-        });
-    }, []);
+    const categories = useSelector((store: AppStore) => store.user.categories);
+    const dispatch = useDispatch();
 
     const onChange = (field: string, value: string): void => {
         if (field === 'name') {
@@ -41,7 +38,7 @@ const CategoryView = (props: RouteComponentProps): JSX.Element => {
 
     const onSave = (): void => {
         post<Category, Category>('/category', editCategory, data => {
-            setCategories([...categories, data]);
+            dispatch(storeCategories([...categories, data]));
             onClose();
         });
     };
@@ -59,7 +56,7 @@ const CategoryView = (props: RouteComponentProps): JSX.Element => {
     const deleteHandler = (id?: string): void => {
         if (id) {
             deleteCall<{}, string>(`/category/${id}`, {},
-                ((resId) => setCategories(categories.filter(category => category.id !== resId))));
+                (resId) => dispatch(storeCategories(categories.filter(category => category.id !== resId))));
         }
     };
 
