@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {post} from "../../../utility/restCaller";
 import {Vocab, VocabularyValue} from "../../vocabulary/VocabularyView";
-import {useStore} from "../../../store/store";
 import TestCard from "../../../components/test/TestCard";
 import TestResultView from "../../../components/test/TestResultView";
 import {RouteComponentProps} from "react-router-dom";
+import {useSelector} from "react-redux";
+import {AppStore} from "../../../store/store.types";
 
 export type TestResultVocab = {
     id: string;
@@ -21,21 +22,17 @@ type TestResult = {
 
 const TestView = (props: RouteComponentProps): JSX.Element | null => {
     document.title = 'Trainer - Test';
-    const store = useStore()[0];
-    if (!store.test) return null;
-    const testVocabularies = store.test.testVocabulary;
+    const testVocabularies = useSelector((store: AppStore) => store.testVocabularies);
     const [vocabularies, setVocabularies] = useState<Vocab[]>([]);
     const [index, setIndex] = useState<number>(0);
     const [result, setResult] = useState<TestResult>();
     useEffect(() => {
-        const test = store.test;
-        if (test) {
+        if (testVocabularies.vocabularies.length < 1) {
+            props.history.push('/learn');
+        } else {
             setVocabularies(testVocabularies.vocabularies);
-            if (testVocabularies.vocabularies.length < 1) {
-                props.history.push('/learn');
-            }
         }
-    }, [store.test.testVocabulary]);
+    }, [testVocabularies]);
     const submit = (): void => {
         post<{ vocabularies: Vocab[]; firstValueField: string; secondValueField: string }, TestResult>('/check-test',
             {vocabularies, firstValueField: testVocabularies.front, secondValueField: testVocabularies.back}, (r) => {

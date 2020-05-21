@@ -1,0 +1,10 @@
+import { combineReducers } from 'redux';
+import {user} from "./user";
+import {testVocabularies} from "./test";
+
+const reducers = combineReducers({
+    user: user,
+    testVocabularies: testVocabularies,
+});
+
+export default reducers;

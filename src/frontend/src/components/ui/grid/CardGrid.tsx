@@ -69,4 +69,4 @@ function CardGrid<c extends { id?: string; name: string }>(props: CardGridProps<
     );
 }
 
-export default React.memo(CardGrid);
+export default CardGrid;

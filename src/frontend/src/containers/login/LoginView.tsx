@@ -1,13 +1,14 @@
 import React, {useState} from 'react';
 import Login from "../../components/login/Login";
 import {post} from "../../utility/restCaller";
-import {useStore} from "../../store/store";
 import {RouteComponentProps} from "react-router-dom";
+import {useDispatch} from "react-redux";
+import * as userActions from "../../actions/user";
 
 const LoginView = (props: RouteComponentProps): JSX.Element => {
     document.title = 'Trainer - Login';
     const [loginData, setLoginData] = useState({userName: "", password: ""});
-    const dispatch = useStore(false)[1];
+    const dispatch = useDispatch();
     const onChange = (field: 'userName' | 'password', value: string): void => {
         const data = {...loginData};
         data[field] = value;
@@ -18,7 +19,7 @@ const LoginView = (props: RouteComponentProps): JSX.Element => {
         post<{ userName: string; password: string }, { login: boolean }>('/login', loginData, (r) => {
             if (r.login) {
                 props.history.push("/");
-                dispatch('LOGIN');
+                dispatch(userActions.login());
             }
         }, 200);
     };

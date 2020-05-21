@@ -4,14 +4,15 @@ import {get, post} from "../../../utility/restCaller";
 import {VocabularyList} from "../../vocabulary/VocabularyListView";
 import {Button, Grid, List, ListItem, ListItemText, Paper, TextField} from "@material-ui/core";
 import {Vocab} from "../../vocabulary/VocabularyView";
-import {useStore} from "../../../store/store";
 import {RouteComponentProps} from "react-router-dom";
 import {Category} from "../../category/CategoryView";
+import {useDispatch} from "react-redux";
+import * as testActions from "../../../actions/test";
 
 const TestSettings = (props: RouteComponentProps<{ categoryID: string }>): JSX.Element => {
     document.title = 'Trainer - Test Settings';
     const categoryId = props.match.params.categoryID;
-    const dispatch = useStore(false)[1];
+    const dispatch = useDispatch();
     const [checked, setChecked] = React.useState<{ value: string; name: string }[]>([]);
     const [left, setLeft] = React.useState<{ value: string; name: string }[]>([]);
     const [right, setRight] = React.useState<{ value: string; name: string }[]>([]);
@@ -33,7 +34,7 @@ const TestSettings = (props: RouteComponentProps<{ categoryID: string }>): JSX.E
         post<{ listIds: string[]; limit: number; firstValueField: string; secondValueField: string }, Vocab[]>('/generate-test',
             {listIds: right.map(ri => ri.value), limit: maxVocabularyCount, firstValueField: front, secondValueField: back},
             (r) => {
-                dispatch('SET_TEST_DATA', {vocabularies: r, front, back});
+                dispatch(testActions.setTestData(r, front, back));
                 props.history.push('/learn/test');
             }, 200);
     };

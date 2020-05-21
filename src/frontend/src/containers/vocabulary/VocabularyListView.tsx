@@ -43,7 +43,7 @@ const VocabularyListView = (props: RouteComponentProps<{ categoryID: string }>):
                 props.history.push(`/vocabulary/${categoryID}/${id}`);
             }
         };
-        return (<CardGrid
+        return (<CardGrid<VocabularyList>
             deleteHandler={deleteHandler}
             setEditHandler={setEditHandler}
             onClick={onDoubleClick}

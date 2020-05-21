@@ -73,12 +73,13 @@ const CategoryView = (props: RouteComponentProps): JSX.Element => {
                 show={showModal}
                 modalClosed={onClose}/>
             <Paper>
-                <CardGrid
+                <CardGrid<Category>
                     deleteHandler={deleteHandler}
                     onClick={onClick}
                     title='Choose Category:'
                     cards={categories}
-                    addAction={() => setShowModal(true)}/>
+                    addAction={() => setShowModal(true)}
+                    setEditHandler={(d: Category) => console.log(d)}/>
             </Paper>
         </>
     );
