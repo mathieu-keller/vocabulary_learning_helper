@@ -27,18 +27,14 @@ var tokenKey = []byte(os.Getenv("tokenKey"))
 var s = securecookie.New(cookieKey, nil)
 
 func Init(r *mux.Router) {
-	r.Handle("/refresh-token", IsAuthorized(refreshToken)).Methods(http.MethodGet)
+	r.HandleFunc("/refresh-token", checkLogin).Methods(http.MethodGet)
 	r.HandleFunc("/check-login", checkLogin).Methods(http.MethodGet)
 }
 
-func refreshToken(w http.ResponseWriter, _ *http.Request) {
-	SetHTTPOnlyToken(w)
-}
-
 func checkLogin(w http.ResponseWriter, r *http.Request) {
-	if isTokenValid(r) {
+	if claims, valid := GetTokenClaims(r); valid {
 		w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
-		SetHTTPOnlyToken(w)
+		SetHTTPOnlyToken(w, claims["userName"].(string))
 		fmt.Fprint(w, "{\"login\":true}")
 	} else {
 		fmt.Fprint(w, "{\"login\":false}")
@@ -47,7 +43,7 @@ func checkLogin(w http.ResponseWriter, r *http.Request) {
 
 func IsAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if isTokenValid(r) {
+		if _, valid := GetTokenClaims(r); valid {
 			endpoint(w, r)
 			return
 		}
@@ -56,22 +52,22 @@ func IsAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handle
 	})
 }
 
-func isTokenValid(r *http.Request) bool {
+func GetTokenClaims(r *http.Request) (jwt.MapClaims, bool) {
 	if cryptToken, err := r.Cookie("token"); err == nil && cryptToken != nil {
 		var jwtToken string
 		err := s.Decode("token", cryptToken.Value, &jwtToken)
 		if err != nil {
 			log.Println(err)
-			return false
+			return nil, false
 		}
 		token, err := getToken(jwtToken)
 		if err != nil {
 			log.Println(err)
-			return false
+			return nil, false
 		}
-		return token != nil && token.Valid
+		return token.Claims.(jwt.MapClaims), token != nil && token.Valid
 	}
-	return false
+	return nil, false
 }
 
 func getToken(jwtToken string) (*jwt.Token, error) {
@@ -84,12 +80,13 @@ func getToken(jwtToken string) (*jwt.Token, error) {
 	return token, err
 }
 
-func GenerateJWT() (string, error) {
+func GenerateJWT(userName string) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
 	const expTime = time.Minute * 30
 	claims["exp"] = time.Now().Add(expTime).Unix()
+	claims["userName"] = userName
 
 	// Create the JWT string
 	tokenString, err := token.SignedString(tokenKey)
@@ -100,8 +97,8 @@ func GenerateJWT() (string, error) {
 	return tokenString, nil
 }
 
-func SetHTTPOnlyToken(w http.ResponseWriter) {
-	token, err := GenerateJWT()
+func SetHTTPOnlyToken(w http.ResponseWriter, userName string) {
+	token, err := GenerateJWT(userName)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)

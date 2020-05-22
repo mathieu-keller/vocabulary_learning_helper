@@ -3,11 +3,11 @@ package categoryresource
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
 	"net/http"
-
-	"github.com/gorilla/mux"
+	"strings"
 
 	"github.com/afrima/vocabulary_learning_helper/src/backend/entity/categoryentity"
 	"github.com/afrima/vocabulary_learning_helper/src/backend/resource"
@@ -40,10 +40,12 @@ func getByID(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func get(w http.ResponseWriter, _ *http.Request) {
+func get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
 	w.WriteHeader(http.StatusOK)
-	categoryList, err := categoryentity.GetCategory()
+	claims, _ := resource.GetTokenClaims(r)
+	userName := claims["userName"].(string)
+	categoryList, err := categoryentity.GetCategory(userName)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
@@ -65,6 +67,8 @@ func insert(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
+	claims, _ := resource.GetTokenClaims(r)
+	body.Owner = strings.ToLower(claims["userName"].(string))
 	if err = body.Insert(); err != nil {
 		switch err.(type) {
 		case categoryentity.Error:

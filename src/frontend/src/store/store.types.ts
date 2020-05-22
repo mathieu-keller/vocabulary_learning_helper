@@ -6,6 +6,7 @@ export type UserStore = {
     readonly isLogin: boolean;
     readonly categories: Category[];
     readonly vocabularyLists: VocabularyList[];
+    readonly selectedCategory: Category;
 }
 export type TestVocabularyStore = {
     readonly vocabularies: Vocab[];

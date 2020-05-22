@@ -18,27 +18,24 @@ export type Vocab = {
     values: VocabularyValue[];
 }
 
-const VocabularyView = (props: RouteComponentProps<{ categoryID: string; listID: string }>): JSX.Element => {
+const VocabularyView = (props: RouteComponentProps<{ user: string; category: string; listId: string }>): JSX.Element => {
     document.title = 'Trainer - Vocabulary';
-    const listId = props.match.params.listID;
-    const categoryId = props.match.params.categoryID;
+    const listId = props.match.params.listId;
     const [columns, setColumns] = useState<string[]>([]);
     const emptyEditData = {values: columns.map(column => ({key: column, value: ""})), listId: listId};
     const [vocabs, setVocabs] = useState<Vocab[]>([]);
     const [editData, setEditData] = useState<Vocab>(emptyEditData);
     const [showEditModal, setShowEditModal] = useState<boolean>(false);
-    const storedCategories = useSelector((store: AppStore) => store.user.categories);
-
+    const selectedCategory = useSelector((store: AppStore) => store.user.selectedCategory);
     useEffect(() => {
         get<Vocab[]>(`/vocabulary/${listId}`, setVocabs);
     }, [listId]);
 
     useEffect(() => {
-        const category = storedCategories.find(storedCategory => storedCategory.id === categoryId);
-        if (category) {
-            setColumns(category.columns);
+        if (selectedCategory.id) {
+            setColumns(selectedCategory.columns);
         }
-    }, [categoryId, storedCategories]);
+    }, [selectedCategory]);
 
     const grid = useMemo(() => {
         const deleteHandler = (data: Vocab): void => {

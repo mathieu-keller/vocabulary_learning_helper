@@ -14,19 +14,21 @@ export type VocabularyList = {
     categoryId?: string;
 }
 
-const VocabularyListView = (props: RouteComponentProps<{ categoryID: string }>): JSX.Element => {
+const VocabularyListView = (props: RouteComponentProps<{ user: string; category: string }>): JSX.Element => {
     document.title = 'Trainer - Vocabulary Lists';
-    const categoryID = props.match.params.categoryID;
+    const category = props.match.params.category;
+    const user = props.match.params.user;
     const [vocabularyLists, setVocabularyLists] = useState<VocabularyList[]>([]);
-    const [editData, setEditData] = useState<VocabularyList>({name: '', categoryId: categoryID});
     const [showEditModal, setShowEditModal] = useState<boolean>(false);
     const storedVocabularyLists = useSelector((store: AppStore) => store.user.vocabularyLists);
+    const selectedCategory = useSelector((store: AppStore) => store.user.selectedCategory);
+    const [editData, setEditData] = useState<VocabularyList>({name: '', categoryId: selectedCategory.id});
     const dispatch = useDispatch();
     useEffect(() => {
         const vocabularyListForCategory = storedVocabularyLists
-            .filter(storedVocabularyList => storedVocabularyList.categoryId === categoryID);
-        if (vocabularyListForCategory.length < 1) {
-            get<VocabularyList[] | null>(`/vocabulary-list/${categoryID}`, (r) => {
+            .filter(storedVocabularyList => storedVocabularyList.categoryId === selectedCategory.id);
+        if (vocabularyListForCategory.length < 1 && selectedCategory.id) {
+            get<VocabularyList[] | null>(`/vocabulary-list/${selectedCategory.id}`, (r) => {
                     if (r) {
                         dispatch(storeVocabularyLists([...storedVocabularyLists, ...r]));
                         setVocabularyLists(r);
@@ -36,7 +38,7 @@ const VocabularyListView = (props: RouteComponentProps<{ categoryID: string }>):
         } else {
             setVocabularyLists(vocabularyListForCategory);
         }
-    }, [categoryID]);
+    }, [selectedCategory]);
     const grid = useMemo(() => {
         const deleteHandler = (id?: string): void => {
             if (id) {
@@ -49,23 +51,23 @@ const VocabularyListView = (props: RouteComponentProps<{ categoryID: string }>):
             setShowEditModal(true);
             setEditData(data);
         };
-        const onDoubleClick = (id?: string): void => {
-            if (id) {
-                props.history.push(`/vocabulary/${categoryID}/${id}`);
+        const onClick = (data: VocabularyList): void => {
+            if (data.id) {
+                props.history.push(`/vocabulary/${user}/${category}/${data.id}`);
             }
         };
         return (<CardGrid<VocabularyList>
             deleteHandler={deleteHandler}
             setEditHandler={setEditHandler}
-            onClick={onDoubleClick}
+            onClick={onClick}
             cards={vocabularyLists}
-            addAction={() => setEditHandler({name: '', categoryId: categoryID})}
+            addAction={() => setEditHandler({name: '', categoryId: selectedCategory.id})}
             title='Choose Vocabulary List:'/>);
     }, [vocabularyLists]);
 
     const editModal = useMemo(() => {
         const cancelHandler = (): void => {
-            setEditData({name: '', categoryId: categoryID});
+            setEditData({name: '', categoryId: selectedCategory.id});
             setShowEditModal(false);
         };
         const onChangeHandler = (field: string, value: string): void => {
@@ -82,7 +84,7 @@ const VocabularyListView = (props: RouteComponentProps<{ categoryID: string }>):
                         .filter(vocabularyList => vocabularyList.id)
                         .filter(vocabularyList => vocabularyList.id !== data.id);
                     setVocabularyLists([...foundedVocabs, data]);
-                    setEditData({name: '', categoryId: categoryID});
+                    setEditData({name: '', categoryId: selectedCategory.id});
                     setShowEditModal(false);
                 });
             }

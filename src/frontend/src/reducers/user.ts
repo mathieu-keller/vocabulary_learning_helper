@@ -5,7 +5,8 @@ import {UserActions} from "../actions/user";
 const initialState: UserStore = {
     isLogin: false,
     categories: [],
-    vocabularyLists: []
+    vocabularyLists: [],
+    selectedCategory: {name: "", owner: "", columns: ["", ""]}
 };
 
 export const user = (state = initialState, action: UserActions): UserStore => {
@@ -13,11 +14,13 @@ export const user = (state = initialState, action: UserActions): UserStore => {
         case userActions.LOGIN:
             return {...state, isLogin: true};
         case userActions.LOGOUT:
-            return {...state, isLogin: false};
+            return initialState;
         case userActions.STORE_CATEGORIES:
             return {...state, categories: action.payload};
         case userActions.STORE_VOCABULARY_LISTS:
             return {...state, vocabularyLists: action.payload};
+        case userActions.SET_SELECTED_CATEGORY:
+            return {...state, selectedCategory: action.payload};
         default:
             return state;
     }

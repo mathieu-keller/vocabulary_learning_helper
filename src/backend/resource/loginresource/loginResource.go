@@ -52,6 +52,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
+	loginData.UserName = strings.ToLower(loginData.UserName)
 	dbUser, err := userentity.GetUser(loginData.UserName)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -66,7 +67,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
-	resource.SetHTTPOnlyToken(w)
+	resource.SetHTTPOnlyToken(w, loginData.UserName)
 	fmt.Fprint(w, "{\"login\":true}")
 }
 
@@ -104,6 +105,7 @@ func registration(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
+	loginData.UserName = strings.ToLower(loginData.UserName)
 	userInDB, err := userentity.GetUser(loginData.UserName)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -124,7 +126,7 @@ func registration(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
 	w.WriteHeader(http.StatusOK)
-	resource.SetHTTPOnlyToken(w)
+	resource.SetHTTPOnlyToken(w, loginData.UserName)
 	fmt.Fprint(w, "{\"login\":true}")
 }
 

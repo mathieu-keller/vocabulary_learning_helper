@@ -12,10 +12,11 @@ export type Category = {
     id?: string;
     name: string;
     columns: string[];
+    owner: string;
 }
 
 const CategoryView = (props: RouteComponentProps): JSX.Element => {
-    const emptyCategory = {name: '', columns: ["", ""]};
+    const emptyCategory = {name: '', columns: ['', ''], owner: ''};
     const [editCategory, setEditCategory] = useState<Category>(emptyCategory);
     const [showModal, setShowModal] = useState<boolean>(false);
     const categories = useSelector((store: AppStore) => store.user.categories);
@@ -47,10 +48,8 @@ const CategoryView = (props: RouteComponentProps): JSX.Element => {
         setEditCategory({...editCategory, columns: [...editCategory.columns, ""]});
     };
 
-    const onClick = (id?: string): void => {
-        if (id) {
-            props.history.push(`${props.location.pathname}/${id}`);
-        }
+    const onClick = (data: Category): void => {
+        props.history.push(`${props.location.pathname}/${data.owner}/${data.name}`);
     };
 
     const deleteHandler = (id?: string): void => {

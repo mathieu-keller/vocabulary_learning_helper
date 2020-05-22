@@ -14,12 +14,12 @@ import (
 	"github.com/afrima/vocabulary_learning_helper/src/backend/entity/vocabularylistentity"
 )
 
-func GetCategory() ([]Category, error) {
+func GetCategory(owner string) ([]Category, error) {
 	collection := database.GetDatabase().Collection("Category")
 	const duration = 30 * time.Second
 	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
 	defer closeCtx()
-	cur, err := collection.Find(ctx, bson.D{})
+	cur, err := collection.Find(ctx, bson.D{{Key: "owner", Value: owner}})
 	if err != nil {
 		log.Println(err)
 		return nil, err

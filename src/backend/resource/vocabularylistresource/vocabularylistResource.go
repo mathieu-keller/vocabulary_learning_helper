@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/mux"
 
@@ -47,6 +48,8 @@ func insertVocabularyList(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
+	claims, _ := resource.GetTokenClaims(r)
+	vocabularyList.Owner = strings.ToLower(claims["userName"].(string))
 	if err = vocabularyList.Insert(); err != nil {
 		switch err.(type) {
 		case vocabularylistentity.Error:

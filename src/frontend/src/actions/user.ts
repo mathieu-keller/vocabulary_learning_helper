@@ -5,7 +5,8 @@ import {VocabularyList} from "../containers/vocabulary/VocabularyListView";
 export type UserActions = LoginAction |
     LogoutAction |
     StoreCategoriesAction |
-    StoreVocabularyListsAction;
+    StoreVocabularyListsAction |
+    SetSelectedCategoryAction;
 
 type LoginAction = ReduxAction<userActions.LOGIN>
 export const login = (): LoginAction => ({
@@ -27,4 +28,10 @@ type StoreVocabularyListsAction = ReduxActionWithPayload<userActions.STORE_VOCAB
 export const storeVocabularyLists = (vocabularyLists: VocabularyList[]): StoreVocabularyListsAction => ({
     type: userActions.STORE_VOCABULARY_LISTS,
     payload: vocabularyLists
+});
+
+type SetSelectedCategoryAction = ReduxActionWithPayload<userActions.SET_SELECTED_CATEGORY, Category>
+export const setSelectedCategory = (category: Category): SetSelectedCategoryAction => ({
+    type: userActions.SET_SELECTED_CATEGORY,
+    payload: category
 });

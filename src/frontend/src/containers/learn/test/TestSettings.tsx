@@ -10,9 +10,9 @@ import * as testActions from "../../../actions/test";
 import {AppStore} from "../../../store/store.types";
 import {storeVocabularyLists} from "../../../actions/user";
 
-const TestSettings = (props: RouteComponentProps<{ categoryID: string }>): JSX.Element => {
+const TestSettings = (props: RouteComponentProps<{ user: string; category: string }>): JSX.Element => {
     document.title = 'Trainer - Test Settings';
-    const categoryId = props.match.params.categoryID;
+    const {user, category} = props.match.params;
     const dispatch = useDispatch();
     const [checked, setChecked] = React.useState<{ value: string; name: string }[]>([]);
     const [left, setLeft] = React.useState<{ value: string; name: string }[]>([]);
@@ -21,27 +21,27 @@ const TestSettings = (props: RouteComponentProps<{ categoryID: string }>): JSX.E
     const [columns, setColumns] = useState<string[]>([]);
     const [front, setFront] = useState<string>('');
     const [back, setBack] = useState<string>('');
-    const storedCategories = useSelector((store: AppStore) => store.user.categories);
     const storedVocabularyLists = useSelector((store: AppStore) => store.user.vocabularyLists);
+    const selectedCategory = useSelector((store: AppStore) => store.user.selectedCategory);
+
     useEffect(() => {
-        const vocabularyLists = storedVocabularyLists.filter(storedVocabularyList => storedVocabularyList.categoryId === categoryId);
-        if (vocabularyLists.length < 1) {
-            get<VocabularyList[]>(`/vocabulary-list/${categoryId}`, (r) => {
+        const vocabularyLists = storedVocabularyLists.filter(storedVocabularyList => storedVocabularyList.categoryId === selectedCategory.id);
+        if (vocabularyLists.length < 1 && selectedCategory.id) {
+            get<VocabularyList[]>(`/vocabulary-list/${selectedCategory.id}`, (r) => {
                 setLeft(r.map(m => ({name: m.name, value: m.id ? m.id : ''})));
                 dispatch(storeVocabularyLists([...storedVocabularyLists, ...r]));
             });
         } else {
             setLeft(vocabularyLists.map(m => ({name: m.name, value: m.id ? m.id : ''})));
         }
-    }, [categoryId]);
+    }, [selectedCategory]);
     useEffect(() => {
-        const category = storedCategories.find(storedCategory => storedCategory.id === categoryId);
-        if (category) {
-            setColumns(category.columns);
-            setFront(category.columns[0]);
-            setBack(category.columns[1]);
+        if (selectedCategory.id) {
+            setColumns(selectedCategory.columns);
+            setFront(selectedCategory.columns[0]);
+            setBack(selectedCategory.columns[1]);
         }
-    }, [categoryId, storedCategories]);
+    }, [selectedCategory]);
     const onSubmit = (): void => {
         post<{ listIds: string[]; limit: number; firstValueField: string; secondValueField: string }, Vocab[]>('/generate-test',
             {listIds: right.map(ri => ri.value), limit: maxVocabularyCount, firstValueField: front, secondValueField: back},

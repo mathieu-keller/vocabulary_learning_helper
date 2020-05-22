@@ -8,7 +8,7 @@ type CardGridProps<c extends { id?: string; name: string }> = {
     title: string;
     cards: c[];
     addAction: () => void;
-    onClick: (id?: string) => void;
+    onClick: (data: c) => void;
     deleteHandler: (id?: string) => void;
     setEditHandler: (data: c) => void;
 }
@@ -30,7 +30,7 @@ function CardGrid<c extends { id?: string; name: string }>(props: CardGridProps<
         <Grid item key={card.id} xs={4}>
             <Card className={classes.card}>
                 {getOptionBar(card)}
-                <CardActionArea onClick={() => props.onClick(card.id)}>
+                <CardActionArea onClick={() => props.onClick(card)}>
                     <CardContent>
                         <Typography className={classes.typography} align={"center"} variant="h4" component="h2">
                             {card.name}

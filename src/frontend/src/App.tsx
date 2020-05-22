@@ -27,15 +27,21 @@ const App = (): JSX.Element => {
                 dispatch(userActions.login());
             }
         });
-        get<Category[] | null>('/category', data => {
-            if (data) {
-                dispatch(userActions.storeCategories(data));
-            }
-        });
     }, []);
     useEffect(() => {
         if (isLogin) {
-            setTimer(setInterval(() => get<{}>('/refresh-token'), 450000));//7,5 minutes
+            setTimer(setInterval(() => get<{ login: boolean }>('/refresh-token', (r) => {
+                if (r.login) {
+                    dispatch(userActions.login());
+                } else {
+                    dispatch(userActions.logout());
+                }
+            }), 450000));//7,5 minutes
+            get<Category[] | null>('/category', data => {
+                if (data) {
+                    dispatch(userActions.storeCategories(data));
+                }
+            });
         } else if (timer) {
             clearInterval(timer);
         }
@@ -47,15 +53,15 @@ const App = (): JSX.Element => {
             <Switch>
                 <ProtectedRoute path='/profile' isAllowed={isLogin}
                                 render={(props) => <ProfileView {...props}/>}/>
-                <ProtectedRoute path='/vocabulary/:categoryID/:listID' isAllowed={isLogin}
+                <ProtectedRoute path='/vocabulary/:user/:category/:listId' isAllowed={isLogin}
                                 render={(props) => <VocabularyView {...props}/>}/>
-                <ProtectedRoute path='/vocabulary/:categoryID' isAllowed={isLogin}
+                <ProtectedRoute path='/vocabulary/:user/:category' isAllowed={isLogin}
                                 render={(props) => <VocabularyListView {...props}/>}/>
                 <ProtectedRoute path='/vocabulary' isAllowed={true}
                                 render={(props) => <CategoryView {...props}/>}/>
                 <ProtectedRoute path='/learn/test' isAllowed={true}
                                 render={(props) => <TestView {...props}/>}/>
-                <ProtectedRoute path='/learn/:categoryID' isAllowed={true}
+                <ProtectedRoute path='/learn/:user/:category' isAllowed={true}
                                 render={(props) => <TestSettings {...props}/>}/>
                 <ProtectedRoute path='/learn' isAllowed={true}
                                 render={(props) => <CategoryView {...props}/>}/>
