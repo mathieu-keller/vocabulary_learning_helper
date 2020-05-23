@@ -12,7 +12,6 @@ import {storeVocabularyLists} from "../../../actions/user";
 
 const TestSettings = (props: RouteComponentProps<{ user: string; category: string }>): JSX.Element => {
     document.title = 'Trainer - Test Settings';
-    const {user, category} = props.match.params;
     const dispatch = useDispatch();
     const [checked, setChecked] = React.useState<{ value: string; name: string }[]>([]);
     const [left, setLeft] = React.useState<{ value: string; name: string }[]>([]);

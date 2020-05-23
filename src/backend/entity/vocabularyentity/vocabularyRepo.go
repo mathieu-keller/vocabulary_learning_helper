@@ -14,9 +14,7 @@ import (
 )
 
 func GetVocabularyByIDs(ids []primitive.ObjectID) ([]Vocabulary, error) {
-	collection := database.GetDatabase().Collection("Vocabulary")
-	const duration = 30 * time.Second
-	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
+	collection, ctx, closeCtx := database.GetDatabase("Vocabulary")
 	defer closeCtx()
 	cur, err := collection.Find(ctx, bson.D{{Key: "_id", Value: bson.M{"$in": ids}}})
 	if err != nil {
@@ -37,9 +35,7 @@ func GetVocabularyByListID(listID string) ([]Vocabulary, error) {
 	if err != nil {
 		return nil, err
 	}
-	collection := database.GetDatabase().Collection("Vocabulary")
-	const duration = 30 * time.Second
-	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
+	collection, ctx, closeCtx := database.GetDatabase("Vocabulary")
 	defer closeCtx()
 	cur, err := collection.Find(ctx, bson.D{{Key: "listID", Value: id}})
 	if err != nil {
@@ -62,9 +58,7 @@ func (vocabulary *Vocabulary) InsertVocab() error {
 	if len(vocabulary.Values) < 2 {
 		return Error{ErrorText: "2 Values must be filled"}
 	}
-	collection := database.GetDatabase().Collection("Vocabulary")
-	const duration = 30 * time.Second
-	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
+	collection, ctx, closeCtx := database.GetDatabase("Vocabulary")
 	defer closeCtx()
 	if vocabulary.ID.IsZero() {
 		vocabulary.ID = primitive.NewObjectIDFromTimestamp(time.Now())
@@ -94,27 +88,21 @@ func (vocabulary *Vocabulary) InsertVocab() error {
 }
 
 func (vocabulary Vocabulary) Delete() error {
-	collection := database.GetDatabase().Collection("Vocabulary")
-	const duration = 30 * time.Second
-	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
+	collection, ctx, closeCtx := database.GetDatabase("Vocabulary")
 	defer closeCtx()
 	_, err := collection.DeleteOne(ctx, bson.D{{Key: "_id", Value: vocabulary.ID}})
 	return err
 }
 
 func DeleteWithListID(listID primitive.ObjectID) error {
-	collection := database.GetDatabase().Collection("Vocabulary")
-	const duration = 30 * time.Second
-	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
+	collection, ctx, closeCtx := database.GetDatabase("Vocabulary")
 	defer closeCtx()
 	_, err := collection.DeleteMany(ctx, bson.D{{Key: "listID", Value: listID}})
 	return err
 }
 
 func GetRandomVocabularyByListIds(ids []primitive.ObjectID, limit int8) ([]Vocabulary, error) {
-	collection := database.GetDatabase().Collection("Vocabulary")
-	const duration = 30 * time.Second
-	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
+	collection, ctx, closeCtx := database.GetDatabase("Vocabulary")
 	defer closeCtx()
 	cur, err := collection.Aggregate(ctx, mongo.Pipeline{
 		bson.D{{Key: "$match", Value: bson.M{"listID": bson.M{"$in": ids}}}},

@@ -13,7 +13,7 @@ const NavigationBar = (props: { selectedCategory?: Category } & RouteComponentPr
     const categories = useSelector((store: AppStore) => store.user.categories);
     const selectedCategory = useSelector((store: AppStore) => store.user.selectedCategory);
     const pathSections = props.location.pathname.split('/');
-    const [hash, section, urlUser, urlCategory, list] = pathSections;
+    const [section, urlUser, urlCategory] = pathSections.slice(1);
     const dispatch = useDispatch();
     useEffect(() => {
         const user = selectedCategory.owner || urlUser;
@@ -51,7 +51,6 @@ const NavigationBar = (props: { selectedCategory?: Category } & RouteComponentPr
             <Tabs className={classes.tabs} value={'/' + props.location.pathname.split('/', 2)[1]}
                   onChange={(e, v) => props.history.push(v)}>
                 <Tab label="Home" icon={<Home/>} value={'/'}/>
-                <Tab label="Learn" icon={<School/>} value={'/learn'}/>
                 <Tab label="Login" icon={<AccountCircle/>} value={'/login'}/>
             </Tabs>
         );

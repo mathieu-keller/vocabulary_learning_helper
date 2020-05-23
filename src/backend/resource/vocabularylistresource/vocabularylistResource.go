@@ -17,8 +17,8 @@ import (
 
 func Init(r *mux.Router) {
 	const path = "/vocabulary-list"
-	r.HandleFunc(path+"/{id}", getVocabularyList).Methods(http.MethodGet)
-	r.HandleFunc(path, insertVocabularyList).Methods(http.MethodPost)
+	r.Handle(path+"/{id}",resource.IsAuthorized( getVocabularyList)).Methods(http.MethodGet)
+	r.Handle(path, resource.IsAuthorized(insertVocabularyList)).Methods(http.MethodPost)
 	r.Handle(path+"/{id}", resource.IsAuthorized(deleteVocabularyList)).Methods(http.MethodDelete)
 }
 

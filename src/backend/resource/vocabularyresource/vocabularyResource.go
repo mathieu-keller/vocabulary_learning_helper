@@ -18,11 +18,11 @@ import (
 
 func Init(r *mux.Router) {
 	const path = "/vocabulary"
-	r.HandleFunc(path, insertVocab).Methods(http.MethodPost)
+	r.Handle(path, resource.IsAuthorized(insertVocab)).Methods(http.MethodPost)
 	r.Handle(path+"/{id}", resource.IsAuthorized(getVocab)).Methods(http.MethodGet)
 	r.Handle(path, resource.IsAuthorized(deleteVocab)).Methods(http.MethodDelete)
-	r.HandleFunc("/generate-test", generateTest).Methods(http.MethodPost)
-	r.HandleFunc("/check-test", checkTest).Methods(http.MethodPost)
+	r.Handle("/generate-test", resource.IsAuthorized(generateTest)).Methods(http.MethodPost)
+	r.Handle("/check-test", resource.IsAuthorized(checkTest)).Methods(http.MethodPost)
 }
 
 func checkTest(w http.ResponseWriter, r *http.Request) {

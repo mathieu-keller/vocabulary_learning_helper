@@ -15,9 +15,7 @@ import (
 )
 
 func GetCategory(owner string) ([]Category, error) {
-	collection := database.GetDatabase().Collection("Category")
-	const duration = 30 * time.Second
-	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
+	collection, ctx, closeCtx := database.GetDatabase("Category")
 	defer closeCtx()
 	cur, err := collection.Find(ctx, bson.D{{Key: "owner", Value: owner}})
 	if err != nil {
@@ -42,9 +40,7 @@ func GetCategoryByID(categoryID string) (Category, error) {
 	if err != nil {
 		return Category{}, err
 	}
-	collection := database.GetDatabase().Collection("Category")
-	const duration = 30 * time.Second
-	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
+	collection, ctx, closeCtx := database.GetDatabase("Category")
 	defer closeCtx()
 	var returnValue Category
 	err = collection.FindOne(ctx, bson.D{{Key: "_id", Value: id}}).Decode(&returnValue)
@@ -59,9 +55,7 @@ func (category *Category) Insert() error {
 	if category.Name == "" || len(category.Columns) < 2 {
 		return vocabularyentity.Error{ErrorText: "Category need a name and 2 or more columns!"}
 	}
-	collection := database.GetDatabase().Collection("Category")
-	const duration = 30 * time.Second
-	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
+	collection, ctx, closeCtx := database.GetDatabase("Category")
 	defer closeCtx()
 	if category.ID.IsZero() {
 		category.ID = primitive.NewObjectIDFromTimestamp(time.Now())
@@ -95,9 +89,7 @@ func Delete(categoryID string) error {
 	if err != nil {
 		return err
 	}
-	collection := database.GetDatabase().Collection("Category")
-	const duration = 30 * time.Second
-	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
+	collection, ctx, closeCtx := database.GetDatabase("Category")
 	defer closeCtx()
 	_, err = collection.DeleteOne(ctx, bson.D{{Key: "_id", Value: id}})
 	if err != nil {

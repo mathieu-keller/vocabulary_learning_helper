@@ -9,11 +9,9 @@ const initialState: TestVocabularyStore = {
 };
 
 export const testVocabularies = (state = initialState, action: TestActions): TestVocabularyStore => {
-    switch (action.type) {
-        case testActions.SET_TEST_DATA:
-            const {vocabularies, front, back} = action.payload;
-            return {...state, vocabularies, front, back};
-        default:
-            return state;
+    if (action.type === testActions.SET_TEST_DATA) {
+        const {vocabularies, front, back} = action.payload;
+        return {...state, vocabularies, front, back};
     }
+    return state;
 };

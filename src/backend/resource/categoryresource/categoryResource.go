@@ -16,9 +16,9 @@ import (
 
 func Init(r *mux.Router) {
 	const path = "/category"
-	r.HandleFunc(path, get).Methods(http.MethodGet)
-	r.HandleFunc(path+"/{id}", getByID).Methods(http.MethodGet)
-	r.HandleFunc(path, insert).Methods(http.MethodPost)
+	r.Handle(path, resource.IsAuthorized(get)).Methods(http.MethodGet)
+	r.Handle(path+"/{id}", resource.IsAuthorized(getByID)).Methods(http.MethodGet)
+	r.Handle(path, resource.IsAuthorized(insert)).Methods(http.MethodPost)
 	r.Handle(path+"/{id}", resource.IsAuthorized(deleteCategory)).Methods(http.MethodDelete)
 }
 

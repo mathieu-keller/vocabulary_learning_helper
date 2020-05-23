@@ -18,9 +18,7 @@ func GetVocabularyList(categoryID string) ([]VocabularyList, error) {
 	if err != nil {
 		return nil, err
 	}
-	collection := database.GetDatabase().Collection("VocabularyList")
-	const duration = 30 * time.Second
-	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
+	collection, ctx, closeCtx := database.GetDatabase("VocabularyList")
 	defer closeCtx()
 	cur, err := collection.Find(ctx, bson.D{{Key: "categoryID", Value: id}})
 	if err != nil {
@@ -44,9 +42,7 @@ func (vocabularyList *VocabularyList) Insert() error {
 	if vocabularyList.Name == "" {
 		return Error{ErrorText: "Vocabulary list need a name!"}
 	}
-	collection := database.GetDatabase().Collection("VocabularyList")
-	const duration = 30 * time.Second
-	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
+	collection, ctx, closeCtx := database.GetDatabase("VocabularyList")
 	defer closeCtx()
 	if vocabularyList.ID.IsZero() {
 		vocabularyList.ID = primitive.NewObjectIDFromTimestamp(time.Now())
@@ -80,9 +76,7 @@ func Delete(vocabularyListID string) error {
 	if err != nil {
 		return err
 	}
-	collection := database.GetDatabase().Collection("VocabularyList")
-	const duration = 30 * time.Second
-	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
+	collection, ctx, closeCtx := database.GetDatabase("VocabularyList")
 	defer closeCtx()
 	_, err = collection.DeleteOne(ctx, bson.D{{Key: "_id", Value: id}})
 	if err != nil {
@@ -92,9 +86,7 @@ func Delete(vocabularyListID string) error {
 }
 
 func DeleteWithCategoryID(categoryID primitive.ObjectID) error {
-	collection := database.GetDatabase().Collection("VocabularyList")
-	const duration = 30 * time.Second
-	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
+	collection, ctx, closeCtx := database.GetDatabase("VocabularyList")
 	defer closeCtx()
 	cur, err := collection.Find(ctx, bson.D{{Key: "categoryID", Value: categoryID}})
 	if err != nil {

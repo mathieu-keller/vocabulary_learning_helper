@@ -20,7 +20,7 @@ import (
 
 func Init(r *mux.Router) {
 	r.HandleFunc("/login", login).Methods(http.MethodPost)
-	r.Handle("/logout", resource.IsAuthorized(logout)).Methods(http.MethodPost)
+	r.HandleFunc("/logout", logout).Methods(http.MethodPost)
 	r.HandleFunc("/registration", registration).Methods(http.MethodPost)
 }
 

@@ -25,12 +25,14 @@ func connectToDatabase() {
 	database = client.Database("JapaneseLearning")
 }
 
-func GetDatabase() *mongo.Database {
-	if database != nil {
-		return database
+func GetDatabase(collectionName string) (*mongo.Collection, context.Context, context.CancelFunc) {
+	if database == nil {
+		connectToDatabase()
 	}
-	connectToDatabase()
-	return database
+	collection := database.Collection(collectionName)
+	const duration = 30 * time.Second
+	ctx, closeCtx := context.WithTimeout(context.Background(), duration)
+	return collection, ctx, closeCtx
 }
 
 func CloseCursor(ctx context.Context, cur *mongo.Cursor) {
