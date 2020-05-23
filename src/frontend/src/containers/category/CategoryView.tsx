@@ -6,7 +6,7 @@ import CardGrid from "../../components/ui/grid/CardGrid";
 import {RouteComponentProps} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {AppStore} from "../../store/store.types";
-import {storeCategories} from "../../actions/user";
+import {setSelectedCategory, storeCategories} from "../../actions/user";
 
 export type Category = {
     id?: string;
@@ -49,7 +49,11 @@ const CategoryView = (props: RouteComponentProps): JSX.Element => {
     };
 
     const onClick = (data: Category): void => {
-        props.history.push(`${props.location.pathname}/${data.owner}/${data.name}`);
+        const {pathname} = props.location;
+        dispatch(setSelectedCategory(data));
+        if(pathname !== '/category') {
+            props.history.push(`${pathname}/${data.owner}/${data.name}`);
+        }
     };
 
     const deleteHandler = (id?: string): void => {

@@ -1,4 +1,4 @@
 - [ ] Add unique constrain on Category (name,owner)
 - [ ] Add unique constrain on VocabularyList (categoryId, name)
-- [ ] Show the category in header
+- [x] Show the category in header
 - [ ] Add permissions for other vocabulary lists

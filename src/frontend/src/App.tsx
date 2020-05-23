@@ -57,13 +57,15 @@ const App = (): JSX.Element => {
                                 render={(props) => <VocabularyView {...props}/>}/>
                 <ProtectedRoute path='/vocabulary/:user/:category' isAllowed={isLogin}
                                 render={(props) => <VocabularyListView {...props}/>}/>
-                <ProtectedRoute path='/vocabulary' isAllowed={true}
+                <ProtectedRoute path='/vocabulary' isAllowed={isLogin}
                                 render={(props) => <CategoryView {...props}/>}/>
-                <ProtectedRoute path='/learn/test' isAllowed={true}
+                <ProtectedRoute path='/learn/test' isAllowed={isLogin}
                                 render={(props) => <TestView {...props}/>}/>
-                <ProtectedRoute path='/learn/:user/:category' isAllowed={true}
+                <ProtectedRoute path='/learn/:user/:category' isAllowed={isLogin}
                                 render={(props) => <TestSettings {...props}/>}/>
-                <ProtectedRoute path='/learn' isAllowed={true}
+                <ProtectedRoute path='/learn' isAllowed={isLogin}
+                                render={(props) => <CategoryView {...props}/>}/>
+                <ProtectedRoute path='/category' isAllowed={isLogin}
                                 render={(props) => <CategoryView {...props}/>}/>
                 <ProtectedRoute path='/login' isAllowed={!isLogin}
                                 render={(props) => <LoginView {...props}/>}/>
