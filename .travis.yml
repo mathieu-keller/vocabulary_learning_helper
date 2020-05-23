@@ -2,8 +2,8 @@ jobs:
   include:
     - stage: test
       language: go
-      node_js: latest
-      go: latest
+      node_js: 12
+      go: 1.14
       addons:
         sonarcloud:
           organization: afrima
