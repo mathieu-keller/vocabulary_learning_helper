@@ -1,19 +1,21 @@
 matrix:
   include:
-  - language: node_js
-    node_js: 12.16.3
-    before_install:
-    - cd src/frontend
-    - npm install yarn
-    install:
-    - yarn
-    addons:
-      sonarcloud:
-        organization: afrima
-        token:
-          secure: hzF/a55olqyUXCrC3vZWp/ftgPl2SFmbqY45PJ0aEJwb0TLWTGDfhatgBmpy8TizqxIMNjH8artMVdR9ht6vurvpZqZc7RtUWRDMJUFJ0Rkilfkl69qIeqtfOGBnuGSUS77307KXh1gc3vQrJQO/JEdduvB30zZTF595WR+XElYwrmDEeCogKQuBRbL8dSE5xepRzE0LM6OuYt8I+U9+gC/X9oa+4iiOPiXOH9HndT+PCDyOFrLEJoQ73X8rNoyk+pb4uTNMMMseyb1733SW88gt3hKZnhwPvp4mrR5i4kzZjsiOMs0N09Trh/84BttkQt+4fxQScRwTKuJ1q9dGW1y64LEMThprE4n2MtjZqaUWs+mlP1KeFUvpFGP4FTIiH47ln5AGMIadsCBxW8Z8juZsjoViBE+xMRVEY0nPKljc8ufALbtnZrUJ+sMl5M0jFNbkqFcxvpb1/V+FyyJSXkXrSw0i6OZ1EF/q+Jqs5SLhlyrBzjmtLyfoNWyKjVzX2/ts5JCophmaq3IRWiA3z1xYorSHTmdlWhX2S6iHcFm5q0AqRQjeOP/yWdfB3dCN7xYGmQKVxkNKpqBcp6aoRD3lS+hHYf9ELB3PUDYLGCa5zU/sntiEXptj3EvslGrimfcxg7A9B0eqGTygK5Lw+pNaULS1B/hNQVww2Wjke6w=
-    script:
-    - npm run lint
-    - npm run test
-    - npm run build:prod
-    - sonar-scanner
+    - language: node_js
+      node_js: 12.16.3
+      before_install:
+        - cd src/frontend
+        - npm install -g yarn
+      install:
+        - yarn
+      addons:
+        sonarcloud:
+          organization: afrima
+          token:
+            secure: hzF/a55olqyUXCrC3vZWp/ftgPl2SFmbqY45PJ0aEJwb0TLWTGDfhatgBmpy8TizqxIMNjH8artMVdR9ht6vurvpZqZc7RtUWRDMJUFJ0Rkilfkl69qIeqtfOGBnuGSUS77307KXh1gc3vQrJQO/JEdduvB30zZTF595WR+XElYwrmDEeCogKQuBRbL8dSE5xepRzE0LM6OuYt8I+U9+gC/X9oa+4iiOPiXOH9HndT+PCDyOFrLEJoQ73X8rNoyk+pb4uTNMMMseyb1733SW88gt3hKZnhwPvp4mrR5i4kzZjsiOMs0N09Trh/84BttkQt+4fxQScRwTKuJ1q9dGW1y64LEMThprE4n2MtjZqaUWs+mlP1KeFUvpFGP4FTIiH47ln5AGMIadsCBxW8Z8juZsjoViBE+xMRVEY0nPKljc8ufALbtnZrUJ+sMl5M0jFNbkqFcxvpb1/V+FyyJSXkXrSw0i6OZ1EF/q+Jqs5SLhlyrBzjmtLyfoNWyKjVzX2/ts5JCophmaq3IRWiA3z1xYorSHTmdlWhX2S6iHcFm5q0AqRQjeOP/yWdfB3dCN7xYGmQKVxkNKpqBcp6aoRD3lS+hHYf9ELB3PUDYLGCa5zU/sntiEXptj3EvslGrimfcxg7A9B0eqGTygK5Lw+pNaULS1B/hNQVww2Wjke6w=
+      script:
+        - npm run lint
+        - npm run test
+        - npm run build:prod
+      after_script:
+        - cd ../..
+        - sonar-scanner
