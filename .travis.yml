@@ -1,7 +1,6 @@
 matrix:
   include:
-    - stage: frontend
-      addons:
+    - addons:
         sonarcloud:
           organization: afrima
           token:
@@ -18,8 +17,7 @@ matrix:
         - npm run test
         - npm run build:prod
         - sonar-scanner
-    - stage: backend
-      addons:
+    - addons:
         sonarcloud:
           organization: afrima
           token:
