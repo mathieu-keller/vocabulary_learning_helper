@@ -17,6 +17,7 @@ jobs:
         - npm run lint
         - npm run test
         - npm run build:prod
+        - cd ../..
         - sonar-scanner
     - stage: backend
       addons:
@@ -34,4 +35,5 @@ jobs:
       script:
         - go test -coverprofile=coverage.out -coverpkg=./... ./...
         - go build -ldflags "-s -w" -o ./
+        - cd ../..
         - sonar-scanner
