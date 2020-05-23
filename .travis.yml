@@ -24,7 +24,7 @@ jobs:
         - cd src/backend
       install:
         - go get -d -v
-          go get github.com/stretchr/testify
+        - go get github.com/stretchr/testify
       script:
         - go test -coverprofile=coverage.out -coverpkg=./... ./...
         - go build -ldflags "-s -w" -o ./
