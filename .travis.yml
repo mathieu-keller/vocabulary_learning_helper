@@ -1,0 +1,13 @@
+matrix:
+  include:
+    - language: node_js
+      node_js: 12.16.3
+      before_install:
+        - cd src/frontend
+        - npm install yarn
+      install:
+        - yarn
+      script:
+        - npm run lint
+        - npm run test
+        - npm run build:prod
