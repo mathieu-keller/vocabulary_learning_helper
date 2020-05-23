@@ -6,7 +6,7 @@ export enum userActions {
     SET_SELECTED_CATEGORY = 'SET_SELECTED_CATEGORY'
 }
 
-export enum testActions {SET_TEST_DATA = 'SET_TEST_DATA'}
+export enum testVocabularyActions {SET_TEST_DATA = 'SET_TEST_DATA'}
 
 export type ReduxActionWithPayload<T, P> = {
     type: T;

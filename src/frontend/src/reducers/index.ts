@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 import {user} from "./user";
-import {testVocabularies} from "./test";
+import {testVocabularies} from "./testVocabularies";
 
 const reducers = combineReducers({
     user: user,

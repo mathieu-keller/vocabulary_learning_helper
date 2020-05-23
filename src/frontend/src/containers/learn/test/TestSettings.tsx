@@ -6,7 +6,7 @@ import {Button, Grid, List, ListItem, ListItemText, Paper, TextField} from "@mat
 import {Vocab} from "../../vocabulary/VocabularyView";
 import {RouteComponentProps} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import * as testActions from "../../../actions/test";
+import * as testActions from "../../../actions/testVocabularies";
 import {AppStore} from "../../../store/store.types";
 import {storeVocabularyLists} from "../../../actions/user";
 

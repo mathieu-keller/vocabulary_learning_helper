@@ -2,7 +2,8 @@ import {userActions} from '../actions/actions.types';
 import {UserStore} from "../store/store.types";
 import {UserActions} from "../actions/user";
 
-const initialState: UserStore = {
+// visible for test
+export const initialState: UserStore = {
     isLogin: false,
     categories: [],
     vocabularyLists: [],
@@ -21,7 +22,5 @@ export const user = (state = initialState, action: UserActions): UserStore => {
             return {...state, vocabularyLists: action.payload};
         case userActions.SET_SELECTED_CATEGORY:
             return {...state, selectedCategory: action.payload};
-        default:
-            return state;
     }
 };
