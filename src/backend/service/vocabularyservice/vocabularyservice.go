@@ -1,7 +1,9 @@
 package vocabularyservice
 
 import (
+	"errors"
 	"log"
+	"strings"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
@@ -58,7 +60,7 @@ func GenerateTest(testReqBody GenerateTestRequest) ([]vocabularyentity.Vocabular
 	return responseVocabularies, nil
 }
 
-func CheckTest(correctVocabs []vocabularyentity.Vocabulary, checkRequestBody CheckTestRequest) TestResult {
+func CheckTest(correctVocabs []vocabularyentity.Vocabulary, checkRequestBody CheckTestRequest) (TestResult, error) {
 	userDBVocabs := make([]UserDBVocabs, 0, len(correctVocabs))
 	correct := int8(0)
 	for _, correctVocab := range correctVocabs {
@@ -68,12 +70,15 @@ func CheckTest(correctVocabs []vocabularyentity.Vocabulary, checkRequestBody Che
 				dbFirstValue := correctVocab.GetValueByKey(checkRequestBody.FirstValueField)
 				userSecondValue := vocab.GetValueByKey(checkRequestBody.SecondValueField)
 				dbSecondValue := correctVocab.GetValueByKey(checkRequestBody.SecondValueField)
+				if userFirstValue == nil || dbFirstValue == nil || userSecondValue == nil || dbSecondValue == nil {
+					return TestResult{}, errors.New("one field does not exist")
+				}
 				userDBVocabs = append(userDBVocabs, UserDBVocabs{ID: correctVocab.ID,
 					DBFirst:    *dbFirstValue,
 					DBSecond:   *dbSecondValue,
 					UserFirst:  *userFirstValue,
 					UserSecond: *userSecondValue})
-				if userSecondValue.Value == dbSecondValue.Value {
+				if strings.ToLower(strings.TrimSpace(userSecondValue.Value)) == strings.ToLower(strings.TrimSpace(dbSecondValue.Value)) {
 					correct++
 				}
 				break
@@ -81,5 +86,5 @@ func CheckTest(correctVocabs []vocabularyentity.Vocabulary, checkRequestBody Che
 		}
 	}
 	correction := TestResult{Vocabs: userDBVocabs, Correct: correct}
-	return correction
+	return correction, nil
 }

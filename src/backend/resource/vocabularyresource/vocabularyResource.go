@@ -36,7 +36,11 @@ func checkTest(w http.ResponseWriter, r *http.Request) {
 		resource.SendError(http.StatusInternalServerError, w, err)
 		return
 	}
-	correction := vocabularyservice.CheckTest(correctVocabs, checkRequestBody)
+	correction, err := vocabularyservice.CheckTest(correctVocabs, checkRequestBody)
+	if err != nil {
+		resource.SendError(http.StatusBadRequest, w, err)
+		return
+	}
 	w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(correction); err != nil {
