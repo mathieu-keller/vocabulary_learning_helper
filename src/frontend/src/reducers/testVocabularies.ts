@@ -14,5 +14,8 @@ export const testVocabularies = (state = initialState, action: TestActions): Tes
             const {vocabularies, front, back} = action.payload;
             return {...state, vocabularies, front, back};
         }
+        default: {
+            return state;
+        }
     }
 };

@@ -2,3 +2,4 @@
 - [ ] Add unique constrain on VocabularyList (categoryId, name)
 - [x] Show the category in header
 - [ ] Add permissions for other vocabulary lists
+- [ ] Save test results

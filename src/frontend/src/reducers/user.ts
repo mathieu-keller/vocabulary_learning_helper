@@ -22,5 +22,8 @@ export const user = (state = initialState, action: UserActions): UserStore => {
             return {...state, vocabularyLists: action.payload};
         case userActions.SET_SELECTED_CATEGORY:
             return {...state, selectedCategory: action.payload};
+        default: {
+            return state;
+        }
     }
 };
