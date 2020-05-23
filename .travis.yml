@@ -13,7 +13,7 @@ matrix:
         - go get -d -v
       script:
         - go test -coverprofile=coverage.out -coverpkg=./... ./...
-        - go build -ldflags "-s -w" -o /go/bin/backend
+        - go build -ldflags "-s -w" -o ./
       after_script:
         - cd ../..
         - sonar-scanner

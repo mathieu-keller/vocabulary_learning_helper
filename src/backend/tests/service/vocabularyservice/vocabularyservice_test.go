@@ -6,8 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/afrima/vocabulary_learning_helper/src/backend/entity/vocabularyentity"
-	"github.com/afrima/vocabulary_learning_helper/src/backend/service/vocabularyservice"
+	"github.com/Afrima/vocabulary_learning_helper/src/backend/entity/vocabularyentity"
+	"github.com/Afrima/vocabulary_learning_helper/src/backend/service/vocabularyservice"
 )
 
 //Test CheckTest

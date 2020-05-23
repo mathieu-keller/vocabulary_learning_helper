@@ -13,9 +13,9 @@ import (
 	"github.com/gorilla/mux"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/afrima/vocabulary_learning_helper/src/backend/entity/userentity"
-	"github.com/afrima/vocabulary_learning_helper/src/backend/resource"
-	"github.com/afrima/vocabulary_learning_helper/src/backend/utility"
+	"github.com/Afrima/vocabulary_learning_helper/src/backend/entity/userentity"
+	"github.com/Afrima/vocabulary_learning_helper/src/backend/resource"
+	"github.com/Afrima/vocabulary_learning_helper/src/backend/utility"
 )
 
 func Init(r *mux.Router) {

@@ -9,9 +9,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/afrima/vocabulary_learning_helper/src/backend/database"
-	"github.com/afrima/vocabulary_learning_helper/src/backend/entity/vocabularyentity"
-	"github.com/afrima/vocabulary_learning_helper/src/backend/entity/vocabularylistentity"
+	"github.com/Afrima/vocabulary_learning_helper/src/backend/database"
+	"github.com/Afrima/vocabulary_learning_helper/src/backend/entity/vocabularyentity"
+	"github.com/Afrima/vocabulary_learning_helper/src/backend/entity/vocabularylistentity"
 )
 
 func GetCategory(owner string) ([]Category, error) {
