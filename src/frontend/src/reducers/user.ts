@@ -1,6 +1,6 @@
 import {userActions} from '../actions/actions.types';
 import {UserStore} from "../store/store.types";
-import {UserActions} from "../actions/user";
+import {userActionFunctions, UserActions} from "../actions/user";
 
 // visible for test
 export const initialState: UserStore = {

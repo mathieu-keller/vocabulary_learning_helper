@@ -6,7 +6,7 @@ import CardGrid from "../../components/ui/grid/CardGrid";
 import {RouteComponentProps} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {AppStore} from "../../store/store.types";
-import {setSelectedCategory, storeCategories} from "../../actions/user";
+import {userActionFunctions} from "../../actions/user";
 
 export type Category = {
     id?: string;
@@ -39,7 +39,7 @@ const CategoryView = (props: RouteComponentProps): JSX.Element => {
 
     const onSave = (): void => {
         post<Category, Category>('/category', editCategory, data => {
-            dispatch(storeCategories([...categories, data]));
+            dispatch(userActionFunctions.storeCategories([...categories, data]));
             onClose();
         });
     };
@@ -50,7 +50,7 @@ const CategoryView = (props: RouteComponentProps): JSX.Element => {
 
     const onClick = (data: Category): void => {
         const {pathname} = props.location;
-        dispatch(setSelectedCategory(data));
+        dispatch(userActionFunctions.setSelectedCategory(data));
         if(pathname !== '/category') {
             props.history.push(`${pathname}/${data.owner}/${data.name}`);
         }
@@ -59,7 +59,7 @@ const CategoryView = (props: RouteComponentProps): JSX.Element => {
     const deleteHandler = (id?: string): void => {
         if (id) {
             deleteCall<{}, string>(`/category/${id}`, {},
-                (resId) => dispatch(storeCategories(categories.filter(category => category.id !== resId))));
+                (resId) => dispatch(userActionFunctions.storeCategories(categories.filter(category => category.id !== resId))));
         }
     };
 

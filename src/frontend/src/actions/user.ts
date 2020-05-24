@@ -9,29 +9,27 @@ export type UserActions = LoginAction |
     SetSelectedCategoryAction;
 
 type LoginAction = ReduxAction<userActions.LOGIN>
-export const login = (): LoginAction => ({
-    type: userActions.LOGIN
-});
-
 type LogoutAction = ReduxAction<userActions.LOGOUT>
-export const logout = (): LogoutAction => ({
-    type: userActions.LOGOUT
-});
-
 type StoreCategoriesAction = ReduxActionWithPayload<userActions.STORE_CATEGORIES, Category[]>
-export const storeCategories = (categories: Category[]): StoreCategoriesAction => ({
-    type: userActions.STORE_CATEGORIES,
-    payload: categories
-});
-
 type StoreVocabularyListsAction = ReduxActionWithPayload<userActions.STORE_VOCABULARY_LISTS, VocabularyList[]>
-export const storeVocabularyLists = (vocabularyLists: VocabularyList[]): StoreVocabularyListsAction => ({
-    type: userActions.STORE_VOCABULARY_LISTS,
-    payload: vocabularyLists
-});
-
 type SetSelectedCategoryAction = ReduxActionWithPayload<userActions.SET_SELECTED_CATEGORY, Category>
-export const setSelectedCategory = (category: Category): SetSelectedCategoryAction => ({
-    type: userActions.SET_SELECTED_CATEGORY,
-    payload: category
-});
+export const userActionFunctions = {
+    setSelectedCategory: (category: Category): SetSelectedCategoryAction => ({
+        type: userActions.SET_SELECTED_CATEGORY,
+        payload: category
+    }),
+    storeVocabularyLists: (vocabularyLists: VocabularyList[]): StoreVocabularyListsAction => ({
+        type: userActions.STORE_VOCABULARY_LISTS,
+        payload: vocabularyLists
+    }),
+    storeCategories: (categories: Category[]): StoreCategoriesAction => ({
+        type: userActions.STORE_CATEGORIES,
+        payload: categories
+    }),
+    logout: (): LogoutAction => ({
+        type: userActions.LOGOUT
+    }),
+    login: (): LoginAction => ({
+        type: userActions.LOGIN
+    })
+};

@@ -3,7 +3,8 @@ import Profile from "../../components/profile/Profile";
 import {post} from "../../utility/restCaller";
 import {RouteComponentProps} from "react-router-dom";
 import {useDispatch} from "react-redux";
-import * as userActions from "../../actions/user";
+import {userActionFunctions} from "../../actions/user";
+
 const ProfileView = (props: RouteComponentProps): JSX.Element => {
     document.title = 'Trainer - Profile';
     const dispatch = useDispatch();
@@ -11,7 +12,7 @@ const ProfileView = (props: RouteComponentProps): JSX.Element => {
         post<{}, { logout: boolean }>('/logout', null, (r) => {
             if (r.logout) {
                 props.history.push('/');
-                dispatch(userActions.logout());
+                dispatch(userActionFunctions.logout());
             }
         }, 200);
     };

@@ -1,7 +1,7 @@
 import {initialState, testVocabularies} from "../../reducers/testVocabularies";
 import {testVocabularyActions} from "../../actions/actions.types";
 
-describe("test test reducer", () => {
+describe("testing test reducer", () => {
     it("set test data", async () => {
         const testVocabularyData = {
             vocabularies: [

@@ -6,9 +6,9 @@ import {Button, Grid, List, ListItem, ListItemText, Paper, TextField} from "@mat
 import {Vocab} from "../../vocabulary/VocabularyView";
 import {RouteComponentProps} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import * as testActions from "../../../actions/testVocabularies";
+import {testVocabularyActionFunctions} from "../../../actions/testVocabularies";
 import {AppStore} from "../../../store/store.types";
-import {storeVocabularyLists} from "../../../actions/user";
+import {userActionFunctions} from "../../../actions/user";
 
 const TestSettings = (props: RouteComponentProps<{ user: string; category: string }>): JSX.Element => {
     document.title = 'Trainer - Test Settings';
@@ -28,7 +28,7 @@ const TestSettings = (props: RouteComponentProps<{ user: string; category: strin
         if (vocabularyLists.length < 1 && selectedCategory.id) {
             get<VocabularyList[]>(`/vocabulary-list/${selectedCategory.id}`, (r) => {
                 setLeft(r.map(m => ({name: m.name, value: m.id ? m.id : ''})));
-                dispatch(storeVocabularyLists([...storedVocabularyLists, ...r]));
+                dispatch(userActionFunctions.storeVocabularyLists([...storedVocabularyLists, ...r]));
             });
         } else {
             setLeft(vocabularyLists.map(m => ({name: m.name, value: m.id ? m.id : ''})));
@@ -45,7 +45,7 @@ const TestSettings = (props: RouteComponentProps<{ user: string; category: strin
         post<{ listIds: string[]; limit: number; firstValueField: string; secondValueField: string }, Vocab[]>('/generate-test',
             {listIds: right.map(ri => ri.value), limit: maxVocabularyCount, firstValueField: front, secondValueField: back},
             (r) => {
-                dispatch(testActions.setTestData(r, front, back));
+                dispatch(testVocabularyActionFunctions.setTestData(r, front, back));
                 props.history.push('/learn/test');
             }, 200);
     };

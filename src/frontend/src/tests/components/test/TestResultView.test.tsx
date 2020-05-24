@@ -1,3 +1,4 @@
+import React from "react";
 import {render} from '@testing-library/react';
 import TestResultView from '../../../components/test/TestResultView';
 
@@ -14,7 +15,7 @@ describe('testing TestResultView', () => {
                 }],
             correct: 1,
         };
-        const {getByTestId} = render(TestResultView(props));
+        const {getByTestId} = render(<TestResultView {...props}/>);
         expect(getByTestId('result-wrong-vocabularies').children.length).toBe(2); // 2 grid items per wrong input
     });
 
@@ -37,7 +38,7 @@ describe('testing TestResultView', () => {
                 }],
             correct: 1,
         };
-        const {getByTestId} = render(TestResultView(props));
+        const {getByTestId} = render(<TestResultView {...props}/>);
         expect(getByTestId('result-wrong-vocabularies').children.length).toBe(0);
     });
 
@@ -60,7 +61,7 @@ describe('testing TestResultView', () => {
                 }],
             correct: 1,
         };
-        const {getByTestId} = render(TestResultView(props));
+        const {getByTestId} = render(<TestResultView {...props}/>);
         expect(getByTestId('result-wrong-vocabularies').children.length).toBe(0);
     });
 
@@ -82,7 +83,7 @@ describe('testing TestResultView', () => {
                 vocabs: vocabs,
                 correct: i,
             };
-            const {unmount, getByTestId} = render(TestResultView(props));
+            const {unmount, getByTestId} = render(<TestResultView {...props}/>);
             expect(getByTestId('result-title').innerHTML).toBe(`${props.correct}/100. Correct. You got a ${grades[step]} grade`);
             unmount();
             step++;

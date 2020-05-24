@@ -6,7 +6,7 @@ import {Paper} from "@material-ui/core";
 import CardGrid from "../../components/ui/grid/CardGrid";
 import {useDispatch, useSelector} from "react-redux";
 import {AppStore} from "../../store/store.types";
-import {storeVocabularyLists} from "../../actions/user";
+import {userActionFunctions} from "../../actions/user";
 
 export type VocabularyList = {
     id?: string;
@@ -30,7 +30,7 @@ const VocabularyListView = (props: RouteComponentProps<{ user: string; category:
         if (vocabularyListForCategory.length < 1 && selectedCategory.id) {
             get<VocabularyList[] | null>(`/vocabulary-list/${selectedCategory.id}`, (r) => {
                     if (r) {
-                        dispatch(storeVocabularyLists([...storedVocabularyLists, ...r]));
+                        dispatch(userActionFunctions.storeVocabularyLists([...storedVocabularyLists, ...r]));
                         setVocabularyLists(r);
                     }
                 }

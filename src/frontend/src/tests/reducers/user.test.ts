@@ -1,7 +1,7 @@
 import {initialState, user} from "../../reducers/user";
 import {userActions} from "../../actions/actions.types";
 
-describe("test user reducer", () => {
+describe("testing user reducer", () => {
     it("set login", async () => {
         const state = user({...initialState, isLogin: false}, {type: userActions.LOGIN});
         const expectedState = {...initialState, isLogin: true};

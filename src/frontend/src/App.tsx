@@ -8,7 +8,7 @@ import ProtectedRoute from "./components/navigation/route/ProtectedRoute";
 import LoginView from "./containers/login/LoginView";
 import {Category} from "./containers/category/CategoryView";
 import {useDispatch, useSelector} from "react-redux";
-import * as userActions from "./actions/user";
+import {userActionFunctions} from "./actions/user";
 import {AppStore} from "./store/store.types";
 
 const CategoryView = lazy(() => import('./containers/category/CategoryView'));
@@ -24,7 +24,7 @@ const App = (): JSX.Element => {
     useEffect(() => {
         get<{ login: boolean }>('/check-login', (r) => {
             if (r.login) {
-                dispatch(userActions.login());
+                dispatch(userActionFunctions.login());
             }
         });
     }, []);
@@ -32,14 +32,14 @@ const App = (): JSX.Element => {
         if (isLogin) {
             setTimer(setInterval(() => get<{ login: boolean }>('/refresh-token', (r) => {
                 if (r.login) {
-                    dispatch(userActions.login());
+                    dispatch(userActionFunctions.login());
                 } else {
-                    dispatch(userActions.logout());
+                    dispatch(userActionFunctions.logout());
                 }
             }), 450000));//7,5 minutes
             get<Category[] | null>('/category', data => {
                 if (data) {
-                    dispatch(userActions.storeCategories(data));
+                    dispatch(userActionFunctions.storeCategories(data));
                 }
             });
         } else if (timer) {

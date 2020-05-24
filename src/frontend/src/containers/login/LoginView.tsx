@@ -3,7 +3,7 @@ import Login from "../../components/login/Login";
 import {post} from "../../utility/restCaller";
 import {RouteComponentProps} from "react-router-dom";
 import {useDispatch} from "react-redux";
-import * as userActions from "../../actions/user";
+import {userActionFunctions} from "../../actions/user";
 
 const LoginView = (props: RouteComponentProps): JSX.Element => {
     document.title = 'Trainer - Login';
@@ -19,7 +19,7 @@ const LoginView = (props: RouteComponentProps): JSX.Element => {
         post<{ userName: string; password: string }, { login: boolean }>('/login', loginData, (r) => {
             if (r.login) {
                 props.history.push("/");
-                dispatch(userActions.login());
+                dispatch(userActionFunctions.login());
             }
         }, 200);
     };
