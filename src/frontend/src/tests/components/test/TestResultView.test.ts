@@ -76,8 +76,8 @@ describe('testing TestResultView', () => {
             })
         }
         let step = 0;
-        const grades = ["1", "1.3", "1.7", "2.0", "2.3", "2.7", "3.0", "3.3", "3.7", "4.0", "5.0"];
-        for (let i = 95; i >= 45; i -= 5) {
+        const grades = ["1", "1.3", "1.7", "2.0", "2.3", "2.7", "3.0", "3.3", "3.7", "4.0", "5.0", "5.0", "5.0"];
+        for (let i = 95; i >= 35; i -= 5) {
             const props = {
                 vocabs: vocabs,
                 correct: i,

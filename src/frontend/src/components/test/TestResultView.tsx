@@ -46,8 +46,11 @@ const TestResultView = ({vocabs, correct}: TestResultViewProps): JSX.Element => 
     };
     const calculateGrade = (): string => {
         const percent = (correct / vocabs.length) * 100;
-        const steps = 19 - Math.floor(percent / 5);
+        let steps = 19 - Math.floor(percent / 5);
         const grades = ["1", "1.3", "1.7", "2.0", "2.3", "2.7", "3.0", "3.3", "3.7", "4.0", "5.0"];
+        if (grades.length <= steps) {
+            steps = grades.length - 1;
+        }
         return grades[steps];
     };
     return (<>
