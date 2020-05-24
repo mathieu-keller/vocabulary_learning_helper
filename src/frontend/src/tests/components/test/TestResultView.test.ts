@@ -1,4 +1,4 @@
-import {render} from '@testing-library/react'
+import {render} from '@testing-library/react';
 import TestResultView from '../../../components/test/TestResultView';
 
 describe('testing TestResultView', () => {
@@ -13,9 +13,9 @@ describe('testing TestResultView', () => {
                     dbSecond: {key: "English", value: "wrong"},
                 }],
             correct: 1,
-        }
-        const {getByTestId} = render(TestResultView(props))
-        expect(getByTestId('result-wrong-vocabularies').children.length).toBe(2) // 2 grid items per wrong input
+        };
+        const {getByTestId} = render(TestResultView(props));
+        expect(getByTestId('result-wrong-vocabularies').children.length).toBe(2); // 2 grid items per wrong input
     });
 
     it('ignore case sensitive', async () => {
@@ -36,9 +36,9 @@ describe('testing TestResultView', () => {
                     dbSecond: {key: "English", value: "Hello"},
                 }],
             correct: 1,
-        }
-        const {getByTestId} = render(TestResultView(props))
-        expect(getByTestId('result-wrong-vocabularies').children.length).toBe(0)
+        };
+        const {getByTestId} = render(TestResultView(props));
+        expect(getByTestId('result-wrong-vocabularies').children.length).toBe(0);
     });
 
     it('ignore spaces', async () => {
@@ -59,9 +59,9 @@ describe('testing TestResultView', () => {
                     dbSecond: {key: "English", value: " hello "},
                 }],
             correct: 1,
-        }
-        const {getByTestId} = render(TestResultView(props))
-        expect(getByTestId('result-wrong-vocabularies').children.length).toBe(0)
+        };
+        const {getByTestId} = render(TestResultView(props));
+        expect(getByTestId('result-wrong-vocabularies').children.length).toBe(0);
     });
 
     it('calculateGrade all correct', async () => {
@@ -73,7 +73,7 @@ describe('testing TestResultView', () => {
                 userSecond: {key: "English", value: "hello"},
                 dbFirst: {key: "German", value: "hallo"},
                 dbSecond: {key: "English", value: "hello"},
-            })
+            });
         }
         let step = 0;
         const grades = ["1", "1.3", "1.7", "2.0", "2.3", "2.7", "3.0", "3.3", "3.7", "4.0", "5.0", "5.0", "5.0"];
@@ -81,11 +81,11 @@ describe('testing TestResultView', () => {
             const props = {
                 vocabs: vocabs,
                 correct: i,
-            }
-            const {unmount, getByTestId} = render(TestResultView(props))
-            expect(getByTestId('result-title').innerHTML).toBe(`${props.correct}/100. Correct. You got a ${grades[step]} grade`)
+            };
+            const {unmount, getByTestId} = render(TestResultView(props));
+            expect(getByTestId('result-title').innerHTML).toBe(`${props.correct}/100. Correct. You got a ${grades[step]} grade`);
             unmount();
             step++;
         }
-    })
-})
+    });
+});
