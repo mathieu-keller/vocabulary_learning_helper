@@ -1,7 +1,7 @@
 jobs:
   include:
     - stage: tests
-    - name: Frontend Tests
+      name: Frontend Tests
       addons:
         sonarcloud:
           organization: afrima
@@ -18,7 +18,8 @@ jobs:
         - npm run lint
         - npm run test
         - sonar-scanner
-    - name: Backend Tests
+    -
+      name: Backend Tests
       addons:
         sonarcloud:
           organization: afrima
