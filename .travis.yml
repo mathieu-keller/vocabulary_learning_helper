@@ -1,38 +1,40 @@
-matrix:
+jobs:
   include:
-    - stage tests
-      - addons:
-          sonarcloud:
-            organization: afrima
-            token:
-              secure: ZJbJ0sJ94WHPigLhVlUKzfKVmbmjvSxtz3mUc8tqNFRfp5M9pdllXcrn/N7StsvnwQTApgOI5Ufwb2CqE+WNcGl6SPfRx25NCbx09RZc4Pm7dy8s8mkIkrDpk7BO89eV1Mm0Lcvqqpmjl/eYjuxoP1wFqllEgrdiCmf8nk4DnpC6HMeD+OwziLG+SiUU4LBH5NYRSXXlL+nIUl9ex+XNZ4oegD5dU2MHiepeMh00uCaPGgnGSnTaQQnHFgeMmjAZvyOmhlaQPM2FZgrcPfD619jRqJMW7QXlVJCLbVyhipchlv/kA/Om5l2DQBrcGZqUdf6FrFOIooYv/IHBPBDXs3n/wGXTJ4ZHvV6hiAWGKf7M+67gl+EDfNKczEDMTMF25eTNwgJjPox8vhLoYyfSLhv1rfqmKXUG66l3KwrAI7Fi4Yg6kI1HZpS2E/MAfCtypZfBfnk4Z8dtNc+6RKCtLLILDmOQLoNcBzSLq9yUVbQeLOP3CTbFSgdddLOdTsvq8BJfS6Yeo6kchc37f8AqCzLSrxu6FXjKh73+7m+BeAlzE8cs9NBW3pU4ia7+nC9Sq3dvlbJij/Ouh8afUxU7YVFoqUo+FzxhCqXeZmMgbOD/2esQzJFJxtKq3QoP1liAHszmkusR0YtR/u0u/bK4FZoffbWkqYk5X6tjtlbuJEE=
-        language: node_js
-        node_js: 12
-        before_install:
-          - cd src/frontend
-          - npm install -g yarn
-        install:
-          - yarn
-        script:
-          - npm run lint
-          - npm run test
-          - sonar-scanner
-      - addons:
-          sonarcloud:
-            organization: afrima
-            token:
-              secure: EHjm5GPObu/xTuaPthEFPCt1PJQEqytHBksjWgvoPhmVbBo/P/tSc84GSUUAvDIU/QOQzVppvQ9xX5HhX7hR/UOSwEaKr8dflJp2x2PBPHXDOhGqn+BAE2B/I0qz+qEwf1KgizpzViRZ7ohDPJWiRbVW2YTiPd5MLBKzOS+b7Osf+YOtnBQZEBabb/w4XBXXqYrlXkkGN6eoyheYNwipC693tx/6EzEAadnC79YyDJObhFqv/ULBhMGJiBE5jbTzG5ccEPMhd3GyUWN5JL9EscNuh0nAM/gZExceDhSPX35wcPHBwkEMuzuDVge004++C+596Y26vXDmVRzyo4thhrAN8tC7aRNv+69JRF21MTamTu1Q26zNKGfDyjV0Bfsgm31A983HYbrbELsuVd6eBo6zjV6jzq5mShFdnvzzprzlcCbM0t6/jNAN43QgW1IhPs2I5w44tnmQw3b4soiGEMhh3umUufFSq1wtnZS9H0ecZVOuXySTbxFpOuoej3vh7kM6HLT8C5QISeZWFm2yLNTMt1g3v6PNqvBf0DnF4hlFlhaRQBN+AIk8x+iMcDIAxC8BMDiIXybrB2SimMDWDpCIhnudNqNreUQlAu+ewuCPIE8xId3L1Lj1+pqaJKtx7A2t37m/p1bb3rpSXN7Mw/FdIfF/3mFw3fz8ZBqvVZ4=
-        language: go
-        go: 1.14
-        before_install:
-          - cd src/backend
-        install:
-          - go get -d -v
-          - go get github.com/stretchr/testify
-        script:
-          - go test -coverprofile=coverage.out -coverpkg=./... ./...
-          - sonar-scanner
-    - stage build
-        services: docker
-        script:
-          - docker build -t vocabulary_trainer:latest .
+    - stage: tests
+      matrix:
+        include:
+          - addons:
+              sonarcloud:
+                organization: afrima
+                token:
+                  secure: ZJbJ0sJ94WHPigLhVlUKzfKVmbmjvSxtz3mUc8tqNFRfp5M9pdllXcrn/N7StsvnwQTApgOI5Ufwb2CqE+WNcGl6SPfRx25NCbx09RZc4Pm7dy8s8mkIkrDpk7BO89eV1Mm0Lcvqqpmjl/eYjuxoP1wFqllEgrdiCmf8nk4DnpC6HMeD+OwziLG+SiUU4LBH5NYRSXXlL+nIUl9ex+XNZ4oegD5dU2MHiepeMh00uCaPGgnGSnTaQQnHFgeMmjAZvyOmhlaQPM2FZgrcPfD619jRqJMW7QXlVJCLbVyhipchlv/kA/Om5l2DQBrcGZqUdf6FrFOIooYv/IHBPBDXs3n/wGXTJ4ZHvV6hiAWGKf7M+67gl+EDfNKczEDMTMF25eTNwgJjPox8vhLoYyfSLhv1rfqmKXUG66l3KwrAI7Fi4Yg6kI1HZpS2E/MAfCtypZfBfnk4Z8dtNc+6RKCtLLILDmOQLoNcBzSLq9yUVbQeLOP3CTbFSgdddLOdTsvq8BJfS6Yeo6kchc37f8AqCzLSrxu6FXjKh73+7m+BeAlzE8cs9NBW3pU4ia7+nC9Sq3dvlbJij/Ouh8afUxU7YVFoqUo+FzxhCqXeZmMgbOD/2esQzJFJxtKq3QoP1liAHszmkusR0YtR/u0u/bK4FZoffbWkqYk5X6tjtlbuJEE=
+            language: node_js
+            node_js: 12
+            before_install:
+              - cd src/frontend
+              - npm install -g yarn
+            install:
+              - yarn
+            script:
+              - npm run lint
+              - npm run test
+              - sonar-scanner
+          - addons:
+              sonarcloud:
+                organization: afrima
+                token:
+                  secure: EHjm5GPObu/xTuaPthEFPCt1PJQEqytHBksjWgvoPhmVbBo/P/tSc84GSUUAvDIU/QOQzVppvQ9xX5HhX7hR/UOSwEaKr8dflJp2x2PBPHXDOhGqn+BAE2B/I0qz+qEwf1KgizpzViRZ7ohDPJWiRbVW2YTiPd5MLBKzOS+b7Osf+YOtnBQZEBabb/w4XBXXqYrlXkkGN6eoyheYNwipC693tx/6EzEAadnC79YyDJObhFqv/ULBhMGJiBE5jbTzG5ccEPMhd3GyUWN5JL9EscNuh0nAM/gZExceDhSPX35wcPHBwkEMuzuDVge004++C+596Y26vXDmVRzyo4thhrAN8tC7aRNv+69JRF21MTamTu1Q26zNKGfDyjV0Bfsgm31A983HYbrbELsuVd6eBo6zjV6jzq5mShFdnvzzprzlcCbM0t6/jNAN43QgW1IhPs2I5w44tnmQw3b4soiGEMhh3umUufFSq1wtnZS9H0ecZVOuXySTbxFpOuoej3vh7kM6HLT8C5QISeZWFm2yLNTMt1g3v6PNqvBf0DnF4hlFlhaRQBN+AIk8x+iMcDIAxC8BMDiIXybrB2SimMDWDpCIhnudNqNreUQlAu+ewuCPIE8xId3L1Lj1+pqaJKtx7A2t37m/p1bb3rpSXN7Mw/FdIfF/3mFw3fz8ZBqvVZ4=
+            language: go
+            go: 1.14
+            before_install:
+              - cd src/backend
+            install:
+              - go get -d -v
+              - go get github.com/stretchr/testify
+            script:
+              - go test -coverprofile=coverage.out -coverpkg=./... ./...
+              - sonar-scanner
+    - stage: build
+      services: docker
+      script:
+        - docker build -t vocabulary_trainer:latest .
