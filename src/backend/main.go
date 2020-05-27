@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/gin-gonic/contrib/gzip"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 
@@ -15,6 +16,7 @@ import (
 
 func main() {
 	r := gin.Default()
+	r.Use(gzip.Gzip(gzip.BestCompression))
 	resource.Init(r)
 	loginresource.Init(r)
 	categoryresource.Init(r)
