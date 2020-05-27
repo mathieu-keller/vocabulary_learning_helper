@@ -1,12 +1,10 @@
 package main
 
 import (
-	"flag"
 	"log"
-	"net/http"
 
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/contrib/static"
+	"github.com/gin-gonic/gin"
 
 	"github.com/Afrima/vocabulary_learning_helper/src/backend/resource"
 	"github.com/Afrima/vocabulary_learning_helper/src/backend/resource/categoryresource"
@@ -16,18 +14,14 @@ import (
 )
 
 func main() {
-	var dir string
-	flag.StringVar(&dir, "dir", "./dist", "the directory to serve files from. Defaults to the current dir")
-	flag.Parse()
-	r := mux.NewRouter()
+	r := gin.Default()
 	resource.Init(r)
 	loginresource.Init(r)
 	categoryresource.Init(r)
 	vocabularyresource.Init(r)
 	vocabularylistresource.Init(r)
-	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(dir))))
-	err := http.ListenAndServe(":8080", handlers.CompressHandler(r))
-	if err != nil {
-		log.Fatal(err)
+	r.Use(static.Serve("/", static.LocalFile("./dist", true)))
+	if err := r.Run(":8080"); err != nil {
+		log.Println(err)
 	}
 }

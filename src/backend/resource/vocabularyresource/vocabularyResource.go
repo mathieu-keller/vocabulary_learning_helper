@@ -2,54 +2,47 @@ package vocabularyresource
 
 import (
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/Afrima/vocabulary_learning_helper/src/backend/entity/vocabularyentity"
 	"github.com/Afrima/vocabulary_learning_helper/src/backend/resource"
 	"github.com/Afrima/vocabulary_learning_helper/src/backend/service/vocabularyservice"
-	"github.com/Afrima/vocabulary_learning_helper/src/backend/utility"
 )
 
-func Init(r *mux.Router) {
+func Init(r *gin.Engine) {
 	const path = "/vocabulary"
-	r.Handle(path, resource.IsAuthorized(insertVocab)).Methods(http.MethodPost)
-	r.Handle(path+"/{id}", resource.IsAuthorized(getVocab)).Methods(http.MethodGet)
-	r.Handle(path, resource.IsAuthorized(deleteVocab)).Methods(http.MethodDelete)
-	r.Handle("/generate-test", resource.IsAuthorized(generateTest)).Methods(http.MethodPost)
-	r.Handle("/check-test", resource.IsAuthorized(checkTest)).Methods(http.MethodPost)
+	r.POST(path, resource.IsAuthorized(insertVocab))
+	r.GET(path+"/:id", resource.IsAuthorized(getVocab))
+	r.DELETE(path, resource.IsAuthorized(deleteVocab))
+	r.POST("/generate-test", resource.IsAuthorized(generateTest))
+	r.POST("/check-test", resource.IsAuthorized(checkTest))
 }
 
-func checkTest(w http.ResponseWriter, r *http.Request) {
-	checkRequestBody, err := getCheckRequestFromBody(r)
+func checkTest(c *gin.Context) {
+	checkRequestBody, err := getCheckRequestFromBody(c)
 	if err != nil {
-		resource.SendError(http.StatusBadRequest, w, err)
+		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
 	correctVocabs, err := getVocabulariesFromDB(checkRequestBody)
 	if err != nil {
-		resource.SendError(http.StatusInternalServerError, w, err)
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 	correction, err := vocabularyservice.CheckTest(correctVocabs, checkRequestBody)
 	if err != nil {
-		resource.SendError(http.StatusBadRequest, w, err)
+		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
-	w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(correction); err != nil {
-		resource.SendError(http.StatusInternalServerError, w, err)
-	}
+	c.JSON(http.StatusOK, correction)
 }
 
-func getCheckRequestFromBody(r *http.Request) (vocabularyservice.CheckTestRequest, error) {
-	reqBody, err := ioutil.ReadAll(r.Body)
+func getCheckRequestFromBody(c *gin.Context) (vocabularyservice.CheckTestRequest, error) {
+	reqBody, err := c.GetRawData()
 	if err != nil {
 		return vocabularyservice.CheckTestRequest{}, err
 	}
@@ -71,68 +64,70 @@ func getVocabulariesFromDB(checkRequestBody vocabularyservice.CheckTestRequest) 
 	return correctVocabs, nil
 }
 
-func generateTest(w http.ResponseWriter, r *http.Request) {
-	reqBody, err := ioutil.ReadAll(r.Body)
+func generateTest(c *gin.Context) {
+	reqBody, err := c.GetRawData()
 	if err != nil {
-		resource.SendError(http.StatusBadRequest, w, err)
+		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
 	var testReqBody vocabularyservice.GenerateTestRequest
 	if err = json.Unmarshal(reqBody, &testReqBody); err != nil {
-		resource.SendError(http.StatusBadRequest, w, err)
+		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
 	responseVocabularies, err := vocabularyservice.GenerateTest(testReqBody)
 	if err != nil {
-		resource.SendError(http.StatusInternalServerError, w, err)
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
-	sendVocabularies(w, responseVocabularies)
+	c.JSON(http.StatusOK, responseVocabularies)
 }
 
-func insertVocab(w http.ResponseWriter, r *http.Request) {
-	vocab, err := getVocabFromBody(r)
+func insertVocab(c *gin.Context) {
+	vocab, err := getVocabFromBody(c)
 	if err != nil {
-		resource.SendError(http.StatusBadRequest, w, err)
+		c.String(http.StatusBadRequest, err.Error())
+		log.Print(err)
 		return
 	}
 	if err = vocab.InsertVocab(); err != nil {
 		switch err.(type) {
 		case vocabularyentity.Error:
-			resource.SendError(http.StatusBadRequest, w, err)
+			c.String(http.StatusBadRequest, err.Error())
 		default:
-			resource.SendError(http.StatusInternalServerError, w, err)
+			c.String(http.StatusInternalServerError, err.Error())
 		}
+		log.Print(err)
 		return
 	}
-	sendVocabulary(w, vocab, http.StatusCreated)
+	c.JSON(http.StatusCreated, vocab)
 }
 
-func getVocab(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
+func getVocab(c *gin.Context) {
+	id := c.Param("id")
 	vocabs, err := vocabularyentity.GetVocabularyByListID(id)
 	if err != nil {
-		resource.SendError(http.StatusInternalServerError, w, err)
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
-	sendVocabularies(w, vocabs)
+	c.JSON(http.StatusOK, vocabs)
 }
 
-func deleteVocab(w http.ResponseWriter, r *http.Request) {
-	vocab, err := getVocabFromBody(r)
+func deleteVocab(c *gin.Context) {
+	vocab, err := getVocabFromBody(c)
 	if err != nil {
-		resource.SendError(http.StatusBadRequest, w, err)
+		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
 	if err = vocab.Delete(); err != nil {
-		resource.SendError(http.StatusInternalServerError, w, err)
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
-	sendVocabulary(w, vocab, http.StatusOK)
+	c.JSON(http.StatusOK, vocab)
 }
 
-func getVocabFromBody(r *http.Request) (vocabularyentity.Vocabulary, error) {
-	reqBody, err := ioutil.ReadAll(r.Body)
+func getVocabFromBody(c *gin.Context) (vocabularyentity.Vocabulary, error) {
+	reqBody, err := c.GetRawData()
 	if err != nil {
 		return vocabularyentity.Vocabulary{}, err
 	}
@@ -141,24 +136,4 @@ func getVocabFromBody(r *http.Request) (vocabularyentity.Vocabulary, error) {
 		return vocabularyentity.Vocabulary{}, err
 	}
 	return vocab, nil
-}
-
-func sendVocabularies(w http.ResponseWriter, vocabs []vocabularyentity.Vocabulary) {
-	w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(vocabs); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		log.Print(err)
-	}
-}
-
-func sendVocabulary(w http.ResponseWriter, vocabs vocabularyentity.Vocabulary, statusCode int) {
-	w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
-	w.WriteHeader(statusCode)
-	if err := json.NewEncoder(w).Encode(vocabs); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		log.Print(err)
-	}
 }

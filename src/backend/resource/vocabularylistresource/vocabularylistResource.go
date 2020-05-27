@@ -2,96 +2,68 @@ package vocabularylistresource
 
 import (
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
+	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"strings"
 
-	"github.com/gorilla/mux"
-
 	"github.com/Afrima/vocabulary_learning_helper/src/backend/entity/vocabularylistentity"
 	"github.com/Afrima/vocabulary_learning_helper/src/backend/resource"
-	"github.com/Afrima/vocabulary_learning_helper/src/backend/utility"
 )
 
-func Init(r *mux.Router) {
+func Init(c *gin.Engine) {
 	const path = "/vocabulary-list"
-	r.Handle(path+"/{id}",resource.IsAuthorized( getVocabularyList)).Methods(http.MethodGet)
-	r.Handle(path, resource.IsAuthorized(insertVocabularyList)).Methods(http.MethodPost)
-	r.Handle(path+"/{id}", resource.IsAuthorized(deleteVocabularyList)).Methods(http.MethodDelete)
+	c.GET(path+"/:id", resource.IsAuthorized(getVocabularyList))
+	c.POST(path, resource.IsAuthorized(insertVocabularyList))
+	c.DELETE(path+"/:id", resource.IsAuthorized(deleteVocabularyList))
 }
 
-func getVocabularyList(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
-	w.WriteHeader(http.StatusOK)
-	id := mux.Vars(r)["id"]
+func getVocabularyList(c *gin.Context) {
+	id := c.Param("id")
 	vocabularyList, err := vocabularylistentity.GetVocabularyList(id)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
+		c.String(http.StatusInternalServerError, err.Error())
 		log.Print(err)
 		return
 	}
-	if err = json.NewEncoder(w).Encode(vocabularyList); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		log.Print(err)
-	}
+	c.JSON(http.StatusOK, vocabularyList)
 }
 
-func insertVocabularyList(w http.ResponseWriter, r *http.Request) {
-	vocabularyList, err := getVocabularyListFromBody(r)
+func insertVocabularyList(c *gin.Context) {
+	vocabularyList, err := getVocabularyListFromBody(c)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, err)
+		c.String(http.StatusBadRequest, err.Error())
 		log.Print(err)
 		return
 	}
-	claims, _ := resource.GetTokenClaims(r)
+	claims, _ := resource.GetTokenClaims(c)
 	vocabularyList.Owner = strings.ToLower(claims["userName"].(string))
 	if err = vocabularyList.Insert(); err != nil {
 		switch err.(type) {
 		case vocabularylistentity.Error:
-			w.WriteHeader(http.StatusBadRequest)
+			c.String(http.StatusBadRequest, err.Error())
 		default:
-			w.WriteHeader(http.StatusInternalServerError)
+			c.String(http.StatusInternalServerError, err.Error())
 		}
 		log.Print(err)
-		fmt.Fprint(w, err)
 		return
 	}
 
-	w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
-	w.WriteHeader(http.StatusCreated)
-	if err = json.NewEncoder(w).Encode(vocabularyList); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		log.Print(err)
-		return
-	}
+	c.JSON(http.StatusCreated, vocabularyList)
 }
 
-func deleteVocabularyList(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
+func deleteVocabularyList(c *gin.Context) {
+	id := c.Param("id")
 	if err := vocabularylistentity.Delete(id); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
+		c.String(http.StatusInternalServerError, err.Error())
 		log.Print(err)
 		return
 	}
-	w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(id); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		log.Print(err)
-		return
-	}
+	c.JSON(http.StatusOK, id)
 }
 
-func getVocabularyListFromBody(r *http.Request) (vocabularylistentity.VocabularyList, error) {
-	reqBody, err := ioutil.ReadAll(r.Body)
+func getVocabularyListFromBody(c *gin.Context) (vocabularylistentity.VocabularyList, error) {
+	reqBody, err := c.GetRawData()
 	if err != nil {
 		return vocabularylistentity.VocabularyList{}, err
 	}

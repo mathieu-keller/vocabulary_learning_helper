@@ -3,25 +3,21 @@ package loginresource
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
-	"io/ioutil"
+	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
-	"time"
-
-	"github.com/gorilla/mux"
-	"golang.org/x/crypto/bcrypt"
 
 	"github.com/Afrima/vocabulary_learning_helper/src/backend/entity/userentity"
 	"github.com/Afrima/vocabulary_learning_helper/src/backend/resource"
-	"github.com/Afrima/vocabulary_learning_helper/src/backend/utility"
 )
 
-func Init(r *mux.Router) {
-	r.HandleFunc("/login", login).Methods(http.MethodPost)
-	r.HandleFunc("/logout", logout).Methods(http.MethodPost)
-	r.HandleFunc("/registration", registration).Methods(http.MethodPost)
+func Init(r *gin.Engine) {
+	r.POST("/login", login)
+	r.POST("/logout", logout)
+	r.POST("/registration", registration)
 }
 
 type LoginData struct {
@@ -33,42 +29,32 @@ type LoginResponse struct {
 	Token string `json:"token"`
 }
 
-func logout(w http.ResponseWriter, _ *http.Request) {
-	w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
-	c := http.Cookie{
-		Name:    "token",
-		Value:   "",
-		Expires: time.Unix(0, 0),
-	}
-	http.SetCookie(w, &c)
-	fmt.Fprint(w, "{\"logout\":true}")
+func logout(c *gin.Context) {
+	c.SetCookie("token", "", -1, "/", os.Getenv("host"), os.Getenv("secure") == "true", true)
+	c.JSON(http.StatusOK, resource.LoginDto{Login: false})
 }
 
-func login(w http.ResponseWriter, r *http.Request) {
-	loginData, err := getLoginData(r)
+func login(c *gin.Context) {
+	loginData, err := getLoginData(c)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, err)
+		c.String(http.StatusBadRequest, err.Error())
 		log.Print(err)
 		return
 	}
 	loginData.UserName = strings.ToLower(loginData.UserName)
 	dbUser, err := userentity.GetUser(loginData.UserName)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
+		c.String(http.StatusInternalServerError, err.Error())
 		log.Print(err)
 		return
 	}
 	if err = checkUserCredentials(dbUser, loginData); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, err)
+		c.String(http.StatusBadRequest, err.Error())
 		log.Print(err)
 		return
 	}
-	w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
-	resource.SetHTTPOnlyToken(w, loginData.UserName)
-	fmt.Fprint(w, "{\"login\":true}")
+	resource.SetHTTPOnlyToken(c, loginData.UserName)
+	c.JSON(http.StatusOK, resource.LoginDto{Login: true})
 }
 
 func checkUserCredentials(dbUser *userentity.User, loginData LoginData) error {
@@ -84,8 +70,8 @@ func checkUserCredentials(dbUser *userentity.User, loginData LoginData) error {
 	return nil
 }
 
-func getLoginData(r *http.Request) (LoginData, error) {
-	reqBody, err := ioutil.ReadAll(r.Body)
+func getLoginData(c *gin.Context) (LoginData, error) {
+	reqBody, err := c.GetRawData()
 	if err != nil {
 		return LoginData{}, err
 	}
@@ -97,37 +83,31 @@ func getLoginData(r *http.Request) (LoginData, error) {
 	return loginData, nil
 }
 
-func registration(w http.ResponseWriter, r *http.Request) {
-	loginData, err := getLoginData(r)
+func registration(c *gin.Context) {
+	loginData, err := getLoginData(c)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, err)
+		c.String(http.StatusBadRequest, err.Error())
 		log.Print(err)
 		return
 	}
 	loginData.UserName = strings.ToLower(loginData.UserName)
 	userInDB, err := userentity.GetUser(loginData.UserName)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
+		c.String(http.StatusInternalServerError, err.Error())
 		log.Print(err)
 		return
 	}
 	if userInDB != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, "Username is already taken!")
+		c.String(http.StatusBadRequest, "Username is already taken!")
 		return
 	}
 	if err = saveNewUser(loginData); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
+		c.String(http.StatusInternalServerError, err.Error())
 		log.Print(err)
 		return
 	}
-	w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
-	w.WriteHeader(http.StatusOK)
-	resource.SetHTTPOnlyToken(w, loginData.UserName)
-	fmt.Fprint(w, "{\"login\":true}")
+	resource.SetHTTPOnlyToken(c, loginData.UserName)
+	c.JSON(http.StatusOK, resource.LoginDto{Login: true})
 }
 
 func saveNewUser(loginData LoginData) error {

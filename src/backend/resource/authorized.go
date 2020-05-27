@@ -1,14 +1,13 @@
 package resource
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/securecookie"
 
 	"github.com/Afrima/vocabulary_learning_helper/src/backend/utility"
@@ -26,36 +25,39 @@ var cookieKey = []byte(os.Getenv("cookieKey"))
 var tokenKey = []byte(os.Getenv("tokenKey"))
 var s = securecookie.New(cookieKey, nil)
 
-func Init(r *mux.Router) {
-	r.HandleFunc("/refresh-token", checkLogin).Methods(http.MethodGet)
-	r.HandleFunc("/check-login", checkLogin).Methods(http.MethodGet)
+func Init(r *gin.Engine) {
+	r.GET("/refresh-token", checkLogin)
+	r.GET("/check-login", checkLogin)
 }
 
-func checkLogin(w http.ResponseWriter, r *http.Request) {
-	if claims, valid := GetTokenClaims(r); valid {
-		w.Header().Set(utility.ContentType, utility.ContentTypeJSON)
-		SetHTTPOnlyToken(w, claims["userName"].(string))
-		fmt.Fprint(w, "{\"login\":true}")
+type LoginDto struct {
+	Login bool `json:"login"`
+}
+
+func checkLogin(c *gin.Context) {
+	if claims, valid := GetTokenClaims(c); valid {
+		c.Header(utility.ContentType, utility.ContentTypeJSON)
+		SetHTTPOnlyToken(c, claims["userName"].(string))
+		c.JSON(http.StatusOK, LoginDto{Login: true})
 	} else {
-		fmt.Fprint(w, "{\"login\":false}")
+		c.JSON(http.StatusOK, LoginDto{Login: false})
 	}
 }
 
-func IsAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if _, valid := GetTokenClaims(r); valid {
-			endpoint(w, r)
+func IsAuthorized(endpoint func(c *gin.Context)) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		if _, valid := GetTokenClaims(c); valid {
+			endpoint(c)
 			return
 		}
-		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprintf(w, "Not Authorized")
-	})
+		c.String(http.StatusUnauthorized, "Not Authorized")
+	}
 }
 
-func GetTokenClaims(r *http.Request) (jwt.MapClaims, bool) {
-	if cryptToken, err := r.Cookie("token"); err == nil && cryptToken != nil {
+func GetTokenClaims(c *gin.Context) (jwt.MapClaims, bool) {
+	if cryptToken, err := c.Cookie("token"); err == nil && cryptToken != "" {
 		var jwtToken string
-		err := s.Decode("token", cryptToken.Value, &jwtToken)
+		err := s.Decode("token", cryptToken, &jwtToken)
 		if err != nil {
 			log.Println(err)
 			return nil, false
@@ -65,7 +67,10 @@ func GetTokenClaims(r *http.Request) (jwt.MapClaims, bool) {
 			log.Println(err)
 			return nil, false
 		}
-		return token.Claims.(jwt.MapClaims), token != nil && token.Valid
+		if token == nil {
+			return nil, false
+		}
+		return token.Claims.(jwt.MapClaims), token.Valid
 	}
 	return nil, false
 }
@@ -97,29 +102,17 @@ func GenerateJWT(userName string) (string, error) {
 	return tokenString, nil
 }
 
-func SetHTTPOnlyToken(w http.ResponseWriter, userName string) {
+func SetHTTPOnlyToken(c *gin.Context, userName string) {
 	token, err := GenerateJWT(userName)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
+		c.Status(http.StatusInternalServerError)
+		c.String(http.StatusInternalServerError, err.Error())
 		log.Print(err)
 		return
 	}
 	tokenValue, err := s.Encode("token", token)
 	if err == nil {
-		const exp = 30 * time.Minute
-		expiration := time.Now().Add(exp)
-		cookie := http.Cookie{
-			Name:    "token",
-			Value:   tokenValue,
-			Expires: expiration,
-		}
-		http.SetCookie(w, &cookie)
+		const exp = 30 * 60
+		c.SetCookie("token", tokenValue, exp, "/", os.Getenv("host"), os.Getenv("secure") == "true", true)
 	}
-}
-
-func SendError(statusCode int, w http.ResponseWriter, err error) {
-	w.WriteHeader(statusCode)
-	log.Println(err)
-	fmt.Fprint(w, err)
 }
