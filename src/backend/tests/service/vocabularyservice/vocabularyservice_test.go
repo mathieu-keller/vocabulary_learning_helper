@@ -78,7 +78,6 @@ func TestCheckTestWithMoreFieldAndOneIsIncorrect(t *testing.T) {
 	result, err := vocabularyservice.CheckTest(correctVocabs, checkTestRequest)
 	assert.Nilf(t, err, "No error should be thrown: %s", err)
 	assert.Equalf(t, result.Correct, int8(1), "The amount of correct vocabulary is not correct. Expected 1 is %d", result.Correct)
-
 }
 
 func getTestVocabularies(secondCorrect []string,

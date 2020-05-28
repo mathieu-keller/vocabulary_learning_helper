@@ -62,7 +62,7 @@ func GenerateTest(testReqBody GenerateTestRequest) ([]vocabularyentity.Vocabular
 
 func checkIfVocabEquals(vocab string, values []string) bool {
 	for _, dbValue := range values {
-		if strings.ToLower(strings.TrimSpace(vocab)) == strings.ToLower(strings.TrimSpace(dbValue)) {
+		if strings.EqualFold(strings.TrimSpace(vocab), strings.TrimSpace(dbValue)) {
 			return true
 		}
 	}
@@ -87,9 +87,11 @@ func CheckTest(correctVocabs []vocabularyentity.Vocabulary, checkRequestBody Che
 					DBSecond:   *dbSecondValue,
 					UserFirst:  *userFirstValue,
 					UserSecond: *userSecondValue})
-				valueCorrect := false
+				valueCorrect := true
 				for _, userValue := range userSecondValue.Values {
-					valueCorrect = checkIfVocabEquals(userValue, dbSecondValue.Values)
+					if valueCorrect = checkIfVocabEquals(userValue, dbSecondValue.Values); !valueCorrect {
+						break
+					}
 				}
 				if valueCorrect {
 					correct++
