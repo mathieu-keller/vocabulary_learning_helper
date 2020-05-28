@@ -39,10 +39,10 @@ const TestView = (props: RouteComponentProps): JSX.Element | null => {
                 setResult(r);
             }, 200);
     };
-    const onChange = (vocab: Vocab, field: string, value: string): void => {
+    const onChange = (vocab: Vocab, field: string, value: string[]): void => {
         const vocabulary = vocab.values.find(val => val.key === field);
         if (vocabulary) {
-            vocabulary.value = value;
+            vocabulary.values = value;
             setVocabularies([...vocabularies]);
         }
     };

@@ -20,7 +20,7 @@ type GridProps<d extends dataType> = {
     onDoubleClick?: (data: d) => void;
 }
 
-type dataType = { id?: string; values: { key: string; value: string }[] };
+type dataType = { id?: string; values: { key: string; values: string[] | null }[] };
 
 function Grid<d extends dataType>(props: GridProps<d>): JSX.Element {
     const sortData = (gridData: d[]): d[] => {
@@ -49,7 +49,7 @@ function Grid<d extends dataType>(props: GridProps<d>): JSX.Element {
                 </div>
             </>;
         } else {
-            row = <>{gridData.values.find(value=>value.key === c.field)?.value}</>;
+            row = <>{gridData.values.find(value=>value.key === c.field)?.values?.join(', ')}</>;
         }
         return <TableCell className={classes.cell} style={cellStyle}
                           key={c.field}>{row}</TableCell>;

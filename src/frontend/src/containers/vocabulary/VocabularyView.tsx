@@ -9,7 +9,7 @@ import {AppStore} from "../../store/store.types";
 
 export type VocabularyValue = {
     key: string;
-    value: string;
+    values: (string[]) | null;
 }
 
 export type Vocab = {
@@ -22,7 +22,7 @@ const VocabularyView = (props: RouteComponentProps<{ user: string; category: str
     document.title = 'Trainer - Vocabulary';
     const listId = props.match.params.listId;
     const [columns, setColumns] = useState<string[]>([]);
-    const emptyEditData = {values: columns.map(column => ({key: column, value: ""})), listId: listId};
+    const emptyEditData = {values: columns.map(column => ({key: column, values: []})), listId: listId};
     const [vocabs, setVocabs] = useState<Vocab[]>([]);
     const [editData, setEditData] = useState<Vocab>(emptyEditData);
     const [showEditModal, setShowEditModal] = useState<boolean>(false);
@@ -62,11 +62,11 @@ const VocabularyView = (props: RouteComponentProps<{ user: string; category: str
             setEditData(emptyEditData);
             setShowEditModal(false);
         };
-        const onChangeHandler = (field: string, value: string): void => {
+        const onChangeHandler = (field: string, values: string[]): void => {
             const valuesCopy = [...editData.values.map(val => ({...val}))];
             const valueCopy = valuesCopy.find(val => val.key === field);
             if (valueCopy) {
-                valueCopy.value = value;
+                valueCopy.values = values;
                 setEditData({...editData, values: valuesCopy});
             }
         };
@@ -77,6 +77,7 @@ const VocabularyView = (props: RouteComponentProps<{ user: string; category: str
                 setEditData(emptyEditData);
             });
         };
+        console.log('editData', editData);
         return (<VocabularyEditModal
             cancelHandler={cancelHandler}
             onChangeHandler={onChangeHandler}

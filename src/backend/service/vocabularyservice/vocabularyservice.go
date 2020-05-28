@@ -18,11 +18,11 @@ type GenerateTestRequest struct {
 }
 
 type UserDBVocabs struct {
-	ID         primitive.ObjectID     `json:"id"`
-	UserFirst  vocabularyentity.Value `json:"userFirst"`
-	UserSecond vocabularyentity.Value `json:"userSecond"`
-	DBFirst    vocabularyentity.Value `json:"dbFirst"`
-	DBSecond   vocabularyentity.Value `json:"dbSecond"`
+	ID         primitive.ObjectID      `json:"id"`
+	UserFirst  vocabularyentity.Values `json:"userFirst"`
+	UserSecond vocabularyentity.Values `json:"userSecond"`
+	DBFirst    vocabularyentity.Values `json:"dbFirst"`
+	DBSecond   vocabularyentity.Values `json:"dbSecond"`
 }
 
 type TestResult struct {
@@ -47,8 +47,8 @@ func GenerateTest(testReqBody GenerateTestRequest) ([]vocabularyentity.Vocabular
 		secondValue := vocab.GetValueByKey(testReqBody.SecondValueField)
 		if secondValue != nil {
 			firstValue := vocab.GetValueByKey(testReqBody.FirstValueField)
-			secondValue.Value = ""
-			newValue := make([]vocabularyentity.Value, 0, 2)
+			secondValue.Values = nil
+			newValue := make([]vocabularyentity.Values, 0, 2)
 			newValue = append(newValue, *firstValue)
 			newValue = append(newValue, *secondValue)
 			responseVocabularies = append(responseVocabularies,
@@ -78,7 +78,23 @@ func CheckTest(correctVocabs []vocabularyentity.Vocabulary, checkRequestBody Che
 					DBSecond:   *dbSecondValue,
 					UserFirst:  *userFirstValue,
 					UserSecond: *userSecondValue})
-				if strings.ToLower(strings.TrimSpace(userSecondValue.Value)) == strings.ToLower(strings.TrimSpace(dbSecondValue.Value)) {
+				valueCorrect := false
+				for _, userValue := range userSecondValue.Values {
+					correct := false
+					for _, dbValue := range dbSecondValue.Values {
+						if strings.ToLower(strings.TrimSpace(userValue)) == strings.ToLower(strings.TrimSpace(dbValue)) {
+							correct = true
+							break
+						}
+					}
+					if !correct {
+						valueCorrect = false
+						break
+					} else {
+						valueCorrect = true
+					}
+				}
+				if valueCorrect {
 					correct++
 				}
 				break

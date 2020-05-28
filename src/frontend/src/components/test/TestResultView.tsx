@@ -11,9 +11,11 @@ export type TestResultViewProps = {
 const TestResultView = ({vocabs, correct}: TestResultViewProps): JSX.Element => {
     const getTextField = (vocab: TestResultVocab): JSX.Element | null => {
         let failed = false;
-        if (vocab.dbSecond.value.toLowerCase().trim() !== vocab.userSecond.value.toLowerCase().trim()) {
-            failed = true;
-        }
+        void vocab.userSecond.values?.forEach(userValue => {
+            if (!vocab.dbSecond.values?.find(dbValue => dbValue.toLowerCase().trim() === userValue.toLowerCase().trim())) {
+                failed = true;
+            }
+        });
         if (failed) {
             return (<React.Fragment key={vocab.id}>
                     <Grid item xs={6}>
@@ -21,7 +23,7 @@ const TestResultView = ({vocabs, correct}: TestResultViewProps): JSX.Element => 
                             data-testid="result-correction-first"
                             style={{width: '100%'}}
                             label={vocab.userFirst.key}
-                            defaultValue={vocab.userFirst.value}
+                            defaultValue={vocab.userFirst.values?.join(', ')}
                             helperText={' '}
                             variant="filled"
                             disabled
@@ -33,8 +35,8 @@ const TestResultView = ({vocabs, correct}: TestResultViewProps): JSX.Element => 
                             style={{width: '100%'}}
                             error={failed}
                             label={vocab.userSecond.key}
-                            defaultValue={vocab.userSecond.value}
-                            helperText={failed ? vocab.dbSecond.value : ' '}
+                            defaultValue={vocab.userSecond.values?.join(', ')}
+                            helperText={failed ? vocab.dbSecond.values?.join(', ') : ' '}
                             variant="filled"
                             disabled
                         />

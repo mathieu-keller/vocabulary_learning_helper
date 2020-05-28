@@ -2,13 +2,13 @@ package vocabularyentity
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
-type Value struct {
+type Values struct {
 	Key   string `bson:"key, omitempty" json:"key"`
-	Value string `bson:"value, omitempty" json:"value"`
+	Values[] string `bson:"values, omitempty" json:"values"`
 }
 
 type Vocabulary struct {
 	ID     primitive.ObjectID `bson:"_id, omitempty" json:"id"`
 	ListID primitive.ObjectID `bson:"listID, omitempty" json:"listId"`
-	Values []Value            `bson:"values, omitempty" json:"values"`
+	Values []Values            `bson:"values, omitempty" json:"values"`
 }
