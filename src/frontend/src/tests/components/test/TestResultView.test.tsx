@@ -8,10 +8,10 @@ describe('testing TestResultView', () => {
             vocabs: [
                 {
                     id: '1',
-                    userFirst: {key: "German", value: "hallo"},
-                    userSecond: {key: "English", value: "hello"},
-                    dbFirst: {key: "German", value: "hallo"},
-                    dbSecond: {key: "English", value: "wrong"},
+                    userFirst: {key: "German", values: ["hallo"]},
+                    userSecond: {key: "English", values: ["hello"]},
+                    dbFirst: {key: "German", values: ["hallo"]},
+                    dbSecond: {key: "English", values: ["wrong"]},
                 }],
             correct: 1,
         };
@@ -24,17 +24,17 @@ describe('testing TestResultView', () => {
             vocabs: [
                 {
                     id: '1',
-                    userFirst: {key: "German", value: "hallo"},
-                    userSecond: {key: "English", value: "Hello"},
-                    dbFirst: {key: "German", value: "hallo"},
-                    dbSecond: {key: "English", value: "hello"},
+                    userFirst: {key: "German", values: ["hallo"]},
+                    userSecond: {key: "English", values: ["Hello"]},
+                    dbFirst: {key: "German", values: ["hallo"]},
+                    dbSecond: {key: "English", values: ["hello"]},
                 },
                 {
                     id: '2',
-                    userFirst: {key: "German", value: "hallo"},
-                    userSecond: {key: "English", value: "hello"},
-                    dbFirst: {key: "German", value: "hallo"},
-                    dbSecond: {key: "English", value: "Hello"},
+                    userFirst: {key: "German", values: ["hallo"]},
+                    userSecond: {key: "English", values: ["hello"]},
+                    dbFirst: {key: "German", values: ["hallo"]},
+                    dbSecond: {key: "English", values: ["Hello"]},
                 }],
             correct: 1,
         };
@@ -47,17 +47,17 @@ describe('testing TestResultView', () => {
             vocabs: [
                 {
                     id: '1',
-                    userFirst: {key: "German", value: "hallo"},
-                    userSecond: {key: "English", value: " hello "},
-                    dbFirst: {key: "German", value: "hallo"},
-                    dbSecond: {key: "English", value: "hello"},
+                    userFirst: {key: "German", values: ["hallo"]},
+                    userSecond: {key: "English", values: [" hello "]},
+                    dbFirst: {key: "German", values: ["hallo"]},
+                    dbSecond: {key: "English", values: ["hello"]},
                 },
                 {
                     id: '2',
-                    userFirst: {key: "German", value: "hallo"},
-                    userSecond: {key: "English", value: "hello"},
-                    dbFirst: {key: "German", value: "hallo"},
-                    dbSecond: {key: "English", value: " hello "},
+                    userFirst: {key: "German", values: ["hallo"]},
+                    userSecond: {key: "English", values: ["hello"]},
+                    dbFirst: {key: "German", values: ["hallo"]},
+                    dbSecond: {key: "English", values: [" hello "]},
                 }],
             correct: 1,
         };
@@ -70,10 +70,10 @@ describe('testing TestResultView', () => {
         for (let i = 1; i <= 100; i++) {
             vocabs.push({
                 id: `${i}`,
-                userFirst: {key: "German", value: "hallo"},
-                userSecond: {key: "English", value: "hello"},
-                dbFirst: {key: "German", value: "hallo"},
-                dbSecond: {key: "English", value: "hello"},
+                userFirst: {key: "German", values: ["hallo"]},
+                userSecond: {key: "English", values: ["hello"]},
+                dbFirst: {key: "German", values: ["hallo"]},
+                dbSecond: {key: "English", values: ["hello"]},
             });
         }
         let step = 0;
