@@ -42,7 +42,7 @@ const VocabularyListView = (props: RouteComponentProps<{ user: string; category:
     const grid = useMemo(() => {
         const deleteHandler = (id?: string): void => {
             if (id) {
-                deleteCall<{}, string>(`/vocabulary-list/${id}`, {},
+                deleteCall<null, string>(`/vocabulary-list/${id}`, null,
                     ((resId) => setVocabularyLists(vocabularyLists
                         .filter(vocabularyList => vocabularyList.id !== resId))));
             }

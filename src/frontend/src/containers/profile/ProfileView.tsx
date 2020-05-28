@@ -9,7 +9,7 @@ const ProfileView = (props: RouteComponentProps): JSX.Element => {
     document.title = 'Trainer - Profile';
     const dispatch = useDispatch();
     const logoutHandler = (): void => {
-        post<{}, { login: boolean }>('/logout', null, (r) => {
+        post<null, { login: boolean }>('/logout', null, (r) => {
             if (!r.login) {
                 props.history.push('/');
                 dispatch(userActionFunctions.logout());

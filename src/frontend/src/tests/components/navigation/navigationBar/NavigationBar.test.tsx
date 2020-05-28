@@ -28,7 +28,7 @@ describe('testing NavigationBar', () => {
     afterAll(() => {
         jest.restoreAllMocks();
     });
-    const getUrl = (path: string): { match: { isExact: boolean; path: string; url: string; params: {} }; location: Location } => {
+    const getUrl = (path: string): { match: { isExact: boolean; path: string; url: string; params: any }; location: Location } => {
         const match = {
             isExact: true,
             path,

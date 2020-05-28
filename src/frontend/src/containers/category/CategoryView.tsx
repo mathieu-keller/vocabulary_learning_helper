@@ -58,7 +58,7 @@ const CategoryView = (props: RouteComponentProps): JSX.Element => {
 
     const deleteHandler = (id?: string): void => {
         if (id) {
-            deleteCall<{}, string>(`/category/${id}`, {},
+            deleteCall<null, string>(`/category/${id}`, null,
                 (resId) => dispatch(userActionFunctions.storeCategories(categories.filter(category => category.id !== resId))));
         }
     };
