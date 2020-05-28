@@ -22,6 +22,16 @@ export const user = (state = initialState, action: UserActions): UserStore => {
             return {...state, vocabularyLists: action.payload};
         case userActions.SET_SELECTED_CATEGORY:
             return {...state, selectedCategory: action.payload};
+        case userActions.REMOVE_CATEGORY:
+            let stateCopy = {...state};
+            if (state.selectedCategory.id === action.payload) {
+                stateCopy = {...stateCopy, selectedCategory: {name: "", owner: "", columns: ["", ""]}};
+            }
+            return {
+                ...stateCopy, vocabularyLists: stateCopy.vocabularyLists
+                    .filter(vocabularyList => vocabularyList.categoryId !== action.payload),
+                categories: stateCopy.categories.filter(category => category.id !== action.payload)
+            };
         default: {
             return state;
         }

@@ -54,4 +54,40 @@ describe("testing user reducer", () => {
         const expectedState = {...initialState, selectedCategory: selectedCategory};
         expect(state).toStrictEqual(expectedState);
     });
+    it("remove selected category", async () => {
+        const selectedCategory = {id: '123', name: 'english', columns: ["english", "german"], owner: 'mike miller'};
+        const state = user({
+            ...initialState, selectedCategory, categories: [selectedCategory], vocabularyLists: [
+                {id: '1', name: "A1", categoryId: '123'},
+                {id: '2', name: "A2", categoryId: '123'},
+                {id: '3', name: "A3", categoryId: '456'}]
+        }, {
+            type: userActions.REMOVE_CATEGORY,
+            payload: '123'
+        });
+        const expectedState = {...initialState, vocabularyLists: [{id: '3', name: "A3", categoryId: '456'}]};
+        expect(state).toStrictEqual(expectedState);
+    });
+    it("remove not selected category", async () => {
+        const selectedCategory = {id: '456', name: 'english', columns: ["english", "german"], owner: 'mike miller'};
+        const state = user({
+            ...initialState,
+            selectedCategory,
+            categories: [selectedCategory, {id: '123', name: 'german', columns: ["german", "english"], owner: 'karl schmidt'}],
+            vocabularyLists: [
+                {id: '1', name: "A1", categoryId: '123'},
+                {id: '2', name: "A2", categoryId: '123'},
+                {id: '3', name: "A3", categoryId: '456'}]
+        }, {
+            type: userActions.REMOVE_CATEGORY,
+            payload: '123'
+        });
+        const expectedState = {
+            ...initialState,
+            categories: [selectedCategory],
+            selectedCategory,
+            vocabularyLists: [{id: '3', name: "A3", categoryId: '456'}]
+        };
+        expect(state).toStrictEqual(expectedState);
+    });
 });

@@ -9,9 +9,9 @@ import {AppStore} from "../../store/store.types";
 import {userActionFunctions} from "../../actions/user";
 
 export type VocabularyList = {
-    id?: string;
-    name: string;
-    categoryId?: string;
+   readonly id?: string;
+   readonly name: string;
+   readonly categoryId?: string;
 }
 
 const VocabularyListView = (props: RouteComponentProps<{ user: string; category: string }>): JSX.Element => {
@@ -83,6 +83,7 @@ const VocabularyListView = (props: RouteComponentProps<{ user: string; category:
                     const foundedVocabs = vocabularyLists
                         .filter(vocabularyList => vocabularyList.id)
                         .filter(vocabularyList => vocabularyList.id !== data.id);
+                    dispatch(userActionFunctions.storeVocabularyLists([...foundedVocabs, data]));
                     setVocabularyLists([...foundedVocabs, data]);
                     setEditData({name: '', categoryId: selectedCategory.id});
                     setShowEditModal(false);

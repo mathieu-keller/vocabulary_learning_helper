@@ -61,7 +61,7 @@ func insert(c *gin.Context) {
 		log.Print(err)
 		return
 	}
-	c.JSON(http.StatusOK, body)
+	c.JSON(http.StatusCreated, body)
 }
 
 func deleteCategory(c *gin.Context) {

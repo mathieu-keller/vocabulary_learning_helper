@@ -6,14 +6,20 @@ export type UserActions = LoginAction |
     LogoutAction |
     StoreCategoriesAction |
     StoreVocabularyListsAction |
-    SetSelectedCategoryAction;
+    SetSelectedCategoryAction |
+    RemoveCategoryAction;
 
 type LoginAction = ReduxAction<userActions.LOGIN>
 type LogoutAction = ReduxAction<userActions.LOGOUT>
 type StoreCategoriesAction = ReduxActionWithPayload<userActions.STORE_CATEGORIES, Category[]>
 type StoreVocabularyListsAction = ReduxActionWithPayload<userActions.STORE_VOCABULARY_LISTS, VocabularyList[]>
 type SetSelectedCategoryAction = ReduxActionWithPayload<userActions.SET_SELECTED_CATEGORY, Category>
+type RemoveCategoryAction = ReduxActionWithPayload<userActions.REMOVE_CATEGORY, string>
 export const userActionFunctions = {
+    removeCategory: (id: string): RemoveCategoryAction => ({
+        type: userActions.REMOVE_CATEGORY,
+        payload: id
+    }),
     setSelectedCategory: (category: Category): SetSelectedCategoryAction => ({
         type: userActions.SET_SELECTED_CATEGORY,
         payload: category

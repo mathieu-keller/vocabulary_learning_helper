@@ -60,6 +60,15 @@ func GenerateTest(testReqBody GenerateTestRequest) ([]vocabularyentity.Vocabular
 	return responseVocabularies, nil
 }
 
+func checkIfVocabEquals(vocab string, values []string) bool {
+	for _, dbValue := range values {
+		if strings.ToLower(strings.TrimSpace(vocab)) == strings.ToLower(strings.TrimSpace(dbValue)) {
+			return true
+		}
+	}
+	return false
+}
+
 func CheckTest(correctVocabs []vocabularyentity.Vocabulary, checkRequestBody CheckTestRequest) (TestResult, error) {
 	userDBVocabs := make([]UserDBVocabs, 0, len(correctVocabs))
 	correct := int8(0)
@@ -80,19 +89,7 @@ func CheckTest(correctVocabs []vocabularyentity.Vocabulary, checkRequestBody Che
 					UserSecond: *userSecondValue})
 				valueCorrect := false
 				for _, userValue := range userSecondValue.Values {
-					correct := false
-					for _, dbValue := range dbSecondValue.Values {
-						if strings.ToLower(strings.TrimSpace(userValue)) == strings.ToLower(strings.TrimSpace(dbValue)) {
-							correct = true
-							break
-						}
-					}
-					if !correct {
-						valueCorrect = false
-						break
-					} else {
-						valueCorrect = true
-					}
+					valueCorrect = checkIfVocabEquals(userValue, dbSecondValue.Values)
 				}
 				if valueCorrect {
 					correct++

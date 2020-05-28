@@ -9,10 +9,10 @@ import {AppStore} from "../../store/store.types";
 import {userActionFunctions} from "../../actions/user";
 
 export type Category = {
-    id?: string;
-    name: string;
-    columns: string[];
-    owner: string;
+    readonly id?: string;
+    readonly name: string;
+    readonly columns: string[];
+    readonly owner: string;
 }
 
 const CategoryView = (props: RouteComponentProps): JSX.Element => {
@@ -51,7 +51,7 @@ const CategoryView = (props: RouteComponentProps): JSX.Element => {
     const onClick = (data: Category): void => {
         const {pathname} = props.location;
         dispatch(userActionFunctions.setSelectedCategory(data));
-        if(pathname !== '/category') {
+        if (pathname !== '/category') {
             props.history.push(`${pathname}/${data.owner}/${data.name}`);
         }
     };
@@ -59,7 +59,9 @@ const CategoryView = (props: RouteComponentProps): JSX.Element => {
     const deleteHandler = (id?: string): void => {
         if (id) {
             deleteCall<null, string>(`/category/${id}`, null,
-                (resId) => dispatch(userActionFunctions.storeCategories(categories.filter(category => category.id !== resId))));
+                (resId) => {
+                    dispatch(userActionFunctions.removeCategory(resId));
+                });
         }
     };
 
