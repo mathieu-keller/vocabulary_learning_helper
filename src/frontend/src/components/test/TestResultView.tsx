@@ -10,7 +10,7 @@ export type TestResultViewProps = {
 
 const TestResultView = ({vocabs, correct}: TestResultViewProps): JSX.Element => {
     const getTextField = (vocab: TestResultVocab): JSX.Element | null => {
-        let failed = false;
+        let failed = vocab.userSecond.values === null;
         void vocab.userSecond.values?.forEach(userValue => {
             if (!vocab.dbSecond.values?.find(dbValue => dbValue.toLowerCase().trim() === userValue.toLowerCase().trim())) {
                 failed = true;
