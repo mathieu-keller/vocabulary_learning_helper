@@ -45,12 +45,12 @@ func GenerateTest(testReqBody GenerateTestRequest) ([]vocabularyentity.Vocabular
 	responseVocabularies := make([]vocabularyentity.Vocabulary, 0, len(vocabs))
 	for _, vocab := range vocabs {
 		secondValue := vocab.GetValueByKey(testReqBody.SecondValueField)
-		if secondValue != nil {
+		if secondValue.Key != "" {
 			firstValue := vocab.GetValueByKey(testReqBody.FirstValueField)
 			secondValue.Values = nil
 			newValue := make([]vocabularyentity.Values, 0, 2)
-			newValue = append(newValue, *firstValue)
-			newValue = append(newValue, *secondValue)
+			newValue = append(newValue, firstValue)
+			newValue = append(newValue, secondValue)
 			responseVocabularies = append(responseVocabularies,
 				vocabularyentity.Vocabulary{ID: vocab.ID,
 					ListID: vocab.ListID,
@@ -69,36 +69,42 @@ func checkIfVocabEquals(vocab string, values []string) bool {
 	return false
 }
 
+func getUserDBVocab(firstValueKey string, secondValueKey string, userVocab vocabularyentity.Vocabulary,
+	dbVocab vocabularyentity.Vocabulary) (UserDBVocabs, error) {
+	userDBVocab := UserDBVocabs{ID: dbVocab.ID,
+		DBFirst:    dbVocab.GetValueByKey(firstValueKey),
+		DBSecond:   dbVocab.GetValueByKey(secondValueKey),
+		UserFirst:  userVocab.GetValueByKey(firstValueKey),
+		UserSecond: userVocab.GetValueByKey(secondValueKey)}
+	if userDBVocab.UserSecond.Key == "" || userDBVocab.DBSecond.Key == "" || userDBVocab.DBFirst.Key == "" || userDBVocab.UserFirst.Key == "" {
+		return UserDBVocabs{}, errors.New("one field does not exist")
+	}
+	return userDBVocab, nil
+}
+
 func CheckTest(correctVocabs []vocabularyentity.Vocabulary, checkRequestBody CheckTestRequest) (TestResult, error) {
-	userDBVocabs := make([]UserDBVocabs, 0, len(correctVocabs))
 	correct := int8(0)
+	correctVocabMap := make(map[primitive.ObjectID]vocabularyentity.Vocabulary, len(correctVocabs))
 	for _, correctVocab := range correctVocabs {
-		for _, vocab := range checkRequestBody.Vocabularies {
-			if correctVocab.ID == vocab.ID {
-				userFirstValue := vocab.GetValueByKey(checkRequestBody.FirstValueField)
-				dbFirstValue := correctVocab.GetValueByKey(checkRequestBody.FirstValueField)
-				userSecondValue := vocab.GetValueByKey(checkRequestBody.SecondValueField)
-				dbSecondValue := correctVocab.GetValueByKey(checkRequestBody.SecondValueField)
-				if userFirstValue == nil || dbFirstValue == nil || userSecondValue == nil || dbSecondValue == nil {
-					return TestResult{}, errors.New("one field does not exist")
-				}
-				userDBVocabs = append(userDBVocabs, UserDBVocabs{ID: correctVocab.ID,
-					DBFirst:    *dbFirstValue,
-					DBSecond:   *dbSecondValue,
-					UserFirst:  *userFirstValue,
-					UserSecond: *userSecondValue})
-				valueCorrect := true
-				for _, userValue := range userSecondValue.Values {
-					if valueCorrect = checkIfVocabEquals(userValue, dbSecondValue.Values); !valueCorrect {
-						break
-					}
-				}
-				if valueCorrect {
-					correct++
-				}
+		correctVocabMap[correctVocab.ID] = correctVocab
+	}
+	userDBVocabs := make([]UserDBVocabs, 0, len(correctVocabs))
+	for _, vocab := range checkRequestBody.Vocabularies {
+		correctVocab := correctVocabMap[vocab.ID]
+		userDBVocab, err := getUserDBVocab(checkRequestBody.FirstValueField, checkRequestBody.SecondValueField, vocab, correctVocab)
+		if err != nil {
+			return TestResult{}, err
+		}
+		valueCorrect := true
+		for _, userValue := range userDBVocab.UserSecond.Values {
+			if valueCorrect = checkIfVocabEquals(userValue, userDBVocab.DBSecond.Values); !valueCorrect {
 				break
 			}
 		}
+		if valueCorrect {
+			correct++
+		}
+		userDBVocabs = append(userDBVocabs, userDBVocab)
 	}
 	correction := TestResult{Vocabs: userDBVocabs, Correct: correct}
 	return correction, nil

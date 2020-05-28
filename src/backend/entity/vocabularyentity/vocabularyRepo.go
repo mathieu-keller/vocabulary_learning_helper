@@ -132,11 +132,11 @@ func getValuesFromCursor(ctx context.Context, cur *mongo.Cursor) ([]Vocabulary, 
 	return returnValue, nil
 }
 
-func (vocabulary *Vocabulary)GetValueByKey(key string) *Values {
+func (vocabulary *Vocabulary) GetValueByKey(key string) Values {
 	for _, value := range vocabulary.Values {
 		if value.Key == key {
-			return &value
+			return value
 		}
 	}
-	return nil
+	return Values{}
 }
