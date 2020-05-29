@@ -3,6 +3,7 @@ import ModalWindow, {ModalWindowProps} from "./ModalWindow";
 import {Vocab} from "../../../containers/vocabulary/VocabularyView";
 import {Button} from "@material-ui/core";
 import Creatable from "../input/Creatable";
+import {errorToast} from "../../../utility/toast";
 
 type VocabularyEditModalProps = {
     saveHandler: () => void;
@@ -13,7 +14,11 @@ type VocabularyEditModalProps = {
 
 const VocabularyEditModal = ({show, modalClosed, editData, saveHandler, cancelHandler, onChangeHandler}: VocabularyEditModalProps): JSX.Element => {
     const save = (): void => {
-        saveHandler();
+        if (editData.values.some(val => val.values === null || val.values.length === 0)) {
+            errorToast("unfilled fields", "all fields must be filled");
+        } else {
+            saveHandler();
+        }
     };
 
     const onKeyDownHandler = (e: React.KeyboardEvent<HTMLElement>): void => {
@@ -22,20 +27,22 @@ const VocabularyEditModal = ({show, modalClosed, editData, saveHandler, cancelHa
         }
     };
 
-    const TextFields = editData.values.map((value) => (
-        <div key={value.key}>
-            <p>{value.key}</p>
-            <Creatable
-                onChange={(v) => onChangeHandler(value.key, v)}
-                values={value.values}
-                placeholder={value.key}
-                onKeyDown={onKeyDownHandler}
-            />
-        </div>
-    ));
+    const textFields = (<>
+        {editData.values.map((value) => (
+            <div key={value.key}>
+                <p>{value.key}</p>
+                <Creatable
+                    onChange={(v) => onChangeHandler(value.key, v)}
+                    values={value.values}
+                    placeholder={value.key}
+                    onKeyDown={onKeyDownHandler}
+                />
+            </div>
+        ))}
+    </>);
 
     return (<ModalWindow modalClosed={modalClosed} show={show}>
-            {TextFields}
+            {textFields}
             <div style={{float: 'right'}}>
                 <Button variant="contained" onClick={cancelHandler}>Cancel</Button>
                 <Button variant="contained" color="primary" onClick={save}> Save </Button>

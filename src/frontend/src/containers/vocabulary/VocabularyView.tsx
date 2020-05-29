@@ -77,7 +77,6 @@ const VocabularyView = (props: RouteComponentProps<{ user: string; category: str
                 setEditData(emptyEditData);
             });
         };
-        console.log('editData', editData);
         return (<VocabularyEditModal
             cancelHandler={cancelHandler}
             onChangeHandler={onChangeHandler}
