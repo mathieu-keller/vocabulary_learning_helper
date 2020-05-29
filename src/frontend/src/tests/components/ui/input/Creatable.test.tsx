@@ -8,11 +8,11 @@ describe('testing creatable', () => {
         let savedValues: string[] = [];
         const onChange = (values: string[]): void => {
             savedValues = values;
-        }
+        };
         render(<Creatable values={savedValues} placeholder='test' onChange={onChange}/>);
         const input = screen.getByRole('textbox', {name: ""}) as HTMLInputElement;
 
-        fireEvent.change(input, {target: {value: 'Good Day'}})
+        fireEvent.change(input, {target: {value: 'Good Day'}});
         expect(input.value).toBe('Good Day');
         expect(savedValues.length).toBe(0);
 
@@ -26,11 +26,11 @@ describe('testing creatable', () => {
         let savedValues: string[] = [];
         const onChange = (values: string[]): void => {
             savedValues = values;
-        }
+        };
         render(<Creatable values={savedValues} placeholder='test' onChange={onChange}/>);
         const input = screen.getByRole('textbox', {name: ""}) as HTMLInputElement;
 
-        fireEvent.change(input, {target: {value: 'Good Day'}})
+        fireEvent.change(input, {target: {value: 'Good Day'}});
         expect(input.value).toBe('Good Day');
         expect(savedValues.length).toBe(0);
 
@@ -44,10 +44,10 @@ describe('testing creatable', () => {
         let savedValues: string[] = [];
         const onChange = (values: string[]): void => {
             savedValues = values;
-        }
+        };
         render(<Creatable values={savedValues} placeholder='test' onChange={onChange}/>);
         const input = screen.getByRole('textbox', {name: ""}) as HTMLInputElement;
-        fireEvent.change(input, {target: {value: 'Good Day'}})
+        fireEvent.change(input, {target: {value: 'Good Day'}});
         expect(input.value).toBe('Good Day');
         expect(savedValues.length).toBe(0);
         fireEvent.blur(input);
@@ -60,7 +60,7 @@ describe('testing creatable', () => {
         let savedValues: string[] = [];
         const onChange = (values: string[]): void => {
             savedValues = values;
-        }
+        };
         render(<Creatable values={savedValues} placeholder='test' onChange={onChange}/>);
         const input = screen.getByRole('textbox', {name: ""}) as HTMLInputElement;
 
@@ -74,13 +74,13 @@ describe('testing creatable', () => {
         let savedValues: string[] = [];
         const onChange = (values: string[]): void => {
             savedValues = values;
-        }
+        };
         let keyPressed = false;
         const onKeyDown = (e: React.KeyboardEvent<HTMLElement>): void => {
             if (e.key === 'Enter') {
                 keyPressed = true;
             }
-        }
+        };
         render(<Creatable values={savedValues} onKeyDown={onKeyDown} onChange={onChange}/>);
         const input = screen.getByRole('textbox', {name: ""}) as HTMLInputElement;
 
@@ -93,17 +93,17 @@ describe('testing creatable', () => {
         let savedValues: string[] = [];
         const onChange = (values: string[]): void => {
             savedValues = values;
-        }
+        };
         let keyPressed = false;
         const onKeyDown = (e: React.KeyboardEvent<HTMLElement>): void => {
             if (e.key === 'Enter') {
                 keyPressed = true;
             }
-        }
+        };
         render(<Creatable values={savedValues} onKeyDown={onKeyDown} onChange={onChange}/>);
         const input = screen.getByRole('textbox', {name: ""}) as HTMLInputElement;
 
-        fireEvent.change(input, {target: {value: 'Good Day'}})
+        fireEvent.change(input, {target: {value: 'Good Day'}});
         expect(input.value).toBe('Good Day');
         fireEvent.keyDown(input, {key: 'Enter'});
         expect(keyPressed).toBeFalsy();

@@ -35,7 +35,7 @@ export default (props: CreatableProps): JSX.Element => {
             props.onChange([]);
             setInputValue('');
         } else {
-            const value1 = (value as CreatableValue).value
+            const value1 = (value as CreatableValue).value;
             if (value1) {
                 setInputValue(value1);
             }
