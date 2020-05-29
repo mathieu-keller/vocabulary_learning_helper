@@ -1,5 +1,5 @@
 import {initialState, testVocabularies} from "../../reducers/testVocabularies";
-import {testVocabularyActions} from "../../actions/actions.types";
+import {testVocabularyActionFunctions} from "../../actions/testVocabularies";
 
 describe("testing test reducer", () => {
     it("set test data", async () => {
@@ -9,8 +9,8 @@ describe("testing test reducer", () => {
                 {id: '3', listId: '4', values: [{key: 'German', values: ['Danke']}, {key: 'English', values: ['thanks']}]}
             ], front: 'German', back: 'English'
         };
-        const state = testVocabularies({...initialState},
-            {type: testVocabularyActions.SET_TEST_DATA, payload: testVocabularyData});
+        const state = testVocabularies({...initialState}, testVocabularyActionFunctions.setTestData(testVocabularyData.vocabularies,
+            testVocabularyData.front, testVocabularyData.back));
         const expectedState = {
             ...initialState, vocabularies: testVocabularyData.vocabularies,
             front: testVocabularyData.front, back: testVocabularyData.back
