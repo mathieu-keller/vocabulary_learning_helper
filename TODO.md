@@ -1,5 +1,5 @@
-- [ ] Add unique constrain on Category (name,owner)
-- [ ] Add unique constrain on VocabularyList (categoryId, name)
+- [x] Add unique constrain on Category (name,owner)
+- [x] Add unique constrain on VocabularyList (categoryId, name)
 - [x] Show the category in header
 - [ ] Add permissions for other vocabulary lists
 - [ ] Save test results
