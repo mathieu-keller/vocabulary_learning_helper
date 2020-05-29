@@ -28,17 +28,10 @@ export default (props: CreatableProps): JSX.Element => {
     const [inputValue, setInputValue] = useState<string>('');
     const handleChange = (value: ValueType<CreatableValue>, actionMeta: ActionMeta<CreatableValue>): void => {
         if (actionMeta.action === 'remove-value' && props.values) {
-            const newValueList = props.values.filter(val => val !== actionMeta.removedValue?.value);
-            props.onChange(newValueList);
-            setInputValue('');
+            const values = (value as CreatableValue[]).map(val => val.value);
+            props.onChange(values);
         } else if (actionMeta.action === 'clear') {
             props.onChange([]);
-            setInputValue('');
-        } else {
-            const value1 = (value as CreatableValue).value;
-            if (value1) {
-                setInputValue(value1);
-            }
         }
     };
     const handleInputChange = (inputVal: string): void => {
@@ -76,8 +69,8 @@ export default (props: CreatableProps): JSX.Element => {
             components={components}
             inputValue={inputValue}
             isClearable
+            id={props.placeholder || "creatable-input"}
             isMulti
-            inputId={props.placeholder || "creatable-input"}
             onBlur={onBlur}
             menuIsOpen={false}
             onChange={handleChange}
