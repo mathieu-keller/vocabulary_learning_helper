@@ -32,13 +32,17 @@ const LoginView = (props: RouteComponentProps): JSX.Element => {
                     post<{ username: string; password: string }, { login: boolean }>('/login', values, 200)
                         .then(response => {
                             if ((response as { login: boolean }).login) {
-                                props.history.push("/");
+                                setSubmitting(false);
                                 dispatch(userActionFunctions.login());
+                                props.history.push("/");
                             } else if (typeof response === 'string') {
                                 setRestError(response);
+                                setSubmitting(false);
                             }
-                        }).catch(setRestError)
-                        .finally(() => setSubmitting(false));
+                        }).catch(e => {
+                        setRestError(e);
+                        setSubmitting(false);
+                    });
                 }}
             >
                 {({
