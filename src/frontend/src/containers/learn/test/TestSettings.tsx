@@ -43,11 +43,13 @@ const TestSettings = (props: RouteComponentProps<{ user: string; category: strin
     }, [selectedCategory]);
     const onSubmit = (): void => {
         post<{ listIds: string[]; limit: number; firstValueField: string; secondValueField: string }, Vocab[]>('/generate-test',
-            {listIds: right.map(ri => ri.value), limit: maxVocabularyCount, firstValueField: front, secondValueField: back},
-            (r) => {
-                dispatch(testVocabularyActionFunctions.setTestData(r, front, back));
-                props.history.push('/learn/test');
-            }, 200);
+            {listIds: right.map(ri => ri.value), limit: maxVocabularyCount, firstValueField: front, secondValueField: back}, 200)
+            .then(r => {
+                if (typeof r !== 'string') {
+                    dispatch(testVocabularyActionFunctions.setTestData(r, front, back));
+                    props.history.push('/learn/test');
+                }
+            });
     };
 
     return (

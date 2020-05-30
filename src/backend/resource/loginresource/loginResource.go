@@ -3,12 +3,13 @@ package loginresource
 import (
 	"encoding/json"
 	"errors"
-	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 
 	"github.com/Afrima/vocabulary_learning_helper/src/backend/entity/userentity"
 	"github.com/Afrima/vocabulary_learning_helper/src/backend/resource"
@@ -21,7 +22,7 @@ func Init(r *gin.Engine) {
 }
 
 type LoginData struct {
-	UserName string `json:"userName"`
+	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
@@ -41,8 +42,8 @@ func login(c *gin.Context) {
 		log.Print(err)
 		return
 	}
-	loginData.UserName = strings.ToLower(loginData.UserName)
-	dbUser, err := userentity.GetUser(loginData.UserName)
+	loginData.Username = strings.ToLower(loginData.Username)
+	dbUser, err := userentity.GetUser(loginData.Username)
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 		log.Print(err)
@@ -53,7 +54,7 @@ func login(c *gin.Context) {
 		log.Print(err)
 		return
 	}
-	resource.SetHTTPOnlyToken(c, loginData.UserName)
+	resource.SetHTTPOnlyToken(c, loginData.Username)
 	c.JSON(http.StatusOK, resource.LoginDto{Login: true})
 }
 
@@ -79,7 +80,7 @@ func getLoginData(c *gin.Context) (LoginData, error) {
 	if err = json.Unmarshal(reqBody, &loginData); err != nil {
 		return LoginData{}, err
 	}
-	loginData.UserName = strings.Title(strings.ToLower(loginData.UserName))
+	loginData.Username = strings.Title(strings.ToLower(loginData.Username))
 	return loginData, nil
 }
 
@@ -90,8 +91,8 @@ func registration(c *gin.Context) {
 		log.Print(err)
 		return
 	}
-	loginData.UserName = strings.ToLower(loginData.UserName)
-	userInDB, err := userentity.GetUser(loginData.UserName)
+	loginData.Username = strings.ToLower(loginData.Username)
+	userInDB, err := userentity.GetUser(loginData.Username)
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 		log.Print(err)
@@ -106,7 +107,7 @@ func registration(c *gin.Context) {
 		log.Print(err)
 		return
 	}
-	resource.SetHTTPOnlyToken(c, loginData.UserName)
+	resource.SetHTTPOnlyToken(c, loginData.Username)
 	c.JSON(http.StatusOK, resource.LoginDto{Login: true})
 }
 
@@ -115,7 +116,7 @@ func saveNewUser(loginData LoginData) error {
 	if err != nil {
 		return err
 	}
-	userToRegister := userentity.User{UserName: loginData.UserName, Password: string(passwordHash)}
+	userToRegister := userentity.User{UserName: loginData.Username, Password: string(passwordHash)}
 	if err = userToRegister.Insert(); err != nil {
 		return err
 	}

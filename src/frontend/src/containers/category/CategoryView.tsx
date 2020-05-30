@@ -38,10 +38,14 @@ const CategoryView = (props: RouteComponentProps): JSX.Element => {
     };
 
     const onSave = (): void => {
-        post<Category, Category>('/category', editCategory, data => {
-            dispatch(userActionFunctions.storeCategories([...categories, data]));
-            onClose();
-        });
+        post<Category, Category>('/category', editCategory)
+            .then(r => {
+                console.log(r);
+                if (typeof r !== 'string') {
+                    dispatch(userActionFunctions.storeCategories([...categories, r]));
+                    onClose();
+                }
+            });
     };
 
     const addColumn = (): void => {
@@ -58,10 +62,8 @@ const CategoryView = (props: RouteComponentProps): JSX.Element => {
 
     const deleteHandler = (id?: string): void => {
         if (id) {
-            deleteCall<null, string>(`/category/${id}`, null,
-                (resId) => {
-                    dispatch(userActionFunctions.removeCategory(resId));
-                });
+            deleteCall<null, string>(`/category/${id}`, null)
+                .then(resId => dispatch(userActionFunctions.removeCategory(resId)));
         }
     };
 

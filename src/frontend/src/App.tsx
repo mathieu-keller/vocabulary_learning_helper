@@ -1,4 +1,5 @@
 import React, {lazy, useEffect, useState} from 'react';
+import 'react-toastify/scss/main.scss';
 import {Route, Switch} from 'react-router-dom';
 import {get} from "./utility/restCaller";
 import {ToastContainer} from "react-toastify";
@@ -22,26 +23,33 @@ const App = (): JSX.Element => {
     const dispatch = useDispatch();
     const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
     useEffect(() => {
-        get<{ login: boolean }>('/check-login', (r) => {
-            if (r.login) {
-                dispatch(userActionFunctions.login());
-            }
-        });
+        get<{ login: boolean }>('/check-login')
+            .then(r => {
+                if (typeof r !== 'string') {
+                    if (r.login) {
+                        dispatch(userActionFunctions.login());
+                    }
+                }
+            });
     }, []);
     useEffect(() => {
         if (isLogin) {
-            setTimer(setInterval(() => get<{ login: boolean }>('/refresh-token', (r) => {
-                if (r.login) {
-                    dispatch(userActionFunctions.login());
-                } else {
-                    dispatch(userActionFunctions.logout());
-                }
-            }), 450000));//7,5 minutes
-            get<Category[] | null>('/category', data => {
-                if (data) {
-                    dispatch(userActionFunctions.storeCategories(data));
-                }
-            });
+            setTimer(setInterval(() => get<{ login: boolean }>('/refresh-token')
+                .then(r => {
+                    if (typeof r !== 'string') {
+                        if (r.login) {
+                            dispatch(userActionFunctions.login());
+                        } else {
+                            dispatch(userActionFunctions.logout());
+                        }
+                    }
+                }), 450000));//7,5 minutes
+            get<Category[] | null>('/category')
+                .then(r => {
+                    if (typeof r !== 'string' && r) {
+                        dispatch(userActionFunctions.storeCategories(r));
+                    }
+                });
         } else if (timer) {
             clearInterval(timer);
         }

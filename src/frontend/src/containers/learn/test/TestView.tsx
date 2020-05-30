@@ -35,9 +35,12 @@ const TestView = (props: RouteComponentProps): JSX.Element | null => {
     }, [testVocabularies]);
     const submit = (): void => {
         post<{ vocabularies: Vocab[]; firstValueField: string; secondValueField: string }, TestResult>('/check-test',
-            {vocabularies, firstValueField: testVocabularies.front, secondValueField: testVocabularies.back}, (r) => {
-                setResult(r);
-            }, 200);
+            {vocabularies, firstValueField: testVocabularies.front, secondValueField: testVocabularies.back}, 200)
+            .then((r) => {
+                if (typeof r !== 'string') {
+                    setResult(r);
+                }
+            });
     };
     const onChange = (vocab: Vocab, field: string, value: string[]): void => {
         const vocabulary = vocab.values.find(val => val.key === field);

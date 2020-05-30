@@ -28,7 +28,12 @@ const VocabularyView = (props: RouteComponentProps<{ user: string; category: str
     const [showEditModal, setShowEditModal] = useState<boolean>(false);
     const selectedCategory = useSelector((store: AppStore) => store.user.selectedCategory);
     useEffect(() => {
-        get<Vocab[]>(`/vocabulary/${listId}`, setVocabs);
+        get<Vocab[]>(`/vocabulary/${listId}`)
+            .then(r => {
+                if (typeof r !== 'string') {
+                    setVocabs(r);
+                }
+            });
     }, [listId]);
 
     useEffect(() => {
@@ -39,7 +44,12 @@ const VocabularyView = (props: RouteComponentProps<{ user: string; category: str
 
     const grid = useMemo(() => {
         const deleteHandler = (data: Vocab): void => {
-            deleteCall<Vocab, Vocab>('/vocabulary', data, ((d) => setVocabs(vocabs.filter(vocab => vocab.id !== d.id))));
+            deleteCall<Vocab, Vocab>('/vocabulary', data)
+                .then(r => {
+                    if (typeof r !== 'string') {
+                        setVocabs(vocabs.filter(vocab => vocab.id !== r.id));
+                    }
+                });
         };
         const setEditHandler = (data: Vocab): void => {
             setEditData({...data});
@@ -71,11 +81,14 @@ const VocabularyView = (props: RouteComponentProps<{ user: string; category: str
             }
         };
         const saveHandler = (): void => {
-            post<Vocab, Vocab>('/vocabulary', editData, (data) => {
-                const foundedVocabs = vocabs.filter(vocab => vocab.id).filter(vocab => vocab.id !== data.id);
-                setVocabs([...foundedVocabs, data]);
-                setEditData(emptyEditData);
-            });
+            post<Vocab, Vocab>('/vocabulary', editData)
+                .then(r => {
+                    if (typeof r !== 'string') {
+                        const foundedVocabs = vocabs.filter(vocab => vocab.id).filter(vocab => vocab.id !== r.id);
+                        setVocabs([...foundedVocabs, r]);
+                        setEditData(emptyEditData);
+                    }
+                });
         };
         return (<VocabularyEditModal
             cancelHandler={cancelHandler}

@@ -11,12 +11,12 @@ import (
 	"github.com/Afrima/vocabulary_learning_helper/src/backend/database"
 )
 
-func GetUser(userName string) (*User, error) {
+func GetUser(username string) (*User, error) {
 	collection, ctx, closeCtx := database.GetDatabase("User")
 	defer closeCtx()
 	limit, findOptions := int64(1), options.Find()
 	findOptions.Limit = &limit
-	cur, err := collection.Find(ctx, bson.M{"username": userName}, findOptions)
+	cur, err := collection.Find(ctx, bson.M{"username": username}, findOptions)
 	defer database.CloseCursor(ctx, cur)
 	if err != nil {
 		log.Println(err)

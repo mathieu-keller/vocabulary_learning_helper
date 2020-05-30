@@ -9,9 +9,9 @@ import {AppStore} from "../../store/store.types";
 import {userActionFunctions} from "../../actions/user";
 
 export type VocabularyList = {
-   readonly id?: string;
-   readonly name: string;
-   readonly categoryId?: string;
+    readonly id?: string;
+    readonly name: string;
+    readonly categoryId?: string;
 }
 
 const VocabularyListView = (props: RouteComponentProps<{ user: string; category: string }>): JSX.Element => {
@@ -28,13 +28,13 @@ const VocabularyListView = (props: RouteComponentProps<{ user: string; category:
         const vocabularyListForCategory = storedVocabularyLists
             .filter(storedVocabularyList => storedVocabularyList.categoryId === selectedCategory.id);
         if (vocabularyListForCategory.length < 1 && selectedCategory.id) {
-            get<VocabularyList[] | null>(`/vocabulary-list/${selectedCategory.id}`, (r) => {
-                    if (r) {
+            get<VocabularyList[] | null>(`/vocabulary-list/${selectedCategory.id}`)
+                .then(r => {
+                    if (typeof r !== 'string' && r) {
                         dispatch(userActionFunctions.storeVocabularyLists([...storedVocabularyLists, ...r]));
                         setVocabularyLists(r);
                     }
-                }
-            );
+                });
         } else {
             setVocabularyLists(vocabularyListForCategory);
         }
@@ -42,9 +42,8 @@ const VocabularyListView = (props: RouteComponentProps<{ user: string; category:
     const grid = useMemo(() => {
         const deleteHandler = (id?: string): void => {
             if (id) {
-                deleteCall<null, string>(`/vocabulary-list/${id}`, null,
-                    ((resId) => setVocabularyLists(vocabularyLists
-                        .filter(vocabularyList => vocabularyList.id !== resId))));
+                deleteCall<null, string>(`/vocabulary-list/${id}`, null)
+                    .then(resId => setVocabularyLists(vocabularyLists.filter(vocabularyList => vocabularyList.id !== resId)));
             }
         };
         const setEditHandler = (data: VocabularyList): void => {
@@ -72,22 +71,23 @@ const VocabularyListView = (props: RouteComponentProps<{ user: string; category:
         };
         const onChangeHandler = (field: string, value: string): void => {
             if (editData && field === 'name') {
-                const newEditData: VocabularyList = {...editData};
-                newEditData[field] = value;
-                setEditData(newEditData);
+                setEditData({...editData, name: value});
             }
         };
         const saveHandler = (): void => {
             if (editData) {
-                post<VocabularyList, VocabularyList>('/vocabulary-list', editData, (data) => {
-                    const foundedVocabs = vocabularyLists
-                        .filter(vocabularyList => vocabularyList.id)
-                        .filter(vocabularyList => vocabularyList.id !== data.id);
-                    dispatch(userActionFunctions.storeVocabularyLists([...foundedVocabs, data]));
-                    setVocabularyLists([...foundedVocabs, data]);
-                    setEditData({name: '', categoryId: selectedCategory.id});
-                    setShowEditModal(false);
-                });
+                post<VocabularyList, VocabularyList>('/vocabulary-list', editData)
+                    .then((r) => {
+                        if (typeof r !== 'string') {
+                            const foundedVocabs = vocabularyLists
+                                .filter(vocabularyList => vocabularyList.id)
+                                .filter(vocabularyList => vocabularyList.id !== r.id);
+                            dispatch(userActionFunctions.storeVocabularyLists([...foundedVocabs, r]));
+                            setVocabularyLists([...foundedVocabs, r]);
+                            setEditData({name: '', categoryId: selectedCategory.id});
+                            setShowEditModal(false);
+                        }
+                    });
             }
         };
         return (<VocabularyListEditModal cancelHandler={cancelHandler}

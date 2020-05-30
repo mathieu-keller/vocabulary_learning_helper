@@ -9,12 +9,13 @@ const ProfileView = (props: RouteComponentProps): JSX.Element => {
     document.title = 'Trainer - Profile';
     const dispatch = useDispatch();
     const logoutHandler = (): void => {
-        post<null, { login: boolean }>('/logout', null, (r) => {
-            if (!r.login) {
-                props.history.push('/');
-                dispatch(userActionFunctions.logout());
-            }
-        }, 200);
+        post<null, { login: boolean }>('/logout', null, 200)
+            .then(r => {
+                if (typeof r !== 'string' && !r.login) {
+                    props.history.push('/');
+                    dispatch(userActionFunctions.logout());
+                }
+            });
     };
 
     return (
