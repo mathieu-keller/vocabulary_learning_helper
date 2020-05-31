@@ -3,7 +3,6 @@ import ModalWindow, {ModalWindowProps} from "./ModalWindow";
 import {Vocab} from "../../../containers/vocabulary/VocabularyView";
 import {Button} from "@material-ui/core";
 import Creatable from "../input/Creatable";
-import {errorToast} from "../../../utility/toast";
 
 type VocabularyEditModalProps = {
     saveHandler: () => void;
@@ -15,7 +14,7 @@ type VocabularyEditModalProps = {
 const VocabularyEditModal = ({show, modalClosed, editData, saveHandler, cancelHandler, onChangeHandler}: VocabularyEditModalProps): JSX.Element => {
     const save = (): void => {
         if (editData.values.some(val => val.values === null || val.values.length === 0)) {
-            errorToast("unfilled fields", "all fields must be filled");
+            console.error("unfilled fields", "all fields must be filled");
         } else {
             saveHandler();
         }

@@ -1,8 +1,6 @@
 import React, {lazy, useEffect, useState} from 'react';
-import 'react-toastify/scss/main.scss';
 import {Route, Switch} from 'react-router-dom';
 import {get} from "./utility/restCaller";
-import {ToastContainer} from "react-toastify";
 import NavigationBar from './components/navigation/navigationBar/NavigationBar';
 import Home from './components/Home';
 import ProtectedRoute from "./components/navigation/route/ProtectedRoute";
