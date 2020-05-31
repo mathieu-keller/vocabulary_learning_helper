@@ -26,7 +26,7 @@ var tokenKey = []byte(os.Getenv("tokenKey"))
 var s = securecookie.New(cookieKey, nil)
 
 func Init(r *gin.Engine) {
-	r.GET("/refresh-token", checkLogin)
+	r.GET("/refresh-token", refreshToken)
 	r.GET("/check-login", checkLogin)
 }
 
@@ -34,10 +34,17 @@ type LoginDto struct {
 	Login bool `json:"login"`
 }
 
-func checkLogin(c *gin.Context) {
+func refreshToken(c *gin.Context) {
 	if claims, valid := GetTokenClaims(c); valid {
-		c.Header(utility.ContentType, utility.ContentTypeJSON)
 		SetHTTPOnlyToken(c, claims["userName"].(string))
+	} else {
+		c.JSON(http.StatusOK, LoginDto{Login: false})
+	}
+}
+
+func checkLogin(c *gin.Context) {
+	if _, valid := GetTokenClaims(c); valid {
+		c.Header(utility.ContentType, utility.ContentTypeJSON)
 		c.JSON(http.StatusOK, LoginDto{Login: true})
 	} else {
 		c.JSON(http.StatusOK, LoginDto{Login: false})

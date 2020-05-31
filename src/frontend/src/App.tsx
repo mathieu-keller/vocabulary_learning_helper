@@ -32,18 +32,20 @@ const App = (): JSX.Element => {
                 }
             });
     }, []);
+    const refreshRequest = (): Promise<void> => get<{ login: boolean }>('/refresh-token')
+        .then(r => {
+            if (typeof r !== 'string') {
+                if (r.login) {
+                    dispatch(userActionFunctions.login());
+                } else {
+                    dispatch(userActionFunctions.logout());
+                }
+            }
+        });
     useEffect(() => {
         if (isLogin) {
-            setTimer(setInterval(() => get<{ login: boolean }>('/refresh-token')
-                .then(r => {
-                    if (typeof r !== 'string') {
-                        if (r.login) {
-                            dispatch(userActionFunctions.login());
-                        } else {
-                            dispatch(userActionFunctions.logout());
-                        }
-                    }
-                }), 450000));//7,5 minutes
+            void refreshRequest();
+            setTimer(setInterval(refreshRequest, 450000));//7,5 minutes
             get<Category[] | null>('/category')
                 .then(r => {
                     if (typeof r !== 'string' && r) {
