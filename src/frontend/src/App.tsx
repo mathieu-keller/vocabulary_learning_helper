@@ -56,7 +56,6 @@ const App = (): JSX.Element => {
     }, [isLogin]);
     return (
         <>
-            <ToastContainer/>
             <NavigationBar/>
             <Switch>
                 <ProtectedRoute path='/profile' isAllowed={isLogin}
