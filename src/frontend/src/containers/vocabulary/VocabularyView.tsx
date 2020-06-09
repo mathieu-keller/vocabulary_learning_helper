@@ -72,16 +72,8 @@ const VocabularyView = (props: RouteComponentProps<{ user: string; category: str
             setEditData(emptyEditData);
             setShowEditModal(false);
         };
-        const onChangeHandler = (field: string, values: string[]): void => {
-            const valuesCopy = [...editData.values.map(val => ({...val}))];
-            const valueCopy = valuesCopy.find(val => val.key === field);
-            if (valueCopy) {
-                valueCopy.values = values;
-                setEditData({...editData, values: valuesCopy});
-            }
-        };
-        const saveHandler = (): void => {
-            post<Vocab, Vocab>('/vocabulary', editData)
+        const saveHandler = async (data: Vocab): Promise<void> => {
+            post<Vocab, Vocab>('/vocabulary', data)
                 .then(r => {
                     if (typeof r !== 'string') {
                         const foundedVocabs = vocabs.filter(vocab => vocab.id).filter(vocab => vocab.id !== r.id);
@@ -90,14 +82,13 @@ const VocabularyView = (props: RouteComponentProps<{ user: string; category: str
                     }
                 });
         };
-        return (<VocabularyEditModal
+        return (showEditModal ? <VocabularyEditModal
             cancelHandler={cancelHandler}
-            onChangeHandler={onChangeHandler}
             saveHandler={saveHandler}
             show={showEditModal}
             modalClosed={cancelHandler}
             editData={editData}
-        />);
+        /> : null);
     }, [editData, showEditModal]);
 
     return (<Paper>

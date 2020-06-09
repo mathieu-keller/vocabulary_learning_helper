@@ -22,6 +22,7 @@ type CreatableProps = {
     readonly onChange: (values: string[]) => void;
     readonly placeholder?: string;
     readonly onKeyDown?: (event: React.KeyboardEvent<HTMLElement>) => void;
+    readonly onBlur?: (event?: React.FocusEvent<HTMLElement>) => void;
 }
 
 export default (props: CreatableProps): JSX.Element => {
@@ -71,7 +72,12 @@ export default (props: CreatableProps): JSX.Element => {
             isClearable
             id={props.placeholder || "creatable-input"}
             isMulti
-            onBlur={onBlur}
+            onBlur={(e) => {
+                onBlur();
+                if (props.onBlur) {
+                    props.onBlur(e);
+                }
+            }}
             menuIsOpen={false}
             onChange={handleChange}
             onInputChange={handleInputChange}

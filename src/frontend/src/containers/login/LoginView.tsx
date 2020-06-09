@@ -83,7 +83,7 @@ const LoginView = (props: RouteComponentProps): JSX.Element => {
                             </Grid>
                         </Grid>
                         <Grid container justify="center" className={classes.buttonContainer}>
-                            <Button type='submit' disabled={isSubmitting} className={classes.button} variant="contained"
+                            <Button type="submit" disabled={isSubmitting} className={classes.button} variant="contained"
                                     color="primary">Login</Button>
                         </Grid>
                     </form>
