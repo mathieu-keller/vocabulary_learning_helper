@@ -65,6 +65,7 @@ const VocabularyListView = (props: RouteComponentProps<{ user: string; category:
     }, [vocabularyLists]);
 
     const editModal = useMemo(() => {
+        if (!showEditModal) return null;
         const cancelHandler = (): void => {
             setEditData({name: '', categoryId: selectedCategory.id});
             setShowEditModal(false);
@@ -74,21 +75,19 @@ const VocabularyListView = (props: RouteComponentProps<{ user: string; category:
                 setEditData({...editData, name: value});
             }
         };
-        const saveHandler = (): void => {
-            if (editData) {
-                post<VocabularyList, VocabularyList>('/vocabulary-list', editData)
-                    .then((r) => {
-                        if (typeof r !== 'string') {
-                            const foundedVocabs = vocabularyLists
-                                .filter(vocabularyList => vocabularyList.id)
-                                .filter(vocabularyList => vocabularyList.id !== r.id);
-                            dispatch(userActionFunctions.storeVocabularyLists([...foundedVocabs, r]));
-                            setVocabularyLists([...foundedVocabs, r]);
-                            setEditData({name: '', categoryId: selectedCategory.id});
-                            setShowEditModal(false);
-                        }
-                    });
-            }
+        const saveHandler = async (data: VocabularyList): Promise<void> => {
+            post<VocabularyList, VocabularyList>('/vocabulary-list', data)
+                .then(r => {
+                    if (typeof r !== 'string') {
+                        const foundedVocabs = vocabularyLists
+                            .filter(vocabularyList => vocabularyList.id)
+                            .filter(vocabularyList => vocabularyList.id !== r.id);
+                        dispatch(userActionFunctions.storeVocabularyLists([...foundedVocabs, r]));
+                        setVocabularyLists([...foundedVocabs, r]);
+                        setEditData({name: '', categoryId: selectedCategory.id});
+                        setShowEditModal(false);
+                    }
+                });
         };
         return (<VocabularyListEditModal cancelHandler={cancelHandler}
                                          onChangeHandler={onChangeHandler}

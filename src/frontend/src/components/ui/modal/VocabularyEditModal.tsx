@@ -4,6 +4,7 @@ import {Vocab, VocabularyValue} from "../../../containers/vocabulary/VocabularyV
 import Creatable from "../input/Creatable";
 import {ErrorMessage, Formik} from "formik";
 import {Button} from "@material-ui/core";
+import {ErrorRenderer} from "../../../utility/FormikErrorRenderer";
 
 type VocabularyEditModalProps = {
     saveHandler: (data: Vocab) => Promise<void>;
@@ -12,19 +13,19 @@ type VocabularyEditModalProps = {
 } & ModalWindowProps;
 
 const VocabularyEditModal = ({show, modalClosed, editData, saveHandler, cancelHandler}: VocabularyEditModalProps): JSX.Element => {
-    const errorMessage = (msg: string): JSX.Element => <p style={{color: 'red', margin: 0}}>{msg}</p>;
+    const validateForm = (values: VocabularyValue[]): { [key: string]: string } => {
+        const errors: { [key: string]: string } = {};
+        values.forEach(value => {
+            if (!value.values || value.values.length <= 0) {
+                errors[value.key] = 'Required';
+            }
+        });
+        return errors;
+    };
     const form = editData.values.length > 0 ?
         (<Formik<VocabularyValue[]>
             initialValues={editData.values}
-            validate={values => {
-                const errors: { [key: string]: string } = {};
-                values.forEach(value => {
-                    if (!value.values || value.values.length <= 0) {
-                        errors[value.key] = 'Required';
-                    }
-                });
-                return errors;
-            }}
+            validate={validateForm}
             onSubmit={(values, {setSubmitting, setValues}) => {
                 setSubmitting(true);
                 saveHandler({...editData, values: values}).finally(() => {
@@ -38,7 +39,8 @@ const VocabularyEditModal = ({show, modalClosed, editData, saveHandler, cancelHa
                   setFieldTouched,
                   handleSubmit,
                   isSubmitting,
-                  setFieldValue
+                  setFieldValue,
+                  isValid
               }) => {
                 return (
                     <form onSubmit={handleSubmit}>
@@ -52,13 +54,13 @@ const VocabularyEditModal = ({show, modalClosed, editData, saveHandler, cancelHa
                                         values={value.values}
                                         placeholder={value.key}
                                     />
-                                    <ErrorMessage render={errorMessage} name={value.key}/>
+                                    <ErrorMessage render={ErrorRenderer} name={value.key}/>
                                 </div>
                             ))}
                         </div>
                         <div style={{float: 'right'}}>
                             <Button variant="contained" onClick={cancelHandler}>Cancel</Button>
-                            <Button disabled={isSubmitting} type="submit" variant="contained" color="primary"> Save </Button>
+                            <Button disabled={isSubmitting || !isValid} type="submit" variant="contained" color="primary"> Save </Button>
                         </div>
                     </form>
                 );

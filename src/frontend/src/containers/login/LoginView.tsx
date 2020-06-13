@@ -7,12 +7,12 @@ import classes from "./Login.module.scss";
 import {ErrorMessage, Formik} from "formik";
 import {post} from "../../utility/restCaller";
 import {Lock, Person} from "@material-ui/icons";
+import {ErrorRenderer} from "../../utility/FormikErrorRenderer";
 
 const LoginView = (props: RouteComponentProps): JSX.Element => {
     document.title = 'Trainer - Login';
     const [restError, setRestError] = useState<string>('');
     const dispatch = useDispatch();
-    const errorMessage = (msg: string): JSX.Element => <p style={{color: 'red', margin: 0}}>{msg}</p>;
     return (
         <Paper className={classes.paper}>
             <Formik
@@ -50,7 +50,8 @@ const LoginView = (props: RouteComponentProps): JSX.Element => {
                       handleChange,
                       handleBlur,
                       handleSubmit,
-                      isSubmitting
+                      isSubmitting,
+                      isValid
                   }) => (
                     <form onSubmit={handleSubmit}>
                         {restError ? <p style={{justifyContent: 'center', display: 'flex', color: 'red'}}>{restError}</p> : null}
@@ -65,7 +66,7 @@ const LoginView = (props: RouteComponentProps): JSX.Element => {
                                            name='username'
                                            onBlur={handleBlur}
                                            value={values.username} fullWidth autoFocus required autoComplete='username'/>
-                                <ErrorMessage render={errorMessage} name="username"/>
+                                <ErrorMessage render={ErrorRenderer} name="username"/>
                             </Grid>
                         </Grid>
                         <Grid className={classes.login} container spacing={8} alignItems="stretch">
@@ -79,17 +80,16 @@ const LoginView = (props: RouteComponentProps): JSX.Element => {
                                            onBlur={handleBlur}
                                            onChange={handleChange}
                                            value={values.password} fullWidth required autoComplete='current-password'/>
-                                <ErrorMessage render={errorMessage} name="password"/>
+                                <ErrorMessage render={ErrorRenderer} name="password"/>
                             </Grid>
                         </Grid>
                         <Grid container justify="center" className={classes.buttonContainer}>
-                            <Button type="submit" disabled={isSubmitting} className={classes.button} variant="contained"
+                            <Button type="submit" disabled={isSubmitting || !isValid} className={classes.button} variant="contained"
                                     color="primary">Login</Button>
                         </Grid>
                     </form>
                 )}
             </Formik>
-
         </Paper>
     );
 };

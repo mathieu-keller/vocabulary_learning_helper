@@ -68,6 +68,7 @@ const VocabularyView = (props: RouteComponentProps<{ user: string; category: str
         />);
     }, [vocabs, columns]);
     const editModal = useMemo(() => {
+        if (!showEditModal) return null;
         const cancelHandler = (): void => {
             setEditData(emptyEditData);
             setShowEditModal(false);
@@ -82,13 +83,13 @@ const VocabularyView = (props: RouteComponentProps<{ user: string; category: str
                     }
                 });
         };
-        return (showEditModal ? <VocabularyEditModal
+        return (<VocabularyEditModal
             cancelHandler={cancelHandler}
             saveHandler={saveHandler}
             show={showEditModal}
             modalClosed={cancelHandler}
             editData={editData}
-        /> : null);
+        />);
     }, [editData, showEditModal]);
 
     return (<Paper>
