@@ -2,12 +2,11 @@ import React from 'react';
 import classes from './Backdrop.module.scss';
 
 type BackdropProps = {
-    show: boolean;
     onClick?: () => void;
 }
 
-const Backdrop = ({show, onClick}: BackdropProps): JSX.Element | null => (
-    show ? <div className={classes.Backdrop} onClick={onClick}/> : null
+const Backdrop = ({onClick}: BackdropProps): JSX.Element => (
+    <div className={classes.Backdrop} onClick={onClick}/>
 );
 
 export default Backdrop;

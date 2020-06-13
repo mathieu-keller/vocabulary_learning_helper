@@ -22,34 +22,19 @@ const CategoryView = (props: RouteComponentProps): JSX.Element => {
     const categories = useSelector((store: AppStore) => store.user.categories);
     const dispatch = useDispatch();
 
-    const onChange = (field: string, value: string): void => {
-        if (field === 'name') {
-            setEditCategory({...editCategory, name: value});
-        } else {
-            const columnsCopy = [...editCategory.columns];
-            columnsCopy[+field] = value;
-            setEditCategory({...editCategory, columns: columnsCopy});
-        }
-    };
-
     const onClose = (): void => {
         setEditCategory(emptyCategory);
         setShowModal(false);
     };
 
-    const onSave = (): void => {
-        post<Category, Category>('/category', editCategory)
+    const onSave = async (data: Category): Promise<void> => {
+        post<Category, Category>('/category', data)
             .then(r => {
-                console.log(r);
                 if (typeof r !== 'string') {
                     dispatch(userActionFunctions.storeCategories([...categories, r]));
                     onClose();
                 }
             });
-    };
-
-    const addColumn = (): void => {
-        setEditCategory({...editCategory, columns: [...editCategory.columns, ""]});
     };
 
     const onClick = (data: Category): void => {
@@ -68,14 +53,11 @@ const CategoryView = (props: RouteComponentProps): JSX.Element => {
     };
 
     return (<>
-            <CategoryEditModal
-                addColumn={addColumn}
+            {showModal ? <CategoryEditModal
                 saveHandler={onSave}
                 editData={editCategory}
                 cancelHandler={onClose}
-                onChangeHandler={onChange}
-                show={showModal}
-                modalClosed={onClose}/>
+                modalClosed={onClose}/> : null}
             <Paper>
                 <CardGrid<Category>
                     deleteHandler={deleteHandler}

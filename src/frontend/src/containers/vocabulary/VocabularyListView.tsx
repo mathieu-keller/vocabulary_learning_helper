@@ -70,11 +70,6 @@ const VocabularyListView = (props: RouteComponentProps<{ user: string; category:
             setEditData({name: '', categoryId: selectedCategory.id});
             setShowEditModal(false);
         };
-        const onChangeHandler = (field: string, value: string): void => {
-            if (editData && field === 'name') {
-                setEditData({...editData, name: value});
-            }
-        };
         const saveHandler = async (data: VocabularyList): Promise<void> => {
             post<VocabularyList, VocabularyList>('/vocabulary-list', data)
                 .then(r => {
@@ -90,9 +85,7 @@ const VocabularyListView = (props: RouteComponentProps<{ user: string; category:
                 });
         };
         return (<VocabularyListEditModal cancelHandler={cancelHandler}
-                                         onChangeHandler={onChangeHandler}
                                          saveHandler={saveHandler}
-                                         show={showEditModal}
                                          modalClosed={cancelHandler}
                                          editData={editData}
         />);

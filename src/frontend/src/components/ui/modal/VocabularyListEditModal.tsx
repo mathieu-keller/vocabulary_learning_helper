@@ -9,10 +9,9 @@ type VocabularyEditModalProps = {
     saveHandler: (data: VocabularyList) => Promise<void>;
     editData: VocabularyList;
     cancelHandler: () => void;
-    onChangeHandler: (field: string, value: string) => void;
 } & ModalWindowProps;
 
-const VocabularyListEditModal = ({show, modalClosed, editData, saveHandler, cancelHandler}: VocabularyEditModalProps): JSX.Element => {
+const VocabularyListEditModal = ({modalClosed, editData, saveHandler, cancelHandler}: VocabularyEditModalProps): JSX.Element => {
     const validateForm = (values: VocabularyList): { name?: string } => {
         const errors: { name?: string } = {};
         if (!values.name || values.name.trim() === '') {
@@ -59,7 +58,7 @@ const VocabularyListEditModal = ({show, modalClosed, editData, saveHandler, canc
         }}
     </Formik>);
 
-    return (<ModalWindow modalClosed={modalClosed} show={show}>
+    return (<ModalWindow modalClosed={modalClosed}>
             {form}
         </ModalWindow>
     );

@@ -86,7 +86,6 @@ const VocabularyView = (props: RouteComponentProps<{ user: string; category: str
         return (<VocabularyEditModal
             cancelHandler={cancelHandler}
             saveHandler={saveHandler}
-            show={showEditModal}
             modalClosed={cancelHandler}
             editData={editData}
         />);

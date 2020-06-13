@@ -12,7 +12,7 @@ type VocabularyEditModalProps = {
     cancelHandler: () => void;
 } & ModalWindowProps;
 
-const VocabularyEditModal = ({show, modalClosed, editData, saveHandler, cancelHandler}: VocabularyEditModalProps): JSX.Element => {
+const VocabularyEditModal = ({modalClosed, editData, saveHandler, cancelHandler}: VocabularyEditModalProps): JSX.Element => {
     const validateForm = (values: VocabularyValue[]): { [key: string]: string } => {
         const errors: { [key: string]: string } = {};
         values.forEach(value => {
@@ -44,20 +44,18 @@ const VocabularyEditModal = ({show, modalClosed, editData, saveHandler, cancelHa
               }) => {
                 return (
                     <form onSubmit={handleSubmit}>
-                        <div>
-                            {values.map((value, index) => (
-                                <div key={value.key}>
-                                    <p>{value.key}</p>
-                                    <Creatable
-                                        onBlur={() => setFieldTouched(value.key)}
-                                        onChange={(v) => setFieldValue(`${index}.values`, v)}
-                                        values={value.values}
-                                        placeholder={value.key}
-                                    />
-                                    <ErrorMessage render={ErrorRenderer} name={value.key}/>
-                                </div>
-                            ))}
-                        </div>
+                        {values.map((value, index) => (
+                            <div key={value.key}>
+                                <p>{value.key}</p>
+                                <Creatable
+                                    onBlur={() => setFieldTouched(value.key)}
+                                    onChange={(v) => setFieldValue(`${index}.values`, v)}
+                                    values={value.values}
+                                    placeholder={value.key}
+                                />
+                                <ErrorMessage render={ErrorRenderer} name={value.key}/>
+                            </div>
+                        ))}
                         <div style={{float: 'right'}}>
                             <Button variant="contained" onClick={cancelHandler}>Cancel</Button>
                             <Button disabled={isSubmitting || !isValid} type="submit" variant="contained" color="primary"> Save </Button>
@@ -66,7 +64,7 @@ const VocabularyEditModal = ({show, modalClosed, editData, saveHandler, cancelHa
                 );
             }}
         </Formik>) : null;
-    return (<ModalWindow modalClosed={modalClosed} show={show}>
+    return (<ModalWindow modalClosed={modalClosed}>
             {form}
         </ModalWindow>
     );
