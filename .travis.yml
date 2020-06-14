@@ -20,8 +20,7 @@ jobs:
         - npm run lint
         - npm run test
         - sonar-scanner
-    -
-      name: Backend Tests
+    - name: Backend Tests
       addons:
         sonarcloud:
           organization: afrima
@@ -40,6 +39,13 @@ jobs:
     - stage: build
       services: docker
       script:
+        - docker build -t vocabulary_trainer -f DockerfileForPi .
+      before_deploy:
         - docker login --username=${DOCKER_USER} --password=${DOCKER_PASSWORD}
-        - docker build -t vocabulary_trainer:latest -f DockerfileForPi .
-        - docker push vocabulary_trainer:latest
+        - docker tag "vocabulary_trainer" "vocabulary_trainer:latest"
+        - docker tag "vocabulary_trainer" "vocabulary_trainer:${version}"
+      deploy:
+        provider: script
+          script: docker push "vocabulary_trainer:latest" && docker push "vocabulary_trainer:${version}"
+          on:
+            branch: master
