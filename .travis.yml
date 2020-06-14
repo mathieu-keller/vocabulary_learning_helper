@@ -4,13 +4,14 @@ jobs:
   include:
     - stage: tests
       name: Frontend Tests
+      os: linux
+      language: node_js
+      node_js: 14
       addons:
         sonarcloud:
           organization: afrima
           token:
             - ${SONAR_TOKEN}
-      language: node_js
-      node_js: 12
       before_install:
         - cd src/frontend
         - npm install -g yarn
@@ -21,13 +22,14 @@ jobs:
         - npm run test
         - sonar-scanner
     - name: Backend Tests
+      os: linux
+      language: go
+      go: 1.14
       addons:
         sonarcloud:
           organization: afrima
           token:
             - ${SONAR_TOKEN}
-      language: go
-      go: 1.14
       before_install:
         - cd src/backend
       install:
@@ -37,6 +39,8 @@ jobs:
         - go test -coverprofile=coverage.out -coverpkg=./... ./...
         - sonar-scanner
     - stage: build
+      os: linux
+      arch: arm64
       services: docker
       script:
         - docker build -t ${DOCKER_USER}/vocabulary_trainer -f DockerfileForPi .
