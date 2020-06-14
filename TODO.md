@@ -3,3 +3,6 @@
 - [x] Show the category in header
 - [ ] Add permissions for other vocabulary lists
 - [ ] Save test results
+- [ ] Add multiply choose to learn
+- [ ] add learning with cards and text input
+- [ ] add repetition system

@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/gin-gonic/contrib/gzip"
 	"github.com/gin-gonic/contrib/static"
@@ -23,7 +24,7 @@ func main() {
 	vocabularyresource.Init(r)
 	vocabularylistresource.Init(r)
 	r.Use(static.Serve("/", static.LocalFile("./dist", true)))
-	if err := r.Run(":8080"); err != nil {
+	if err := r.Run(":"+os.Getenv("port")); err != nil {
 		log.Println(err)
 	}
 }
