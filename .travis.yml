@@ -8,7 +8,7 @@ jobs:
         sonarcloud:
           organization: afrima
           token:
-            secure: ${SONAR_FRONTEND_TOKEN}
+            - ${SONAR_TOKEN}
       language: node_js
       node_js: 12
       before_install:
@@ -26,7 +26,7 @@ jobs:
         sonarcloud:
           organization: afrima
           token:
-            secure: ${SONAR_BACKEND_TOKEN}
+            - ${SONAR_TOKEN}
       language: go
       go: 1.14
       before_install:
