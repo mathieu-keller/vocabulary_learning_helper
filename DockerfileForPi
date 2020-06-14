@@ -1,7 +1,7 @@
 FROM node:14-buster AS NodeBuilder
 WORKDIR /app
 COPY src/frontend/ .
-RUN yarn install
+RUN yarn install --network-timeout 1000000
 RUN npm run build:prod
 
 FROM golang:1.14-buster AS GOBuilder
@@ -10,7 +10,7 @@ COPY src/backend/ .
 RUN go get -d -v
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags "-s -w" -o /go/bin/backend
 
-FROM alpine:latest
+FROM arm32v7/alpine:latest
 LABEL maintainer=MathieuKeller@gmx.de
 WORKDIR /app
 COPY --from=GOBuilder /go/bin/backend .

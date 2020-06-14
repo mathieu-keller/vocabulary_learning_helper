@@ -40,7 +40,6 @@ jobs:
         - sonar-scanner
     - stage: build
       os: linux
-      arch: arm64
       services: docker
       script:
         - docker build -t ${DOCKER_USER}/vocabulary_trainer -f DockerfileForPi .
