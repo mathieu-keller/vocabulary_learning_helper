@@ -21,6 +21,17 @@ func TestCheckTestAllVocabulariesAreCorrect(t *testing.T) {
 	assert.Equalf(t, result.Correct, int8(2), "The amount of correct vocabulary is not correct. Expected 2 is %d", result.Correct)
 }
 
+//Test CheckTest
+func TestCheckTestAllVocabulariesAreIncorrectBecauseTheyAreEmpty(t *testing.T) {
+	correctVocabs, userVocabs := getTestVocabularies([]string{"apple"}, []string{}, []string{})
+	checkTestRequest := vocabularyservice.CheckTestRequest{FirstValueField: "German",
+		SecondValueField: "English",
+		Vocabularies:     userVocabs}
+	result, err := vocabularyservice.CheckTest(correctVocabs, checkTestRequest)
+	assert.Nilf(t, err, "No error should be thrown: %s", err)
+	assert.Equalf(t, result.Correct, int8(0), "The amount of correct vocabulary is not correct. Expected 2 is %d", result.Correct)
+}
+
 func TestCheckTestOneVocabularyIsIncorrect(t *testing.T) {
 	correctVocabs, userVocabs := getTestVocabularies([]string{"apple"}, []string{"hello"}, []string{"aple"})
 	checkTestRequest := vocabularyservice.CheckTestRequest{FirstValueField: "German",

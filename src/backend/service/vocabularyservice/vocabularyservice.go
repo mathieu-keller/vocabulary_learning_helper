@@ -95,7 +95,7 @@ func CheckTest(correctVocabs []vocabularyentity.Vocabulary, checkRequestBody Che
 		if err != nil {
 			return TestResult{}, err
 		}
-		valueCorrect := true
+		valueCorrect := false
 		for _, userValue := range userDBVocab.UserSecond.Values {
 			if valueCorrect = checkIfVocabEquals(userValue, userDBVocab.DBSecond.Values); !valueCorrect {
 				break
