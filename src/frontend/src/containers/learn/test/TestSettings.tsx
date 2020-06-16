@@ -26,7 +26,7 @@ const TestSettings = (props: RouteComponentProps<{ user: string; category: strin
     useEffect(() => {
         const vocabularyLists = storedVocabularyLists.filter(storedVocabularyList => storedVocabularyList.categoryId === selectedCategory.id);
         if (vocabularyLists.length < 1 && selectedCategory.id) {
-            get<VocabularyList[]>(`/vocabulary-list/${selectedCategory.id}`, (r) => {
+            get<VocabularyList[]>(`/vocabulary-list/${selectedCategory.id}`).then(r => {
                 setLeft(r.map(m => ({name: m.name, value: m.id ? m.id : ''})));
                 dispatch(userActionFunctions.storeVocabularyLists([...storedVocabularyLists, ...r]));
             });
