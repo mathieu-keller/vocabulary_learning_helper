@@ -1,4 +1,5 @@
 #Vocabulary trainer
+
 This app tests your vocabulary with a vocabulary test.
 This app will also store and manage all your vocabulary.
 
@@ -8,6 +9,7 @@ This app will also store and manage all your vocabulary.
 * password: start
 
 #####How is the container executed?
+
 Pull the Docker image or create one.
 
 For docker pull: docker pull afrima/vocabulary_trainer
