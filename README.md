@@ -1,4 +1,4 @@
-#Vocabulary trainer
+# Vocabulary trainer
 
 This app tests your vocabulary with a vocabulary test.
 This app will also store and manage all your vocabulary.
@@ -8,7 +8,7 @@ This app will also store and manage all your vocabulary.
 * user: testuser
 * password: start
 
-#####How is the container executed?
+### How is the container executed?
 
 Pull the Docker image or create one.
 
@@ -24,7 +24,7 @@ Run the Docker image with the following environment variables:
 | dbAddress | mongo DB url                                                  |
 | tokenKey  | key for the JWT signature                                     |
 | cookieKey | Secret key to enter/decode the cookie                         |
-| Host      | for which host is the cookie?                                 |
+| host      | for which host is the cookie?                                 |
 | secure    | says if the cookie should only be used for a secure connection|
-| Port      | on which port it is running                                   |
+| port      | on which port it is running                                   |
 
