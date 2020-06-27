@@ -16,9 +16,9 @@ For docker pull: docker pull afrima/vocabulary_trainer
 
 Run the Docker image with the following environment variables:
 
-| variables | for what?                                                      |
-|----------|--------------------------------------------------------------|
-| GIN_MODE  | right-aligned                                                 |
+| variables | for what?                                                     |
+|-----------|---------------------------------------------------------------|
+| GIN_MODE  | set to release                                                |
 | dbUser    | dbUser                                                        |
 | dbPassword| dbPassword                                                    |
 | dbAddress | mongo DB url                                                  |
