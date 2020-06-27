@@ -1,12 +1,14 @@
 import React from 'react';
 import packageJson from '../../../package.json';
 import GitHubIcon from '@material-ui/icons/GitHub';
+import classes from "./Build.module.scss";
+import {Paper} from "@material-ui/core";
 
 const Build = (): JSX.Element => {
   const dependencies = Object.entries(packageJson.dependencies);
   const devDependencies = Object.entries(packageJson.devDependencies);
   return (
-    <div>
+    <Paper className={classes.paper}>
       <h2>Source Code:</h2>
       <GitHubIcon/>
       <a
@@ -28,7 +30,7 @@ const Build = (): JSX.Element => {
           <a href={`https://www.npmjs.com/package/${dep[0]}`} rel='noreferrer' target='_blank'>{`${dep[0]}: "${dep[1]}"`}</a>
         </li>)}
       </ul>
-    </div>
+    </Paper>
   );
 };
 
