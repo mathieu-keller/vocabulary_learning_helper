@@ -9,14 +9,14 @@ import store from "./store";
 const App = lazy(() => import('./App'));
 
 render(
-    <React.StrictMode>
-        <HashRouter>
-            <Provider store={store}>
-                <Suspense fallback={
-                    <Skeleton variant="rect" height={window.innerHeight} animation="wave"/>
-                }><App/></Suspense>
-            </Provider>
-        </HashRouter>
-    </React.StrictMode>,
-    document.getElementById('root')
+  <React.StrictMode>
+    <HashRouter>
+      <Provider store={store}>
+        <Suspense fallback={
+          <Skeleton variant="rect" height={window.innerHeight} animation="wave"/>
+        }><App/></Suspense>
+      </Provider>
+    </HashRouter>
+  </React.StrictMode>,
+  document.getElementById('root')
 );

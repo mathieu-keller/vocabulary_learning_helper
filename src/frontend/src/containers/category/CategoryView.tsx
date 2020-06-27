@@ -52,7 +52,8 @@ const CategoryView = (props: RouteComponentProps): JSX.Element => {
     }
   };
 
-  return (<>
+  return (
+    <>
       {showModal ? <CategoryEditModal
         saveHandler={onSave}
         editData={editCategory}

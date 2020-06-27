@@ -16,68 +16,101 @@ const VocabularyView = lazy(() => import('./containers/vocabulary/VocabularyView
 const ProfileView = lazy(() => import('./containers/profile/ProfileView'));
 const TestSettings = lazy(() => import('./containers/learn/test/TestSettings'));
 const TestView = lazy(() => import('./containers/learn/test/TestView'));
+const BuildInfo = lazy(() => import('./components/info/Build'));
 const App = (): JSX.Element => {
-    const isLogin = useSelector((store: AppStore) => store.user.isLogin);
-    const dispatch = useDispatch();
-    const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
-    useEffect(() => {
-        get<{ login: boolean }>('/check-login')
-            .then(r => {
-                if (typeof r !== 'string') {
-                    if (r.login) {
-                        dispatch(userActionFunctions.login());
-                    }
-                }
-            });
-    }, []);
-    const refreshRequest = (): Promise<void> => get<{ login: boolean }>('/refresh-token')
-        .then(r => {
-            if (typeof r !== 'string') {
-                if (r.login) {
-                    dispatch(userActionFunctions.login());
-                } else {
-                    dispatch(userActionFunctions.logout());
-                }
-            }
-        });
-    useEffect(() => {
-        if (isLogin) {
-            void refreshRequest();
-            setTimer(setInterval(refreshRequest, 450000));//7,5 minutes
-            get<Category[] | null>('/category')
-                .then(r => {
-                    if (typeof r !== 'string' && r) {
-                        dispatch(userActionFunctions.storeCategories(r));
-                    }
-                });
-        } else if (timer) {
-            clearInterval(timer);
+  const isLogin = useSelector((store: AppStore) => store.user.isLogin);
+  const dispatch = useDispatch();
+  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
+  useEffect(() => {
+    get<{ login: boolean }>('/check-login')
+      .then(r => {
+        if (typeof r !== 'string') {
+          if (r.login) {
+            dispatch(userActionFunctions.login());
+          }
         }
-    }, [isLogin]);
-    return (
-        <>
-            <NavigationBar/>
-            <Switch>
-                <ProtectedRoute path='/profile' isAllowed={isLogin}
-                                render={(props) => <ProfileView {...props}/>}/>
-                <ProtectedRoute path='/vocabulary/:user/:category/:listId' isAllowed={isLogin}
-                                render={(props) => <VocabularyView {...props}/>}/>
-                <ProtectedRoute path='/vocabulary/:user/:category' isAllowed={isLogin}
-                                render={(props) => <VocabularyListView {...props}/>}/>
-                <ProtectedRoute path='/vocabulary' isAllowed={isLogin}
-                                render={(props) => <CategoryView {...props}/>}/>
-                <ProtectedRoute path='/learn/test' isAllowed={isLogin}
-                                render={(props) => <TestView {...props}/>}/>
-                <ProtectedRoute path='/learn/:user/:category' isAllowed={isLogin}
-                                render={(props) => <TestSettings {...props}/>}/>
-                <ProtectedRoute path='/learn' isAllowed={isLogin}
-                                render={(props) => <CategoryView {...props}/>}/>
-                <ProtectedRoute path='/category' isAllowed={isLogin}
-                                render={(props) => <CategoryView {...props}/>}/>
-                <ProtectedRoute path='/login' isAllowed={!isLogin}
-                                render={(props) => <LoginView {...props}/>}/>
-                <Route path='/' component={Home} exact/>
-            </Switch>
-        </>);
+      });
+  }, []);
+  const refreshRequest = (): Promise<void> => get<{ login: boolean }>('/refresh-token')
+    .then(r => {
+      if (typeof r !== 'string') {
+        if (r.login) {
+          dispatch(userActionFunctions.login());
+        } else {
+          dispatch(userActionFunctions.logout());
+        }
+      }
+    });
+  useEffect(() => {
+    if (isLogin) {
+      void refreshRequest();
+      setTimer(setInterval(refreshRequest, 450000));//7,5 minutes
+      get<Category[] | null>('/category')
+        .then(r => {
+          if (typeof r !== 'string' && r) {
+            dispatch(userActionFunctions.storeCategories(r));
+          }
+        });
+    } else if (timer) {
+      clearInterval(timer);
+    }
+  }, [isLogin]);
+  return (
+    <>
+      <NavigationBar/>
+      <Switch>
+        <ProtectedRoute
+          path='/profile'
+          isAllowed={isLogin}
+          render={(props) => <ProfileView {...props}/>}
+        />
+        <ProtectedRoute
+          path='/vocabulary/:user/:category/:listId'
+          isAllowed={isLogin}
+          render={(props) => <VocabularyView {...props}/>}
+        />
+        <ProtectedRoute
+          path='/vocabulary/:user/:category'
+          isAllowed={isLogin}
+          render={(props) => <VocabularyListView {...props}/>}
+        />
+        <ProtectedRoute
+          path='/vocabulary'
+          isAllowed={isLogin}
+          render={(props) => <CategoryView {...props}/>}
+        />
+        <ProtectedRoute
+          path='/learn/test'
+          isAllowed={isLogin}
+          render={(props) => <TestView {...props}/>}
+        />
+        <ProtectedRoute
+          path='/learn/:user/:category'
+          isAllowed={isLogin}
+          render={(props) => <TestSettings {...props}/>}
+        />
+        <ProtectedRoute
+          path='/learn'
+          isAllowed={isLogin}
+          render={(props) => <CategoryView {...props}/>}
+        />
+        <ProtectedRoute
+          path='/category'
+          isAllowed={isLogin}
+          render={(props) => <CategoryView {...props}/>}
+        />
+        <ProtectedRoute
+          path='/login'
+          isAllowed={!isLogin}
+          render={(props) => <LoginView {...props}/>}
+        />
+        <ProtectedRoute
+          path='/info'
+          isAllowed={true}
+          render={() => <BuildInfo/>}
+        />
+        <Route path='/' component={Home} exact/>
+      </Switch>
+    </>);
 };
 export default App;
