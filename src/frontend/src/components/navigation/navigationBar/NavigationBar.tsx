@@ -31,7 +31,7 @@ export const NavigationBar = (props: RouteComponentProps): JSX.Element => {
   }, [urlUser, urlCategory, selectedCategory, categories]);
   let tabs;
   if (isLogin) {
-    const withoutCategory = ["/", "/profile", "/category"];
+    const withoutCategory = ["/", "/profile", "/category", "/info"];
     tabs = (
       <Tabs
         data-testid="navigation-tabs-login"
