@@ -29,10 +29,3 @@ func main() {
 	}
 }
 
-#!/bin/env python3
-# Created by atbswp (https://github.com/rmpr/atbswp)
-# on 29 Jun 2020
-import pyautogui
-import time
-pyautogui.FAILSAFE = False
-
