@@ -31,7 +31,9 @@ jobs:
           token:
             - ${SONAR_TOKEN}
       before_install:
-        - cd src/backend
+        - cd ../..
+        - mv Afrima afrima
+        - cd afrima/vocabulary_learning_helper/src/backend
       install:
         - go get -d -v
         - go get github.com/stretchr/testify
