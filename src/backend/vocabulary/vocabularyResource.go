@@ -1,25 +1,22 @@
-package vocabularyresource
+package vocabulary
 
 import (
 	"encoding/json"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/authorized"
 	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-
-	"github.com/Afrima/vocabulary_learning_helper/src/backend/entity/vocabularyentity"
-	"github.com/Afrima/vocabulary_learning_helper/src/backend/resource"
-	"github.com/Afrima/vocabulary_learning_helper/src/backend/service/vocabularyservice"
 )
 
 func Init(r *gin.Engine) {
 	const path = "/vocabulary"
-	r.POST(path, resource.IsAuthorized(insertVocab))
-	r.GET(path+"/:id", resource.IsAuthorized(getVocab))
-	r.DELETE(path, resource.IsAuthorized(deleteVocab))
-	r.POST("/generate-test", resource.IsAuthorized(generateTest))
-	r.POST("/check-test", resource.IsAuthorized(checkTest))
+	r.POST(path, authorized.IsAuthorized(insertVocab))
+	r.GET(path+"/:id", authorized.IsAuthorized(getVocab))
+	r.DELETE(path, authorized.IsAuthorized(deleteVocab))
+	r.POST("/generate-test", authorized.IsAuthorized(generateTest))
+	r.POST("/check-test", authorized.IsAuthorized(checkTest))
 }
 
 func checkTest(c *gin.Context) {
@@ -33,7 +30,7 @@ func checkTest(c *gin.Context) {
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
-	correction, err := vocabularyservice.CheckTest(correctVocabs, checkRequestBody)
+	correction, err := CheckTest(correctVocabs, checkRequestBody)
 	if err != nil {
 		c.String(http.StatusBadRequest, err.Error())
 		return
@@ -41,22 +38,22 @@ func checkTest(c *gin.Context) {
 	c.JSON(http.StatusOK, correction)
 }
 
-func getCheckRequestFromBody(c *gin.Context) (vocabularyservice.CheckTestRequest, error) {
+func getCheckRequestFromBody(c *gin.Context) (CheckTestRequest, error) {
 	reqBody, err := c.GetRawData()
 	if err != nil {
-		return vocabularyservice.CheckTestRequest{}, err
+		return CheckTestRequest{}, err
 	}
-	var checkRequestBody vocabularyservice.CheckTestRequest
+	var checkRequestBody CheckTestRequest
 	err = json.Unmarshal(reqBody, &checkRequestBody)
 	return checkRequestBody, err
 }
 
-func getVocabulariesFromDB(checkRequestBody vocabularyservice.CheckTestRequest) ([]vocabularyentity.Vocabulary, error) {
+func getVocabulariesFromDB(checkRequestBody CheckTestRequest) ([]Vocabulary, error) {
 	vocabularyIds := make([]primitive.ObjectID, 0, len(checkRequestBody.Vocabularies))
 	for _, vocab := range checkRequestBody.Vocabularies {
 		vocabularyIds = append(vocabularyIds, vocab.ID)
 	}
-	correctVocabs, err := vocabularyentity.GetVocabularyByIDs(vocabularyIds)
+	correctVocabs, err := GetVocabularyByIDs(vocabularyIds)
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -70,12 +67,12 @@ func generateTest(c *gin.Context) {
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
-	var testReqBody vocabularyservice.GenerateTestRequest
+	var testReqBody GenerateTestRequest
 	if err = json.Unmarshal(reqBody, &testReqBody); err != nil {
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
-	responseVocabularies, err := vocabularyservice.GenerateTest(testReqBody)
+	responseVocabularies, err := GenerateTest(testReqBody)
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -92,7 +89,7 @@ func insertVocab(c *gin.Context) {
 	}
 	if err = vocab.InsertVocab(); err != nil {
 		switch err.(type) {
-		case vocabularyentity.Error:
+		case Error:
 			c.String(http.StatusBadRequest, err.Error())
 		default:
 			c.String(http.StatusInternalServerError, err.Error())
@@ -105,7 +102,7 @@ func insertVocab(c *gin.Context) {
 
 func getVocab(c *gin.Context) {
 	id := c.Param("id")
-	vocabs, err := vocabularyentity.GetVocabularyByListID(id)
+	vocabs, err := GetVocabularyByListID(id)
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -126,14 +123,14 @@ func deleteVocab(c *gin.Context) {
 	c.JSON(http.StatusOK, vocab)
 }
 
-func getVocabFromBody(c *gin.Context) (vocabularyentity.Vocabulary, error) {
+func getVocabFromBody(c *gin.Context) (Vocabulary, error) {
 	reqBody, err := c.GetRawData()
 	if err != nil {
-		return vocabularyentity.Vocabulary{}, err
+		return Vocabulary{}, err
 	}
-	var vocab vocabularyentity.Vocabulary
+	var vocab Vocabulary
 	if err = json.Unmarshal(reqBody, &vocab); err != nil {
-		return vocabularyentity.Vocabulary{}, err
+		return Vocabulary{}, err
 	}
 	return vocab, nil
 }

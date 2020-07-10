@@ -1,4 +1,4 @@
-package vocabularylistentity
+package vocabulary
 
 type Error struct {
 	ErrorText string

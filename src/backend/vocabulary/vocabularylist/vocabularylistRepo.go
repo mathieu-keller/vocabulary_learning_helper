@@ -1,7 +1,8 @@
-package vocabularylistentity
+package vocabularylist
 
 import (
 	"context"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/vocabulary"
 	"log"
 	"time"
 
@@ -9,8 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/Afrima/vocabulary_learning_helper/src/backend/database"
-	"github.com/Afrima/vocabulary_learning_helper/src/backend/entity/vocabularyentity"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/database"
 )
 
 func GetVocabularyList(categoryID string) ([]VocabularyList, error) {
@@ -82,7 +82,7 @@ func Delete(vocabularyListID string) error {
 	if err != nil {
 		return err
 	}
-	return vocabularyentity.DeleteWithListID(id)
+	return vocabulary.DeleteWithListID(id)
 }
 
 func DeleteWithCategoryID(categoryID primitive.ObjectID) error {
@@ -104,7 +104,7 @@ func DeleteWithCategoryID(categoryID primitive.ObjectID) error {
 		return err
 	}
 	for _, vocabularyList := range vocabularyLists {
-		err = vocabularyentity.DeleteWithListID(vocabularyList.ID)
+		err = vocabulary.DeleteWithListID(vocabularyList.ID)
 		if err != nil {
 			return err
 		}

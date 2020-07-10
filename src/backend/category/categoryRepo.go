@@ -1,7 +1,9 @@
-package categoryentity
+package category
 
 import (
 	"context"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/vocabulary"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/vocabulary/vocabularylist"
 	"log"
 	"time"
 
@@ -9,9 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/Afrima/vocabulary_learning_helper/src/backend/database"
-	"github.com/Afrima/vocabulary_learning_helper/src/backend/entity/vocabularyentity"
-	"github.com/Afrima/vocabulary_learning_helper/src/backend/entity/vocabularylistentity"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/database"
 )
 
 func GetCategory(owner string) ([]Category, error) {
@@ -53,7 +53,7 @@ func GetCategoryByID(categoryID string) (Category, error) {
 
 func (category *Category) Insert() error {
 	if category.Name == "" || len(category.Columns) < 2 {
-		return vocabularyentity.Error{ErrorText: "Category need a name and 2 or more columns!"}
+		return vocabulary.Error{ErrorText: "Category need a name and 2 or more columns!"}
 	}
 	collection, ctx, closeCtx := database.GetDatabase("Category")
 	defer closeCtx()
@@ -95,5 +95,5 @@ func Delete(categoryID string) error {
 	if err != nil {
 		return err
 	}
-	return vocabularylistentity.DeleteWithCategoryID(id)
+	return vocabularylist.DeleteWithCategoryID(id)
 }

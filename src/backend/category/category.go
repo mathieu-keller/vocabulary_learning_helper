@@ -1,4 +1,4 @@
-package categoryentity
+package category
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 

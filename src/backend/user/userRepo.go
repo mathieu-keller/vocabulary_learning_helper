@@ -1,4 +1,4 @@
-package userentity
+package user
 
 import (
 	"log"
@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/Afrima/vocabulary_learning_helper/src/backend/database"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/database"
 )
 
 func GetUser(username string) (*User, error) {

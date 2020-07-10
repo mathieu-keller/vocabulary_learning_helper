@@ -1,4 +1,4 @@
-package categoryentity
+package category
 
 type Error struct {
 	ErrorText string

@@ -1,4 +1,4 @@
-package vocabularyservice
+package vocabulary
 
 import (
 	"errors"
@@ -6,8 +6,6 @@ import (
 	"strings"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
-
-	"github.com/Afrima/vocabulary_learning_helper/src/backend/entity/vocabularyentity"
 )
 
 type GenerateTestRequest struct {
@@ -18,11 +16,11 @@ type GenerateTestRequest struct {
 }
 
 type UserDBVocabs struct {
-	ID         primitive.ObjectID      `json:"id"`
-	UserFirst  vocabularyentity.Values `json:"userFirst"`
-	UserSecond vocabularyentity.Values `json:"userSecond"`
-	DBFirst    vocabularyentity.Values `json:"dbFirst"`
-	DBSecond   vocabularyentity.Values `json:"dbSecond"`
+	ID         primitive.ObjectID `json:"id"`
+	UserFirst  Values             `json:"userFirst"`
+	UserSecond Values             `json:"userSecond"`
+	DBFirst    Values             `json:"dbFirst"`
+	DBSecond   Values             `json:"dbSecond"`
 }
 
 type TestResult struct {
@@ -31,28 +29,28 @@ type TestResult struct {
 }
 
 type CheckTestRequest struct {
-	Vocabularies     []vocabularyentity.Vocabulary `json:"vocabularies"`
-	FirstValueField  string                        `json:"firstValueField"`
-	SecondValueField string                        `json:"secondValueField"`
+	Vocabularies     []Vocabulary `json:"vocabularies"`
+	FirstValueField  string       `json:"firstValueField"`
+	SecondValueField string       `json:"secondValueField"`
 }
 
-func GenerateTest(testReqBody GenerateTestRequest) ([]vocabularyentity.Vocabulary, error) {
-	vocabs, err := vocabularyentity.GetRandomVocabularyByListIds(testReqBody.ListIDs, testReqBody.Limit)
+func GenerateTest(testReqBody GenerateTestRequest) ([]Vocabulary, error) {
+	vocabs, err := GetRandomVocabularyByListIds(testReqBody.ListIDs, testReqBody.Limit)
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
-	responseVocabularies := make([]vocabularyentity.Vocabulary, 0, len(vocabs))
+	responseVocabularies := make([]Vocabulary, 0, len(vocabs))
 	for _, vocab := range vocabs {
 		secondValue := vocab.GetValueByKey(testReqBody.SecondValueField)
 		if secondValue.Key != "" {
 			firstValue := vocab.GetValueByKey(testReqBody.FirstValueField)
 			secondValue.Values = nil
-			newValue := make([]vocabularyentity.Values, 0, 2)
+			newValue := make([]Values, 0, 2)
 			newValue = append(newValue, firstValue)
 			newValue = append(newValue, secondValue)
 			responseVocabularies = append(responseVocabularies,
-				vocabularyentity.Vocabulary{ID: vocab.ID,
+				Vocabulary{ID: vocab.ID,
 					ListID: vocab.ListID,
 					Values: newValue})
 		}
@@ -69,8 +67,8 @@ func checkIfVocabEquals(vocab string, values []string) bool {
 	return false
 }
 
-func getUserDBVocab(firstValueKey string, secondValueKey string, userVocab vocabularyentity.Vocabulary,
-	dbVocab vocabularyentity.Vocabulary) (UserDBVocabs, error) {
+func getUserDBVocab(firstValueKey string, secondValueKey string, userVocab Vocabulary,
+	dbVocab Vocabulary) (UserDBVocabs, error) {
 	userDBVocab := UserDBVocabs{ID: dbVocab.ID,
 		DBFirst:    dbVocab.GetValueByKey(firstValueKey),
 		DBSecond:   dbVocab.GetValueByKey(secondValueKey),
@@ -82,9 +80,9 @@ func getUserDBVocab(firstValueKey string, secondValueKey string, userVocab vocab
 	return userDBVocab, nil
 }
 
-func CheckTest(correctVocabs []vocabularyentity.Vocabulary, checkRequestBody CheckTestRequest) (TestResult, error) {
+func CheckTest(correctVocabs []Vocabulary, checkRequestBody CheckTestRequest) (TestResult, error) {
 	correct := int8(0)
-	correctVocabMap := make(map[primitive.ObjectID]vocabularyentity.Vocabulary, len(correctVocabs))
+	correctVocabMap := make(map[primitive.ObjectID]Vocabulary, len(correctVocabs))
 	for _, correctVocab := range correctVocabs {
 		correctVocabMap[correctVocab.ID] = correctVocab
 	}
