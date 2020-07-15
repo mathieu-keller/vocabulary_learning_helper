@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/afrima/vocabulary_learning_helper/src/backend/authorized"
 	"github.com/afrima/vocabulary_learning_helper/src/backend/category"
+	"github.com/afrima/vocabulary_learning_helper/src/backend/importer"
 	"github.com/afrima/vocabulary_learning_helper/src/backend/vocabulary"
 	"github.com/afrima/vocabulary_learning_helper/src/backend/vocabulary/vocabularylist"
 	"log"
@@ -17,6 +18,7 @@ func main() {
 	r := gin.Default()
 	r.Use(gzip.Gzip(gzip.BestCompression))
 	authorized.Init(r)
+	importer.Init(r)
 	category.Init(r)
 	vocabulary.Init(r)
 	vocabularylist.Init(r)

@@ -34,7 +34,7 @@ type CheckTestRequest struct {
 	SecondValueField string       `json:"secondValueField"`
 }
 
-func GenerateTest(testReqBody GenerateTestRequest) ([]Vocabulary, error) {
+func generateTest(testReqBody GenerateTestRequest) ([]Vocabulary, error) {
 	vocabs, err := GetRandomVocabularyByListIds(testReqBody.ListIDs, testReqBody.Limit)
 	if err != nil {
 		log.Println(err)
@@ -80,7 +80,7 @@ func getUserDBVocab(firstValueKey string, secondValueKey string, userVocab Vocab
 	return userDBVocab, nil
 }
 
-func CheckTest(correctVocabs []Vocabulary, checkRequestBody CheckTestRequest) (TestResult, error) {
+func checkTest(correctVocabs []Vocabulary, checkRequestBody CheckTestRequest) (TestResult, error) {
 	correct := int8(0)
 	correctVocabMap := make(map[primitive.ObjectID]Vocabulary, len(correctVocabs))
 	for _, correctVocab := range correctVocabs {

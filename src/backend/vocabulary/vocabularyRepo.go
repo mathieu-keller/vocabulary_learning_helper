@@ -87,6 +87,17 @@ func (vocabulary *Vocabulary) InsertVocab() error {
 	return err
 }
 
+func InsertVocabularies(vocabularies []Vocabulary) error {
+	collection, ctx, closeCtx := database.GetDatabase("Vocabulary")
+	defer closeCtx()
+	s := make([]interface{}, len(vocabularies))
+	for i, v := range vocabularies {
+		s[i] = v
+	}
+	_, err := collection.InsertMany(ctx, s)
+	return err
+}
+
 func (vocabulary Vocabulary) Delete() error {
 	collection, ctx, closeCtx := database.GetDatabase("Vocabulary")
 	defer closeCtx()

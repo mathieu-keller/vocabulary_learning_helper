@@ -15,11 +15,11 @@ func Init(r *gin.Engine) {
 	r.POST(path, authorized.IsAuthorized(insertVocab))
 	r.GET(path+"/:id", authorized.IsAuthorized(getVocab))
 	r.DELETE(path, authorized.IsAuthorized(deleteVocab))
-	r.POST("/generate-test", authorized.IsAuthorized(generateTest))
-	r.POST("/check-test", authorized.IsAuthorized(checkTest))
+	r.POST("/generate-test", authorized.IsAuthorized(requestGenerateTest))
+	r.POST("/check-test", authorized.IsAuthorized(requestCheckTest))
 }
 
-func checkTest(c *gin.Context) {
+func requestCheckTest(c *gin.Context) {
 	checkRequestBody, err := getCheckRequestFromBody(c)
 	if err != nil {
 		c.String(http.StatusBadRequest, err.Error())
@@ -30,7 +30,7 @@ func checkTest(c *gin.Context) {
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
-	correction, err := CheckTest(correctVocabs, checkRequestBody)
+	correction, err := checkTest(correctVocabs, checkRequestBody)
 	if err != nil {
 		c.String(http.StatusBadRequest, err.Error())
 		return
@@ -61,7 +61,7 @@ func getVocabulariesFromDB(checkRequestBody CheckTestRequest) ([]Vocabulary, err
 	return correctVocabs, nil
 }
 
-func generateTest(c *gin.Context) {
+func requestGenerateTest(c *gin.Context) {
 	reqBody, err := c.GetRawData()
 	if err != nil {
 		c.String(http.StatusBadRequest, err.Error())
@@ -72,7 +72,7 @@ func generateTest(c *gin.Context) {
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
-	responseVocabularies, err := GenerateTest(testReqBody)
+	responseVocabularies, err := generateTest(testReqBody)
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 		return
