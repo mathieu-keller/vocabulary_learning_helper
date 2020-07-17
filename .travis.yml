@@ -21,6 +21,11 @@ jobs:
         - npm run lint
         - npm run test
         - sonar-scanner
+      after_success:
+        - cd dist
+        - docker build -t ${DOCKER_USER}/vocabulary_trainer_fe:${TRAVIS_BUILD_NUMBER} .
+        - docker login -u=${DOCKER_USER} -p=${DOCKER_PASSWORD}
+        - docker push ${DOCKER_USER}/vocabulary_trainer_fe:${TRAVIS_BUILD_NUMBER}
     - name: Backend Tests
       os: linux
       language: go
@@ -40,6 +45,11 @@ jobs:
       script:
         - go test -coverprofile=coverage.out -coverpkg=./... ./...
         - sonar-scanner
+      after_success:
+        - CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 go build -ldflags "-s -w" -o .
+        - docker build -t ${DOCKER_USER}/vocabulary_trainer_be:${TRAVIS_BUILD_NUMBER} .
+        - docker login -u=${DOCKER_USER} -p=${DOCKER_PASSWORD}
+        - docker push ${DOCKER_USER}/vocabulary_trainer_be:${TRAVIS_BUILD_NUMBER}
     - stage: build
       os: linux
       services: docker

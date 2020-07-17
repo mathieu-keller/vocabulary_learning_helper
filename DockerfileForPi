@@ -1,19 +1,10 @@
-FROM node:14-buster AS NodeBuilder
-WORKDIR /app
-COPY src/frontend/ .
-RUN yarn install --network-timeout 1000000
-RUN npm run build:prod
-
-FROM golang:1.14-buster AS GOBuilder
-WORKDIR $GOPATH/src/github.com/afrima/japanese_learning_helper/src/backend
-COPY src/backend/ .
-RUN go get -d -v
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 go build -ldflags "-s -w" -o /go/bin/backend
+FROM afrima/vocabulary_learning_helper_fe:${TRAVIS_BUILD_NUMBER} as frontend
+FROM afrima/vocabulary_learning_helper_be:${TRAVIS_BUILD_NUMBER} as backend
 
 FROM alpine:latest
 LABEL maintainer=MathieuKeller@gmx.de
 WORKDIR /app
-COPY --from=GOBuilder /go/bin/backend .
-COPY --from=NodeBuilder /app/dist ./dist
+COPY --from=backend /app/dist .
+COPY --from=frontend /app/dist ./dist
 EXPOSE 443
 ENTRYPOINT ["/app/backend"]
