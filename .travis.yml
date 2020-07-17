@@ -6,7 +6,7 @@ jobs:
       name: Frontend Tests
       os: linux
       language: node_js
-      node_js: 12
+      node_js: 'stable'
       addons:
         sonarcloud:
           organization: afrima
