@@ -1,6 +1,6 @@
 ARG TRAVIS_BUILD_NUMBER
-FROM afrima/vocabulary_learning_helper_fe:${TRAVIS_BUILD_NUMBER} as frontend
-FROM afrima/vocabulary_learning_helper_be:${TRAVIS_BUILD_NUMBER} as backend
+FROM afrima/vocabulary_trainer_fe:${TRAVIS_BUILD_NUMBER} as frontend
+FROM afrima/vocabulary_trainer_be:${TRAVIS_BUILD_NUMBER} as backend
 
 FROM alpine:latest
 LABEL maintainer=MathieuKeller@gmx.de
