@@ -5,7 +5,6 @@ jobs:
     - stage: tests
       name: Frontend Tests
       os: linux
-      services: docker
       language: node_js
       node_js: 14
       addons:
@@ -30,7 +29,6 @@ jobs:
         - docker push ${DOCKER_USER}/vocabulary_trainer_fe:${TRAVIS_BUILD_NUMBER}
     - name: Backend Tests
       os: linux
-      services: docker
       language: go
       go: 1.14
       addons:
