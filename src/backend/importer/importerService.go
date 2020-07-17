@@ -21,14 +21,17 @@ func (error Error) Error() string {
 	return error.ErrorText
 }
 
-func importCsv(rCategoryID string,rListID string, listName string, rFile *multipart.FileHeader, userName string) error {
+func importCsv(rCategoryID string, rListID string, listName string, rFile *multipart.FileHeader, userName string, columnSeparator string, vocabSeparator string) error {
 	category, err := category.GetCategoryByID(rCategoryID)
 	if err != nil {
 		log.Print(err.Error())
 		return err
 	}
-	listID := createOrGetVocabularyListId(rListID, category, listName, userName)
-	csvData, err := getCsvData(rFile)
+	listID, err := createOrGetVocabularyListId(rListID, category, listName, userName)
+	if err != nil {
+		return err
+	}
+	csvData, err := getCsvData(rFile, columnSeparator)
 	if err != nil {
 		return err
 	}
@@ -36,17 +39,21 @@ func importCsv(rCategoryID string,rListID string, listName string, rFile *multip
 	if err = checkColumns(columns, category.Columns); err != nil {
 		return err
 	}
-	vocabularies := generateVocabularies(csvData, columns, listID)
+	vocabularies := generateVocabularies(csvData, columns, listID, vocabSeparator)
 	vocabulary.InsertVocabularies(vocabularies)
 	return nil
 }
 
-func generateVocabularies(csvData [][]string, columns []string, listID primitive.ObjectID) []vocabulary.Vocabulary {
+func generateVocabularies(csvData [][]string, columns []string, listID primitive.ObjectID, separator string) []vocabulary.Vocabulary {
 	vocabularies := make([]vocabulary.Vocabulary, 0, len(csvData)-1)
 	for _, data := range csvData[1:] {
 		values := make([]vocabulary.Values, len(columns))
 		for i, column := range columns {
-			values[i] = vocabulary.Values{Key: column, Values: strings.Split(data[i], ",")}
+			if separator == "" {
+				values[i] = vocabulary.Values{Key: column, Values: []string{data[i]}}
+				continue
+			}
+			values[i] = vocabulary.Values{Key: column, Values: strings.Split(data[i], separator)}
 		}
 		vocabularies = append(vocabularies, vocabulary.Vocabulary{
 			ID:     primitive.NewObjectID(),
@@ -77,26 +84,33 @@ func checkColumns(columns []string, categoryColumns []string) error {
 	return nil
 }
 
-func getCsvData(rFile *multipart.FileHeader) ([][]string, error) {
+func getCsvData(rFile *multipart.FileHeader, separator string) ([][]string, error) {
+	if len(separator) > 1 {
+		return nil, Error{ErrorText: "only on char separator is allowed"}
+	}
 	file, err := rFile.Open()
 	if err != nil {
 		return nil, Error{ErrorText: "file format error"}
 	}
 	defer file.Close()
 	reader := csv.NewReader(bufio.NewReader(file))
-	reader.Comma = ';'
+	if separator != "" {
+		reader.Comma = rune(separator[0])
+	}
 	csvData, err := reader.ReadAll()
 	return csvData, nil
 }
 
-func createOrGetVocabularyListId(rListID string, category category.Category, listName string, userName string) primitive.ObjectID {
+func createOrGetVocabularyListId(rListID string, category category.Category, listName string, userName string) (primitive.ObjectID, error) {
 	var listID primitive.ObjectID
 	if rListID == "" {
 		list := vocabularylist.VocabularyList{ID: primitive.NewObjectID(), CategoryID: category.ID, Name: listName, Owner: strings.ToLower(userName)}
-		list.Insert()
+		if err := list.Insert(); err != nil {
+			return [12]byte{}, err
+		}
 		listID = list.ID
 	} else {
 		listID, _ = primitive.ObjectIDFromHex(rListID)
 	}
-	return listID
+	return listID, nil
 }

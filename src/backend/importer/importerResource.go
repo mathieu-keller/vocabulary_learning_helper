@@ -14,6 +14,8 @@ func insert(c *gin.Context) {
 	rListID, _ := c.GetPostForm("listID")
 	rCategoryID, _ := c.GetPostForm("categoryID")
 	listName, _ := c.GetPostForm("listName")
+	columnSeparator, _ := c.GetPostForm("columnSeparator")
+	vocabSeparator, _ := c.GetPostForm("vocabSeparator")
 	if err != nil {
 		c.String(400, "file format error")
 		return
@@ -27,8 +29,9 @@ func insert(c *gin.Context) {
 		c.String(403, "token is not valid!")
 		return
 	}
-	if err = importCsv(rCategoryID, rListID, listName, rFile, claims["userName"].(string)); err != nil {
+	if err = importCsv(rCategoryID, rListID, listName, rFile, claims["userName"].(string), columnSeparator, vocabSeparator); err != nil {
 		c.String(400, err.Error())
+		return
 	}
 	c.String(201, "all imported")
 }
