@@ -55,7 +55,7 @@ jobs:
       os: linux
       services: docker
       script:
-        - docker build --build-arg TRAVIS_BUILD_NUMBER=${TRAVIS_BUILD_NUMBER} -t ${DOCKER_USER}/vocabulary_trainer -f DockerfileForPi .
+        - docker build --build-arg TRAVIS_BUILD_NUMBER=${TRAVIS_BUILD_NUMBER} -t ${DOCKER_USER}/vocabulary_trainer .
       after_success:
         - docker login -u=${DOCKER_USER} -p=${DOCKER_PASSWORD}
         - docker tag ${DOCKER_USER}/vocabulary_trainer ${DOCKER_USER}/vocabulary_trainer:latest
