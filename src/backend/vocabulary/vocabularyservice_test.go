@@ -125,3 +125,27 @@ func getTestVocabularies(secondCorrect []string,
 	})
 	return correctVocabs, userVocabs
 }
+
+func TestBuildTestResponse(t *testing.T) {
+	vocabs := []Vocabulary{
+		{
+			ID:     primitive.NewObjectID(),
+			ListID: primitive.NewObjectID(),
+			Values: []Values{{
+				Key:    "field 1",
+				Values: []string{"value 1"},
+			}, {
+				Key:    "field 2",
+				Values: []string{"value 2"},
+			}},
+		},
+	}
+	response := buildTestResponse(vocabs, "field 1", "field 2")
+	assert.Equalf(t, 1, len(response), "Must be one because only one vocab was given")
+	assert.Equalf(t, 2, len(response[0].Values), "Must be two because one question + one answer")
+	assert.Equalf(t, "field 1", response[0].Values[0].Key, "Must be field 1 because that is the name of the question")
+	assert.Equalf(t, []string{"value 1"}, response[0].Values[0].Values, "Must be array with on value \"value1\"")
+	assert.Equalf(t, "field 2", response[0].Values[1].Key, "Must be field 2 because that is the name of the question")
+	assert.Equalf(t, 0, len(response[0].Values[1].Values), "Must must be zero because the answer must be filled from the user")
+
+}

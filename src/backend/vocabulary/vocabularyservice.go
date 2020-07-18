@@ -40,11 +40,15 @@ func generateTest(testReqBody GenerateTestRequest) ([]Vocabulary, error) {
 		log.Println(err)
 		return nil, err
 	}
+	return buildTestResponse(vocabs, testReqBody.FirstValueField, testReqBody.SecondValueField), nil
+}
+
+func buildTestResponse(vocabs []Vocabulary, firstValueField string, secondValueField string) []Vocabulary {
 	responseVocabularies := make([]Vocabulary, 0, len(vocabs))
 	for _, vocab := range vocabs {
-		secondValue := vocab.GetValueByKey(testReqBody.SecondValueField)
+		secondValue := vocab.GetValueByKey(secondValueField)
 		if secondValue.Key != "" {
-			firstValue := vocab.GetValueByKey(testReqBody.FirstValueField)
+			firstValue := vocab.GetValueByKey(firstValueField)
 			secondValue.Values = nil
 			newValue := make([]Values, 0, 2)
 			newValue = append(newValue, firstValue)
@@ -55,7 +59,7 @@ func generateTest(testReqBody GenerateTestRequest) ([]Vocabulary, error) {
 					Values: newValue})
 		}
 	}
-	return responseVocabularies, nil
+	return responseVocabularies
 }
 
 func checkIfVocabEquals(vocab string, values []string) bool {
