@@ -1,6 +1,7 @@
 package importer
 
 import (
+	"github.com/afrima/vocabulary_learning_helper/src/backend/category"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"testing"
@@ -60,4 +61,10 @@ func Test_generateVocabulariesWithoutSeparator(t *testing.T) {
 	assert.Equalf(t, vocabularies[0].Values[0].Values, []string{"vocab1,vocab2"}, "the values must be vocab1 and vocab2 as array")
 	assert.Equalf(t, vocabularies[0].Values[1].Key, "header2", "key must be header2 because that is the name of the second column")
 	assert.Equalf(t, vocabularies[0].Values[1].Values, []string{"meaning1,meaning2,meaning3"}, "the values must be meaning1, meaning2 and meaning3 as array")
+}
+
+func Test_createOrGetVocabularyListId(t *testing.T) {
+	listId, err := createOrGetVocabularyListId("5f120364e8a9f5de8e15e863", category.Category{}, "", "")
+	assert.Nil(t, err)
+	assert.Equal(t, "5f120364e8a9f5de8e15e863", listId.Hex())
 }

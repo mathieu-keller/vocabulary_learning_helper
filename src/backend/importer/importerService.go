@@ -13,14 +13,6 @@ import (
 	"strings"
 )
 
-type Error struct {
-	ErrorText string
-}
-
-func (error Error) Error() string {
-	return error.ErrorText
-}
-
 func importCsv(rCategoryID string, rListID string, listName string, rFile *multipart.FileHeader, userName string, columnSeparator string, vocabSeparator string) error {
 	category, err := category.GetCategoryByID(rCategoryID)
 	if err != nil {
@@ -103,14 +95,15 @@ func getCsvData(rFile *multipart.FileHeader, separator string) ([][]string, erro
 
 func createOrGetVocabularyListId(rListID string, category category.Category, listName string, userName string) (primitive.ObjectID, error) {
 	var listID primitive.ObjectID
+	var err error
 	if rListID == "" {
 		list := vocabularylist.VocabularyList{ID: primitive.NewObjectID(), CategoryID: category.ID, Name: listName, Owner: strings.ToLower(userName)}
-		if err := list.Insert(); err != nil {
+		if err = list.Insert(); err != nil {
 			return [12]byte{}, err
 		}
 		listID = list.ID
 	} else {
-		listID, _ = primitive.ObjectIDFromHex(rListID)
+		listID, err = primitive.ObjectIDFromHex(rListID)
 	}
-	return listID, nil
+	return listID, err
 }
