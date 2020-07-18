@@ -119,7 +119,6 @@ func GenerateJWT(userName string) (string, error) {
 func SetHTTPOnlyToken(c *gin.Context, userName string) {
 	token, err := GenerateJWT(userName)
 	if err != nil {
-		c.Status(http.StatusInternalServerError)
 		c.String(http.StatusInternalServerError, err.Error())
 		log.Print(err)
 		return
