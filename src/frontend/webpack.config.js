@@ -38,8 +38,8 @@ module.exports = env => {
                                 modules: {
                                     exportGlobals: true,
                                     localIdentName: '[path][name]__[local]--[hash:base64:5]',
-                                    context: path.resolve(__dirname, 'src'),
-                                    hashPrefix: '_',
+                                    localIdentContext: path.resolve(__dirname, 'src'),
+                                    localIdentHashPrefix: '_',
                                 },
                             },
                         },
