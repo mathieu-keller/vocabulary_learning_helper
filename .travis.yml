@@ -47,7 +47,7 @@ jobs:
         - go test -coverprofile=coverage.out -coverpkg=./... ./...
         - sonar-scanner
       after_success:
-        - CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 go build -ldflags "-s -w" -o .
+        - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o .
         - docker build -t ${DOCKER_USER}/vocabulary_trainer_be:${TRAVIS_BUILD_NUMBER} .
         - docker login -u=${DOCKER_USER} -p=${DOCKER_PASSWORD}
         - docker push ${DOCKER_USER}/vocabulary_trainer_be:${TRAVIS_BUILD_NUMBER}
