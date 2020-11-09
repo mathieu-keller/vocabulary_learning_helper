@@ -3,7 +3,7 @@
 This app tests your vocabulary with a vocabulary test.
 This app will also store and manage all your vocabulary.
 
-[live demo](https://trainer.mathieukeller.de)
+[live demo](https://mathieukeller.de)
 
 * user: testuser
 * password: start
