@@ -90,12 +90,9 @@ jobs:
   godep:
     name: go dependencies
     runs-on: ubuntu-latest
-    env:
-      GOPATH: ${{ github.workspace }}/src/backend
-      GO111MODULE: off
     defaults:
       run:
-        working-directory: ${{ env.GOPATH }}
+        working-directory: ./src/backend
     steps:
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
@@ -103,46 +100,16 @@ jobs:
         go-version: ^1.14
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
-    - name: Cache go dep
-      uses: actions/cache@v2
-      id: cache-go-dep
-      with:
-        path: ${GOPATH}
-        key: ${{ runner.os }}-cache-go-dep-${{ hashFiles('**') }}
     - name: install dep
-      if: steps.cache-go-dep.outputs.cache-hit != 'true'
-      run: |
-       go get -d -v
-       go get github.com/stretchr/testify
-  gotest:
-    name: go-test
-    needs: [godep]
-    runs-on: ubuntu-latest
-    env:
-      GOPATH: ${{ github.workspace }}/src/backend
-      GO111MODULE: off
-    defaults:
-      run:
-        working-directory: ${{ env.GOPATH }}
-    steps:
-    - name: Set up Go 1.x
-      uses: actions/setup-go@v2
-      with:
-        go-version: ^1.14
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
-    - name: Cache go dep
-      uses: actions/cache@v2
-      id: cache-go-dep
-      with:
-        path: ${GOPATH}
-        key: ${{ runner.os }}-cache-go-dep-${{ hashFiles('**') }}
-    - name: install dep
-      if: steps.cache-go-dep.outputs.cache-hit != 'true'
       run: |
        go get -d -v
        go get github.com/stretchr/testify
     - name: run tests
       run: go test -coverprofile=coverage.out -coverpkg=./... ./...
-      
-   
+    - name: build
+      run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o .
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: backend
+        path: backend
