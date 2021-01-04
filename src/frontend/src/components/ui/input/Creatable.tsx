@@ -27,10 +27,10 @@ type CreatableProps = {
 
 export default (props: CreatableProps): JSX.Element => {
   const [inputValue, setInputValue] = useState<string>('');
-  const handleChange = (value: ValueType<CreatableValue>, actionMeta: ActionMeta<CreatableValue>): void => {
+  const handleChange = (value: ValueType<CreatableValue, true>, actionMeta: ActionMeta<CreatableValue>): void => {
     if (actionMeta.action === 'remove-value') {
       if (value) {
-        const values = (value as CreatableValue[]).map(val => val.value);
+        const values = value.map(val => val.value);
         props.onChange(values);
       } else {
         props.onChange([]);
@@ -72,7 +72,7 @@ export default (props: CreatableProps): JSX.Element => {
     }
   };
   return (
-    <CreatableSelect<CreatableValue>
+    <CreatableSelect<CreatableValue, true>
       components={components}
       inputValue={inputValue}
       isClearable
