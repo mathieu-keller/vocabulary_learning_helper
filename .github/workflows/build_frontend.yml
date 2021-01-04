@@ -16,7 +16,7 @@ jobs:
       uses: actions/cache@v1
       id: yarn-cache-node-modules
       with:
-        path: node_modules
+        path: src/frontend/node_modules
         key: ${{ runner.os }}-yarn-cache-node-modules-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-yarn-cache-node-modules-
@@ -24,12 +24,24 @@ jobs:
       if: steps.yarn-cache-node-modules.outputs.cache-hit != 'true'
       working-directory: ./src/frontend
       run: yarn install
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
     - name: lint
       working-directory: ./src/frontend
       run: npm run lint
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
     - name: test
       working-directory: ./src/frontend
       run: npm run test
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
     - name: build
       working-directory: ./src/frontend
       run: npm run build:prod
@@ -37,4 +49,4 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: build
-        path: src/frontend/dist
+        path: src/frontend/dist 
