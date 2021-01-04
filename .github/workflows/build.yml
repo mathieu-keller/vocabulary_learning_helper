@@ -125,12 +125,12 @@ jobs:
           path: ./docker
       - name: Build image
         working-directory: ./docker
-        run: docker build . --file Dockerfile --tag {{ secrets.DOCKER_USER }}/vocabulary_trainer
+        run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_USER }}/vocabulary_trainer
       - name: push image
         run: |
           docker login -u=${{ secrets.DOCKER_USER }} -p=${{ secrets.DOCKER_PASSWORD }}
-          docker tag {{ secrets.DOCKER_USER }}/vocabulary_trainer {{ secrets.DOCKER_USER }}/vocabulary_trainer:latest
-          docker push {{ secrets.DOCKER_USER }}/vocabulary_trainer:latest
-          docker tag {{ secrets.DOCKER_USER }}/vocabulary_trainer {{ secrets.DOCKER_USER }}/vocabulary_trainer:${{ github.run_number }}
-          docker push {{ secrets.DOCKER_USER }}/vocabulary_trainer:${{ github.run_number }}
+          docker tag ${{ secrets.DOCKER_USER }}/vocabulary_trainer ${{ secrets.DOCKER_USER }}/vocabulary_trainer:latest
+          docker push ${{ secrets.DOCKER_USER }}/vocabulary_trainer:latest
+          docker tag ${{ secrets.DOCKER_USER }}/vocabulary_trainer ${{ secrets.DOCKER_USER }}/vocabulary_trainer:${{ github.run_number }}
+          docker push ${{ secrets.DOCKER_USER }}/vocabulary_trainer:${{ github.run_number }}
         
