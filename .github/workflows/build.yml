@@ -1,4 +1,4 @@
-name: Build Frontend
+name: Build
 
 on:
   push:
@@ -6,8 +6,34 @@ on:
   pull_request:
     branches: [ master ]
 jobs:
+  go:
+    name: go test and build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./src/backend
+    steps:
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.14
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+    - name: install dep
+      run: |
+       go get -d -v
+       go get github.com/stretchr/testify
+    - name: run tests
+      run: go test -coverprofile=coverage.out -coverpkg=./... ./...
+    - name: build
+      run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o .
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: backend
+        path: src/backend/backend
   yarn:
-    name: Yarn
+    name: cache node modules
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -87,38 +113,10 @@ jobs:
       with:
         name: frontend
         path: src/frontend/dist 
-        if-no-files-found: error
-  godep:
-    name: go dependencies
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./src/backend
-    steps:
-    - name: Set up Go 1.x
-      uses: actions/setup-go@v2
-      with:
-        go-version: ^1.14
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
-    - name: install dep
-      run: |
-       go get -d -v
-       go get github.com/stretchr/testify
-    - name: run tests
-      run: go test -coverprofile=coverage.out -coverpkg=./... ./...
-    - name: build
-      run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o .
-    - name: Archive production artifacts
-      uses: actions/upload-artifact@v1
-      with:
-        name: backend
-        path: src/backend/backend
-        if-no-files-found: error
   docker:
     name: build docker
     runs-on: ubuntu-latest
-    needs: [build, godep]
+    needs: [build, go]
     steps:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
