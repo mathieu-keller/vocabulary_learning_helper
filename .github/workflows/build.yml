@@ -28,6 +28,7 @@ jobs:
     - name: build
       run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o .
     - name: Archive production artifacts
+      if: contains(github.ref, 'master')
       uses: actions/upload-artifact@v1
       with:
         name: backend
@@ -109,6 +110,7 @@ jobs:
       working-directory: ./src/frontend
       run: npm run build:prod
     - name: Archive production artifacts
+      if: contains(github.ref, 'master')
       uses: actions/upload-artifact@v1
       with:
         name: frontend
