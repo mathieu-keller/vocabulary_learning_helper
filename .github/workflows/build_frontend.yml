@@ -53,7 +53,7 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-     - name: Cache node_modules
+    - name: Cache node_modules
       uses: actions/cache@v1
       id: yarn-cache-node-modules
       with:
