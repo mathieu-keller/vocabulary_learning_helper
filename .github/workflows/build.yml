@@ -95,7 +95,7 @@ jobs:
       GO111MODULE: off
     defaults:
       run:
-        working-directory: ${{ env.GOPATH }}/src/github.com/${{ github.repository }}
+        working-directory: ${{ env.GOPATH }}
     steps:
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
@@ -123,7 +123,7 @@ jobs:
       GO111MODULE: off
     defaults:
       run:
-        working-directory: ${{ env.GOPATH }}/src/github.com/${{ github.repository }}
+        working-directory: ${{ env.GOPATH }}
     steps:
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
