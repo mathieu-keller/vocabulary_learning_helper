@@ -126,11 +126,6 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           path: ./docker
-      - name: debug
-        working-directory: ./docker
-        run: |
-         ls
-         ls frontend/
       - name: Build image
         working-directory: ./docker
         run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_USER }}/vocabulary_trainer
