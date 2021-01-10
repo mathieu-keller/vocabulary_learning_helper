@@ -62,10 +62,6 @@ jobs:
       with:
         path: src/frontend/node_modules
         key: ${{ runner.os }}-yarn-cache-node-modules-${{ hashFiles('src/frontend/yarn.lock') }}
-    - name: Yarn install
-      if: steps.yarn-cache-node-modules.outputs.cache-hit != 'true'
-      working-directory: ./src/frontend
-      run: yarn install
     - name: lint
       working-directory: ./src/frontend
       run: npm run lint
@@ -82,10 +78,6 @@ jobs:
       with:
         path: src/frontend/node_modules
         key: ${{ runner.os }}-yarn-cache-node-modules-${{ hashFiles('src/frontend/yarn.lock') }}
-    - name: Yarn install
-      if: steps.yarn-cache-node-modules.outputs.cache-hit != 'true'
-      working-directory: ./src/frontend
-      run: yarn install
     - name: test
       working-directory: ./src/frontend
       run: npm run test
@@ -102,10 +94,6 @@ jobs:
       with:
         path: src/frontend/node_modules
         key: ${{ runner.os }}-yarn-cache-node-modules-${{ hashFiles('src/frontend/yarn.lock') }}
-    - name: Yarn install
-      if: steps.yarn-cache-node-modules.outputs.cache-hit != 'true'
-      working-directory: ./src/frontend
-      run: yarn install
     - name: build
       working-directory: ./src/frontend
       run: npm run build:prod
